@@ -1,0 +1,234 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{0ab84c5c-2035-4041-9c2e-47c361f2139c}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{1fc35a70-dca5-4259-97cb-52ebebe9ea75}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{0b3ff5cc-39c2-489c-b62f-1ad66d3cf63b}</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+    <Filter Include="MMF Headers">
+      <UniqueIdentifier>{de340aed-e7b4-465c-bdc5-641399588360}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Edittime.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="General.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="md5.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sha1.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="md4.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="md2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HashAlgorithm.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SHA224.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SHA256.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SHA384.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SHA512.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SHA2_32.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SHA2_64.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HMAC.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Common.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Data.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FlagsPrefs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Information.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Menu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\Program Files\Microsoft Visual Studio\Vc98\Include\Basetsd.h">
+      <Filter>MMF Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Inc\Ccx.h">
+      <Filter>MMF Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Inc\Ccxhdr.h">
+      <Filter>MMF Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Inc\CfcError.h">
+      <Filter>MMF Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Inc\CfcFile.h">
+      <Filter>MMF Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Inc\Cncf.h">
+      <Filter>MMF Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Inc\cncr.h">
+      <Filter>MMF Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Inc\Cncy.h">
+      <Filter>MMF Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Inc\Cnpdll.h">
+      <Filter>MMF Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Inc\colors.h">
+      <Filter>MMF Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Inc\EVTCCX.H">
+      <Filter>MMF Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Inc\Fill.h">
+      <Filter>MMF Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Inc\FilterMgr.h">
+      <Filter>MMF Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Inc\ImageFlt.h">
+      <Filter>MMF Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Inc\ImgFlt.h">
+      <Filter>MMF Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Inc\MagicRDATA.h">
+      <Filter>MMF Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Inc\oop_ext.h">
+      <Filter>MMF Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Inc\Palet.h">
+      <Filter>MMF Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Inc\PictEdDefs.h">
+      <Filter>MMF Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Inc\Props.h">
+      <Filter>MMF Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Inc\PTYPE.H">
+      <Filter>MMF Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Inc\rCreateObject.h">
+      <Filter>MMF Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Inc\rCreateRunObject.h">
+      <Filter>MMF Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Inc\rGetDependencies.h">
+      <Filter>MMF Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Inc\rTemplate.h">
+      <Filter>MMF Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Inc\SoundFilter.h">
+      <Filter>MMF Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Inc\SoundFilterMgr.h">
+      <Filter>MMF Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Inc\Surface.h">
+      <Filter>MMF Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Inc\SurfaceDefs.h">
+      <Filter>MMF Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Inc\TemplateInc.h">
+      <Filter>MMF Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Inc\WinMacro.h">
+      <Filter>MMF Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="crc32.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="md5.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sha1.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="crc16.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="md4.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="md2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HashAlgorithm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SHA2_64.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SHA2_32.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sha2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HMAC.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Ext.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="EXTICON.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="EXTIMG.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="Ext.def">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+  </ItemGroup>
+</Project>
