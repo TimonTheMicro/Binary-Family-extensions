@@ -173,7 +173,7 @@ EXPRESSION(
 		if ( !rdPtr->bEndianness )
 			return *reinterpret_cast<const short *>(&d_vData.at(p1));
 		else
-			return _byteswap_ulong(*reinterpret_cast<const short *>(&d_vData.at(p1)));
+			return _byteswap_ushort(*reinterpret_cast<const short *>(&d_vData.at(p1)));
 	}
 	
 	return 0;
@@ -192,7 +192,7 @@ EXPRESSION(
 		if ( !rdPtr->bEndianness )
 			return *reinterpret_cast<const unsigned short *>(&d_vData.at(p1));
 		else
-			return _byteswap_ulong(*reinterpret_cast<const unsigned short *>(&d_vData.at(p1)));
+			return _byteswap_ushort(*reinterpret_cast<const unsigned short *>(&d_vData.at(p1)));
 	}
 	
 	return 0;
