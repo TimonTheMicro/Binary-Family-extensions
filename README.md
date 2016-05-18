@@ -22,7 +22,4 @@ The pattern bits option allows to expand value, for eg. bits 11111 to 11111111 o
 
 Checksum object
 Hash manager, allows to calculate hash of data on memory or string of
-MD2, MD4, MD5
-CRC16, CRC32
-SHA1, SHA2
-checksums with HMAC key.
+MD2, MD4, MD5, CRC16, CRC32, SHA1, SHA2 checksums with additional HMAC key.
