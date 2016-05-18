@@ -17,7 +17,7 @@ bitmaps. From 32 bit to 1 bit. Works well with Binary Board object.
 
 Bitset object
 Bits (or flags) manipulator, allows user to treat every integer value as a set of 32 flags.
-The pattern bits option allows to expand value, for eg. bits 11111 to 11111111 or 10101 to 10101101
+The pattern bits option allows to expand value, for eg. bits 11111 are expanded to 11111111 or 10101 to 10101101 patterns.
 
 
 Checksum object
