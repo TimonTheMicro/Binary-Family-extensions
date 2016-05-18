@@ -317,7 +317,7 @@ EXPRESSION(
 	/* Flags */			0,
 	/* Params */		(1, EXPPARAM_NUMBER, "Integer value")
 	) {
-	long input = ExParam(TYPE_INT);
+	short input = ExParam(TYPE_INT);
 	return LOBYTE(input);
 }
 
@@ -337,7 +337,7 @@ EXPRESSION(
 	/* Flags */			0,
 	/* Params */		(1, EXPPARAM_NUMBER, "Integer value")
 	) {
-	short input = ExParam(TYPE_INT);
+	long input = ExParam(TYPE_INT);
 	return LOWORD(input);
 }
 
