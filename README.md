@@ -1,4 +1,5 @@
-# Binary-Family-extensions for Multimedia Fusion 2
+# Binary Family
+extensions for Multimedia Fusion 2
 
 To create or edit binary data.
 
