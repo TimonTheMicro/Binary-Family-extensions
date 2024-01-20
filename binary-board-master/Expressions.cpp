@@ -48,7 +48,7 @@ EXPRESSION(
 	if ( numBoards )
 	{	
 		for (unsigned int i=0; i<numBoards; i++) //check if board already exists
-			if ( strCompare(d_sNamei, p1, rdPtr->bStrCmp) )
+			if ( strCompare(d_sNamei, p1) )
 				return (int)d_vDatai.data();
 	}
 
@@ -66,7 +66,7 @@ EXPRESSION(
 	if ( numBoards )
 	{		
 		for (unsigned int i=0; i<numBoards; i++) //check if board already exists
-			   if ( strCompare(d_sNamei, p1, rdPtr->bStrCmp) )
+			   if ( strCompare(d_sNamei, p1) )
 				return d_vDatai.size();
 	}
 
@@ -83,7 +83,7 @@ EXPRESSION(
 	string p1( (LPSTR)ExParam(TYPE_STRING) );
 
 	for (unsigned int i=0; i<numBoards; i++) //check if board already exists
-		   if ( strCompare(d_sNamei, p1, rdPtr->bStrCmp) )
+		   if ( strCompare(d_sNamei, p1) )
 			return d_bProtectedi;
 	return 0;
 }
@@ -126,10 +126,10 @@ EXPRESSION(
 	off_t p1tmp = ExParam(TYPE_FLOAT);
 	float p1 = *reinterpret_cast<const float *>(&p1tmp);
 	
-	if ( p1 >= 0 )
-		return 1;
-	else
+	if ( p1 < 0 )
 		return -1;
+
+		return 1;
 }
 
 EXPRESSION(
@@ -313,7 +313,7 @@ EXPRESSION(
 		long counter = 0;
 		while ( true )
 		{
-			auto it = search( d_vData.begin()+dist, d_vData.end(), value, value + sizeof(char)*p2 );
+			auto it = std::search( d_vData.begin()+dist, d_vData.end(), value, value + sizeof(char)*p2 );
 			dist = it - d_vData.begin();
 			if ( dist == d_vData.size() )
 				break;
@@ -340,7 +340,7 @@ EXPRESSION(
 		long dist = 0;
 		while ( true )
 		{
-			auto it = search( d_vData.begin()+dist, d_vData.end(), p1, p1 + strlen(p1) );			
+			auto it = std::search( d_vData.begin()+dist, d_vData.end(), p1, p1 + strlen(p1) );			
 			dist = it - d_vData.begin();	
 			if ( dist == d_vData.size() )
 				break;
@@ -364,13 +364,13 @@ EXPRESSION(
 	if ( numBoards )
 	{	
 		for (unsigned int i=0; i<numBoards; i++) //check if board already exists
-			   if ( strCompare(d_sNamei, p1, rdPtr->bStrCmp) )
+			   if ( strCompare(d_sNamei, p1) )
 			{
 				long dist = 0;
 				long counter = 0;
 				while ( true )
 				{
-					auto it = search( d_vData.begin()+dist, d_vData.end(), d_vDatai.begin(), d_vDatai.end() );			
+					auto it = std::search( d_vData.begin()+dist, d_vData.end(), d_vDatai.begin(), d_vDatai.end() );			
 					dist = it - d_vData.begin();	
 					if ( dist == d_vData.size() )
 						break;
@@ -406,7 +406,7 @@ EXPRESSION(
 		long dist = 0;
 		while ( true )
 		{
-			auto it = search( d_vData.begin()+dist+1, d_vData.end(), value, value + sizeof(char)*p2 );
+			auto it = std::search( d_vData.begin()+dist+1, d_vData.end(), value, value + sizeof(char)*p2 );
 			dist = it - d_vData.begin();
 			p3--;
 			if ( dist == d_vData.size() )
@@ -426,27 +426,30 @@ EXPRESSION(
 	/* ID */			21,
 	/* Name */			"findStr(",
 	/* Flags */			0,
-	/* Params */		(2, EXPPARAM_STRING, "String", /*EXPPARAM_NUMBER, "Case sensitive", */EXPPARAM_NUMBER, "Occurrence")
+	/* Params */		(4, EXPPARAM_STRING, "String", /*EXPPARAM_NUMBER, "Case sensitive", */EXPPARAM_NUMBER, "Occurrence",EXPPARAM_NUMBER,"Begins with NULL (0 for false, 1 for true)",EXPPARAM_NUMBER,"Ends with NULL (0 for false, 1 for true)")
 ) {
 	LPSTR p1 = (LPSTR)ExParam(TYPE_STRING);
-	long p3 = ExParam(TYPE_INT);
+	long p2 = ExParam(TYPE_INT);
+	bool p3 = ExParam(TYPE_INT);
+	bool p4 = ExParam(TYPE_INT);
 
-	if ( numBoards && p3 )
+	if ( numBoards && p2 )
 	{
 		long dist = 0;
-		while ( p3 && dist != d_vData.size() )
+		while ( p2 && dist != d_vData.size() )
 		{
-			auto it = search( d_vData.begin()+dist+1, d_vData.end(), p1, p1 + strlen(p1) );			
+			auto it = std::search( d_vData.begin()+dist+1, d_vData.end(), p1, p1 + strlen(p1) );			
 			dist = it - d_vData.begin();						
-			p3--;
+			if ( !p3 || (p3 && !((char)d_vData.at(dist-1))))
+				if ( !p4 || (p4 && ((dist+strlen(p1)) < d_vData.size()) && !((char)d_vData.at(dist+strlen(p1)))))
+					p2--;
 			if ( dist == d_vData.size() )
 				return -1;
-			if (p3)
+			if (p2)
 				dist += strlen(p1);
 			else
 				return dist;
 		}
-
 	}
 	
 	return -1;
@@ -464,12 +467,12 @@ EXPRESSION(
 	if ( numBoards )
 	{		
 		for (unsigned int i=0; i<numBoards; i++) //check if board already exists
-			   if ( strCompare(d_sNamei, p1, rdPtr->bStrCmp) )
+			   if ( strCompare(d_sNamei, p1) )
 			{
 				long dist = 0;
 				while ( true )
 				{
-					auto it = search( d_vData.begin()+dist, d_vData.end(), d_vDatai.begin(), d_vDatai.end() );
+					auto it = std::search( d_vData.begin()+dist, d_vData.end(), d_vDatai.begin(), d_vDatai.end() );
 					dist = it - d_vData.begin();
 					p2--;
 					if ( dist == d_vData.size() )
@@ -494,9 +497,9 @@ EXPRESSION(
 	/* Params */		(1, EXPPARAM_NUMBER, "Integer value")
 ){	
 	long p1temp = ExParam(TYPE_INT);
-	float p1 = *reinterpret_cast<float *>(&p1temp);
+	float p1 = *reinterpret_cast<const float*>(&p1temp);
 
-	return p1;
+	ReturnFloat(p1);
 }
 
 EXPRESSION(
@@ -531,4 +534,435 @@ EXPRESSION(
 	long p1 = ExParam(TYPE_INT);
 
 	return _byteswap_ulong(p1);
+}
+
+EXPRESSION(
+	/* ID */			27,
+	/* Name */			"bit(",
+	/* Flags */			0,
+	/* Params */		(2, EXPPARAM_NUMBER, "Offset", EXPPARAM_NUMBER, "bit")
+	) {
+	off_t p1 = ExParam(TYPE_INT);
+	off_t bit = ExParam(TYPE_INT);
+
+	if (numBoards && p1 < d_vData.size())
+	{
+		if (!rdPtr->bEndianness)
+			return ((char)d_vData.at(p1) >> bit) & 1;
+		else
+			return ((char)d_vData.at(p1) >> (7-bit)) & 1;
+	}
+
+	return 0;
+}
+
+EXPRESSION(
+	/* ID */			28,
+	/* Name */			"ntsl(",
+	/* Flags */			0,
+	/* Params */		(1, EXPPARAM_NUMBER, "Offset")
+	) {
+	off_t p1 = ExParam(TYPE_INT);
+	size_t p2 = 1024^2;
+
+	if ( numBoards && p2 )
+	{
+		if ( p2>d_vData.size() )
+			p2 = d_vData.size();
+		string str( d_vData.begin()+p1, p1+p2>d_vData.size() ? d_vData.end():d_vData.begin()+p1+p2 );
+		const char* output = str.c_str();
+		return strlen(output);
+	}
+
+	return 0;
+}
+//EXPRESSION(
+//	/* ID */			28,
+//	/* Name */			"undefined(",
+//	/* Flags */			0,
+//	/* Params */		(2, EXPPARAM_NUMBER, "bits", EXPPARAM_NUMBER, "Offset")
+//	) {
+//	off_t p1 = ExParam(TYPE_INT);
+//
+//	if ( numBoards && p1 < d_vData.size() )
+//		return (char)d_vData.at(p1);
+//	
+//	return 0;
+//}
+
+/* Date conversion */
+EXPRESSION(
+	/* ID */			29,
+	/* Name */			"getYear(",
+	/* Flags */			0,
+	/* Params */		(1, EXPPARAM_STRING, "Hexadecimal 64bit value")
+) {
+	LPSTR p1 = (LPSTR)ExParam(TYPE_STRING);
+
+	long long value;
+    istringstream iss(p1);
+    iss >> hex >> value;
+
+	time_t timestamp = value;
+	struct tm time;
+	char date_time[256];
+	localtime_s(&time, &timestamp);
+	//asctime_s(date_time, sizeof(date_time), &time);
+
+	return (1900+time.tm_year);
+}
+EXPRESSION(
+	/* ID */			30,
+	/* Name */			"getMonth(",
+	/* Flags */			0,
+	/* Params */		(1, EXPPARAM_STRING, "Hexadecimal 64bit value")
+) {
+	LPSTR p1 = (LPSTR)ExParam(TYPE_STRING);
+
+	long long value;
+    istringstream iss(p1);
+    iss >> hex >> value;
+
+	time_t timestamp = value;
+	struct tm time;
+	char date_time[256];
+	localtime_s(&time, &timestamp);
+	//asctime_s(date_time, sizeof(date_time), &time);
+
+	return time.tm_mon;
+}
+EXPRESSION(
+	/* ID */			31,
+	/* Name */			"getDay(",
+	/* Flags */			0,
+	/* Params */		(1, EXPPARAM_STRING, "Hexadecimal 64bit value")
+) {
+	LPSTR p1 = (LPSTR)ExParam(TYPE_STRING);
+
+	long long value;
+    istringstream iss(p1);
+    iss >> hex >> value;
+
+	time_t timestamp = value;
+	struct tm time;
+	char date_time[256];
+	localtime_s(&time, &timestamp);
+	//asctime_s(date_time, sizeof(date_time), &time);
+
+	return time.tm_mday;
+}
+EXPRESSION(
+	/* ID */			32,
+	/* Name */			"getHour(",
+	/* Flags */			0,
+	/* Params */		(1, EXPPARAM_STRING, "Hexadecimal 64bit value")
+) {
+	LPSTR p1 = (LPSTR)ExParam(TYPE_STRING);
+
+	long long value;
+    istringstream iss(p1);
+    iss >> hex >> value;
+
+	time_t timestamp = value;
+	struct tm time;
+	char date_time[256];
+	localtime_s(&time, &timestamp);
+	//asctime_s(date_time, sizeof(date_time), &time);
+
+	return time.tm_hour;
+}
+EXPRESSION(
+	/* ID */			33,
+	/* Name */			"getMinute(",
+	/* Flags */			0,
+	/* Params */		(1, EXPPARAM_STRING, "Hexadecimal 64bit value")
+) {
+	LPSTR p1 = (LPSTR)ExParam(TYPE_STRING);
+
+	long long value;
+    istringstream iss(p1);
+    iss >> hex >> value;
+
+	time_t timestamp = value;
+	struct tm time;
+	char date_time[256];
+	localtime_s(&time, &timestamp);
+	//asctime_s(date_time, sizeof(date_time), &time);
+
+	return time.tm_min;
+}
+EXPRESSION(
+	/* ID */			34,
+	/* Name */			"getSecond(",
+	/* Flags */			0,
+	/* Params */		(1, EXPPARAM_STRING, "Hexadecimal 64bit value")
+) {
+	LPSTR p1 = (LPSTR)ExParam(TYPE_STRING);
+
+	long long value;
+    istringstream iss(p1);
+    iss >> hex >> value;
+
+	time_t timestamp = value;
+	struct tm time;
+	char date_time[256];
+	localtime_s(&time, &timestamp);
+	//asctime_s(date_time, sizeof(date_time), &time);
+
+	return time.tm_sec;
+}
+
+EXPRESSION(
+	/* ID */			35,
+	/* Name */			"IntToStr$(",
+	/* Flags */			EXPFLAG_STRING,
+	/* Params */		(2, EXPPARAM_NUMBER, "Integer", EXPPARAM_NUMBER, "Size" )
+	) {
+	long p1 = ExParam(TYPE_INT);
+	long p2 = ExParam(TYPE_INT);
+
+	stringstream ss;
+	ss << std::setw(p2) << std::setfill('0') << p1;
+	string str = ss.str();
+
+	ReturnStringSafe(str.c_str());
+}
+
+
+EXPRESSION(
+	/* ID */			36,
+	/* Name */			"IntToHex$(",
+	/* Flags */			EXPFLAG_STRING,
+	/* Params */		(2, EXPPARAM_NUMBER, "Integer", EXPPARAM_NUMBER, "Size" )
+	) {
+	long p1 = ExParam(TYPE_INT);
+	long p2 = ExParam(TYPE_INT);
+
+	stringstream ss;
+	ss << std::setfill('0') << std::setw(p2) << std::right << std::hex << p1;
+	string hex = ss.str();
+	std::transform(hex.begin(), hex.end(),hex.begin(), ::toupper);
+	hex = "0x"+hex;
+
+	ReturnStringSafe(hex.c_str());
+}
+
+
+EXPRESSION(
+	/* ID */			37,
+	/* Name */			"IntToBin$(",
+	/* Flags */			EXPFLAG_STRING,
+	/* Params */		(2, EXPPARAM_NUMBER, "Integer", EXPPARAM_NUMBER, "Size" )
+	) {
+	long p1 = ExParam(TYPE_INT);
+	long p2 = ExParam(TYPE_INT);
+
+	stringstream ss;
+/*
+switch(p2) {
+  case 1:
+    ss << int_to_bitset<char>(p1);
+    break;
+  case 2:
+    ss << int_to_bitset<short>(p1);
+    break;
+  case 4:
+    ss << int_to_bitset<int>(p1);
+    break;
+  case 8:
+    ss << int_to_bitset<long>(p1);
+    break;
+
+  default:
+    ss << int_to_bitset<int>(p1);
+}
+*/
+	string bin = ss.str();
+
+	ReturnString(bin.c_str());
+}
+
+EXPRESSION(
+	/* ID */			38,
+	/* Name */			"longlong$(",
+	/* Flags */			EXPFLAG_STRING,
+	/* Params */		(1, EXPPARAM_NUMBER, "Offset")
+	) {
+	off_t p1 = ExParam(TYPE_INT);
+	long long output(0);
+
+	if ( numBoards && p1+sizeof(long) <= d_vData.size() )
+	{
+		if ( !rdPtr->bEndianness )
+			output = *reinterpret_cast<const long long*>(&d_vData.at(p1));
+		else
+			output = _byteswap_ulong(*reinterpret_cast<const long long*>(&d_vData.at(p1)));
+	}
+	
+	stringstream ss;
+	ss << std::right << std::hex << output; // << std::endl
+	string hex = ss.str();
+	std::transform(hex.begin(), hex.end(),hex.begin(), ::toupper);
+	hex = "0x"+hex;
+	ReturnStringSafe( hex.c_str());
+}
+
+
+
+//MATRICES
+#include <rotm2quat.h>
+
+EXPRESSION(
+	/* ID */			39,
+	/* Name */			"m4x4getrW(",
+	/* Flags */			EXPFLAG_DOUBLE,
+	/* Params */		(1, EXPPARAM_NUMBER, "Matrix Offset")
+	) {
+	off_t p1 = ExParam(TYPE_INT);
+
+	if ( numBoards && p1+sizeof(float) <= d_vData.size() )
+	{
+		ReturnFloat(
+			mRot2Quat(0,
+			*reinterpret_cast<const float *>(&d_vData.at(p1)),
+			*reinterpret_cast<const float *>(&d_vData.at(p1+4)),
+			*reinterpret_cast<const float *>(&d_vData.at(p1+8)),
+			*reinterpret_cast<const float *>(&d_vData.at(p1+16)),
+			*reinterpret_cast<const float *>(&d_vData.at(p1+20)),
+			*reinterpret_cast<const float *>(&d_vData.at(p1+24)),
+			*reinterpret_cast<const float *>(&d_vData.at(p1+32)),
+			*reinterpret_cast<const float *>(&d_vData.at(p1+36)),
+			*reinterpret_cast<const float *>(&d_vData.at(p1+40))
+			)
+		);
+	}
+	
+	return 0;
+}
+
+EXPRESSION(
+	/* ID */			40,
+	/* Name */			"m4x4getrX(",
+	/* Flags */			EXPFLAG_DOUBLE,
+	/* Params */		(1, EXPPARAM_NUMBER, "Matrix Offset")
+	) {
+	off_t p1 = ExParam(TYPE_INT);
+
+	if ( numBoards && p1+sizeof(float) <= d_vData.size() )
+	{
+		ReturnFloat(
+			mRot2Quat(1,
+			*reinterpret_cast<const float *>(&d_vData.at(p1)),
+			*reinterpret_cast<const float *>(&d_vData.at(p1+4)),
+			*reinterpret_cast<const float *>(&d_vData.at(p1+8)),
+			*reinterpret_cast<const float *>(&d_vData.at(p1+16)),
+			*reinterpret_cast<const float *>(&d_vData.at(p1+20)),
+			*reinterpret_cast<const float *>(&d_vData.at(p1+24)),
+			*reinterpret_cast<const float *>(&d_vData.at(p1+32)),
+			*reinterpret_cast<const float *>(&d_vData.at(p1+36)),
+			*reinterpret_cast<const float *>(&d_vData.at(p1+40))
+			)
+		);
+	}
+	
+	return 0;
+}
+
+EXPRESSION(
+	/* ID */			41,
+	/* Name */			"m4x4getrY(",
+	/* Flags */			EXPFLAG_DOUBLE,
+	/* Params */		(1, EXPPARAM_NUMBER, "Matrix Offset")
+	) {
+	off_t p1 = ExParam(TYPE_INT);
+
+	if ( numBoards && p1+sizeof(float) <= d_vData.size() )
+	{
+		ReturnFloat(
+			mRot2Quat(2,
+			*reinterpret_cast<const float *>(&d_vData.at(p1)),
+			*reinterpret_cast<const float *>(&d_vData.at(p1+4)),
+			*reinterpret_cast<const float *>(&d_vData.at(p1+8)),
+			*reinterpret_cast<const float *>(&d_vData.at(p1+16)),
+			*reinterpret_cast<const float *>(&d_vData.at(p1+20)),
+			*reinterpret_cast<const float *>(&d_vData.at(p1+24)),
+			*reinterpret_cast<const float *>(&d_vData.at(p1+32)),
+			*reinterpret_cast<const float *>(&d_vData.at(p1+36)),
+			*reinterpret_cast<const float *>(&d_vData.at(p1+40))
+			)
+		);
+	}
+	
+	return 0;
+}
+
+EXPRESSION(
+	/* ID */			42,
+	/* Name */			"m4x4getrZ(",
+	/* Flags */			EXPFLAG_DOUBLE,
+	/* Params */		(1, EXPPARAM_NUMBER, "4x4 Matrix Offset")
+	) {
+	off_t p1 = ExParam(TYPE_INT);
+
+	if ( numBoards && p1+sizeof(float) <= d_vData.size() )
+	{
+		ReturnFloat(
+			mRot2Quat(3,
+			*reinterpret_cast<const float *>(&d_vData.at(p1)),
+			*reinterpret_cast<const float *>(&d_vData.at(p1+4)),
+			*reinterpret_cast<const float *>(&d_vData.at(p1+8)),
+			*reinterpret_cast<const float *>(&d_vData.at(p1+16)),
+			*reinterpret_cast<const float *>(&d_vData.at(p1+20)),
+			*reinterpret_cast<const float *>(&d_vData.at(p1+24)),
+			*reinterpret_cast<const float *>(&d_vData.at(p1+32)),
+			*reinterpret_cast<const float *>(&d_vData.at(p1+36)),
+			*reinterpret_cast<const float *>(&d_vData.at(p1+40))
+			)
+		);
+	}
+	
+	return 0;
+}
+
+
+EXPRESSION(
+	/* ID */			43,
+	/* Name */			"FltToStr$(",
+	/* Flags */			EXPFLAG_STRING,
+	/* Params */		(3, EXPPARAM_NUMBER, "Floating-Point", EXPPARAM_NUMBER, "Width", EXPPARAM_NUMBER, "Precision" )
+	) {
+	float p1 = ExParam(TYPE_FLOAT);
+	long p2 = ExParam(TYPE_INT);
+	long p3 = ExParam(TYPE_INT);
+
+	stringstream ss;
+	ss << std::internal << std::showpos << std::setw(p2) << std::setprecision(p3) << std::setfill('0') << p1;
+	string str = ss.str();
+
+	ReturnStringSafe(str.c_str());
+}
+
+//Alien Math
+EXPRESSION(
+	/* ID */			44,
+	/* Name */			"cosh(",
+	/* Flags */			EXPFLAG_DOUBLE,
+	/* Params */		(1, EXPPARAM_NUMBER, "Floating-Point value")
+){	
+	long input = ExParam(TYPE_FLOAT);
+	float output = coshf(*reinterpret_cast<const float *>(&input));
+
+	ReturnFloat(output);
+}
+
+EXPRESSION(
+	/* ID */			45,
+	/* Name */			"sinh(",
+	/* Flags */			EXPFLAG_DOUBLE,
+	/* Params */		(1, EXPPARAM_NUMBER, "Floating-Point value")
+){	
+	long input = ExParam(TYPE_FLOAT);
+	float output = sinhf(*reinterpret_cast<const float *>(&input));
+
+	ReturnFloat(output);
 }

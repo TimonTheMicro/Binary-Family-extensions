@@ -38,7 +38,7 @@ short WINAPI DLLExport CreateRunObject(LPRDATA rdPtr, LPEDATA edPtr, fpcob cobPt
 	*/
 	rdPtr->bEndianness = edPtr->bEndianness; // kiss <3 =)
 	rdPtr->bAutoSelect = edPtr->bAutoSelect; // kiss <3 =)
-	rdPtr->bStrCmp = edPtr->bStrCmp; // kiss <3 =)
+
 	// No errors
 	return 0;
 }

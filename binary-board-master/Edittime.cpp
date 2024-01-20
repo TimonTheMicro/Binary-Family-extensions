@@ -23,7 +23,6 @@ PROPS_IDS_START()
 		PROPID_ENDIANNESS,
 	PROPID_GRP1,
 		PROPID_AUTOSELECT,
-		PROPID_CASESENSITIVE,
 
 PROPS_IDS_END()
 
@@ -35,7 +34,6 @@ PROPS_DATA_START()
 	PropData_CheckBox(PROPID_ENDIANNESS,(int)_T("Big endian"),(int)_T("Read integer values in big endian format")),
 	PropData_Group(PROPID_GRP1,(int)_T("Other options"),(int)_T("")),
 	PropData_CheckBox(PROPID_AUTOSELECT,(int)_T("Board autoselect"),(int)_T("Automatically select board after create")),
-	PropData_CheckBox(PROPID_CASESENSITIVE,(int)_T("Case sensitive"),(int)_T("Make names of boards case sensitive")),
 PROPS_DATA_END()
 
 // --------------------
@@ -176,9 +174,6 @@ BOOL WINAPI DLLExport GetPropCheck(LPMV mV, LPEDATA edPtr, UINT nPropID)
 	case PROPID_AUTOSELECT:
 		return edPtr->bAutoSelect;
 		break;
-	case PROPID_CASESENSITIVE:
-		return edPtr->bStrCmp;
-		break;
 	}
 
 #endif // !RUN_ONLY
@@ -269,11 +264,6 @@ void WINAPI DLLExport SetPropCheck(LPMV mV, LPEDATA edPtr, UINT nPropID, BOOL nC
 		break;
 	case PROPID_AUTOSELECT:
 		edPtr->bAutoSelect = nCheck;		
-		mvInvalidateObject(mV, edPtr);
-		mvRefreshProp(mV, edPtr, PROPID_AUTOSELECT,false);
-		break;
-	case PROPID_CASESENSITIVE:
-		edPtr->bStrCmp = nCheck;		
 		mvInvalidateObject(mV, edPtr);
 		mvRefreshProp(mV, edPtr, PROPID_AUTOSELECT,false);
 		break;

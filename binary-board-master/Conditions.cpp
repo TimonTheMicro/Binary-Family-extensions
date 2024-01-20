@@ -18,7 +18,7 @@ CONDITION(
 	string p1(GetStr());
 
 	for (unsigned int i=0; i<numBoards; i++) //check if board already exists
-		if ( strCompare(d_sNamei, p1, rdPtr->bStrCmp) )
+		if ( strCompare(d_sNamei, p1) )
 			return 1;
 	return 0;
 }
@@ -33,7 +33,7 @@ CONDITION(
 	string p1(GetStr());
 
 	for (unsigned int i=0; i<numBoards; i++) //check if board already exists
-		   if ( strCompare(d_sNamei, p1, rdPtr->bStrCmp) )
+		   if ( strCompare(d_sNamei, p1) )
 			return d_bProtectedi;
 	return 0;
 }

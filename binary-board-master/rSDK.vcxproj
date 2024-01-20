@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -35,41 +35,42 @@
     <SccLocalPath />
     <ProjectGuid>{7D975880-07AD-4076-B3EE-20B46CB6A79C}</ProjectGuid>
     <ProjectName>BinaryBoard</ProjectName>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Run_Only_Small|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <UseOfMfc>false</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Vitalize_Small|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <UseOfMfc>false</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Vitalize|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <UseOfMfc>false</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <UseOfMfc>false</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <UseOfMfc>false</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Run_Only|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <UseOfMfc>false</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Small|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <UseOfMfc>false</UseOfMfc>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -149,7 +150,7 @@
       <Optimization>MaxSpeed</Optimization>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <WarningLevel>Level3</WarningLevel>
-      <AdditionalIncludeDirectories>..\..\Inc;%(AdditionalIncludeDirectories);$(ProjectDir)\zlib\;$(ProjectDir)\blowfish\;$(ProjectDir)\base64\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Inc;%(AdditionalIncludeDirectories);$(ProjectDir)\zlib\;$(ProjectDir)\blowfish\;$(ProjectDir)\base64\;$(ProjectDir)\quaternion\</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;COMPILE_SMALL;WIN32;_WINDOWS;STRICT;COXSDK;IN_EXT_VERSION2;RSDK;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AssemblerListingLocation>.\Release_Small\</AssemblerListingLocation>
       <BrowseInformation>true</BrowseInformation>
@@ -194,7 +195,7 @@
       <Optimization>MaxSpeed</Optimization>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <WarningLevel>Level3</WarningLevel>
-      <AdditionalIncludeDirectories>..\..\Inc;%(AdditionalIncludeDirectories);$(ProjectDir)\zlib\;$(ProjectDir)\blowfish\;$(ProjectDir)\base64\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Inc;%(AdditionalIncludeDirectories);$(ProjectDir)\zlib\;$(ProjectDir)\blowfish\;$(ProjectDir)\base64\;$(ProjectDir)\quaternion\</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;RUN_ONLY;WIN32;_WINDOWS;STRICT;COXSDK;IN_EXT_VERSION2;RSDK;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AssemblerListingLocation>.\Run_Only\</AssemblerListingLocation>
       <PrecompiledHeaderOutputFile>.\Run_Only\rSDK.pch</PrecompiledHeaderOutputFile>
@@ -244,7 +245,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <AdditionalIncludeDirectories>..\..\Inc;%(AdditionalIncludeDirectories);$(ProjectDir)\zlib\;$(ProjectDir)\blowfish\;$(ProjectDir)\base64\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Inc;%(AdditionalIncludeDirectories);$(ProjectDir)\zlib\;$(ProjectDir)\blowfish\;$(ProjectDir)\base64\;$(ProjectDir)\quaternion\</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;WIN32;_WINDOWS;STRICT;COXSDK;IN_EXT_VERSION2;RSDK;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AssemblerListingLocation>.\Debug\</AssemblerListingLocation>
       <BrowseInformation>true</BrowseInformation>
@@ -290,7 +291,7 @@
       <Optimization>MaxSpeed</Optimization>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <WarningLevel>Level3</WarningLevel>
-      <AdditionalIncludeDirectories>..\..\Inc;%(AdditionalIncludeDirectories);$(ProjectDir)\zlib\;$(ProjectDir)\blowfish\;$(ProjectDir)\base64\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Inc;%(AdditionalIncludeDirectories);$(ProjectDir)\zlib\;$(ProjectDir)\blowfish\;$(ProjectDir)\base64\;$(ProjectDir)\quaternion\</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;STRICT;COXSDK;IN_EXT_VERSION2;RSDK;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AssemblerListingLocation>.\Release\</AssemblerListingLocation>
       <BrowseInformation>true</BrowseInformation>
@@ -340,7 +341,7 @@
       <Optimization>MaxSpeed</Optimization>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <WarningLevel>Level3</WarningLevel>
-      <AdditionalIncludeDirectories>..\..\Inc;%(AdditionalIncludeDirectories);$(ProjectDir)\zlib\;$(ProjectDir)\blowfish\;$(ProjectDir)\base64\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Inc;%(AdditionalIncludeDirectories);$(ProjectDir)\zlib\;$(ProjectDir)\blowfish\;$(ProjectDir)\base64\;$(ProjectDir)\quaternion\</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;RUN_ONLY;VITALIZE;WIN32;_WINDOWS;STRICT;COXSDK;IN_EXT_VERSION2;RSDK;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AssemblerListingLocation>.\Vitalize\</AssemblerListingLocation>
       <PrecompiledHeaderOutputFile>.\Vitalize\rSDK.pch</PrecompiledHeaderOutputFile>
@@ -383,7 +384,7 @@
       <Optimization>MaxSpeed</Optimization>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <WarningLevel>Level3</WarningLevel>
-      <AdditionalIncludeDirectories>..\..\Inc;%(AdditionalIncludeDirectories);$(ProjectDir)\zlib\;$(ProjectDir)\blowfish\;$(ProjectDir)\base64\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Inc;%(AdditionalIncludeDirectories);$(ProjectDir)\zlib\;$(ProjectDir)\blowfish\;$(ProjectDir)\base64\;$(ProjectDir)\quaternion\</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;RUN_ONLY;COMPILE_SMALL;VITALIZE;WIN32;_WINDOWS;STRICT;COXSDK;IN_EXT_VERSION2;RSDK;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AssemblerListingLocation>.\Vitalize_Small\</AssemblerListingLocation>
       <PrecompiledHeaderOutputFile>.\Vitalize_Small\rSDK.pch</PrecompiledHeaderOutputFile>
@@ -427,7 +428,7 @@
       <Optimization>MaxSpeed</Optimization>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <WarningLevel>Level3</WarningLevel>
-      <AdditionalIncludeDirectories>..\..\Inc;%(AdditionalIncludeDirectories);$(ProjectDir)\zlib\;$(ProjectDir)\blowfish\;$(ProjectDir)\base64\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Inc;%(AdditionalIncludeDirectories);$(ProjectDir)\zlib\;$(ProjectDir)\blowfish\;$(ProjectDir)\base64\;$(ProjectDir)\quaternion\</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;RUN_ONLY;COMPILE_SMALL;WIN32;_WINDOWS;STRICT;COXSDK;IN_EXT_VERSION2;RSDK;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AssemblerListingLocation>.\Run_Only_Small\</AssemblerListingLocation>
       <BrowseInformation>true</BrowseInformation>
@@ -494,6 +495,7 @@
       <SuppressStartupBanner Condition="'$(Configuration)|$(Platform)'=='Run_Only_Small|Win32'">true</SuppressStartupBanner>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Run_Only_Small|Win32'">MinSpace</Optimization>
     </ClCompile>
+    <ClCompile Include="quaternion\rotm2quat.cpp" />
     <ClCompile Include="Runtime.cpp">
       <SuppressStartupBanner Condition="'$(Configuration)|$(Platform)'=='Release_Small|Win32'">true</SuppressStartupBanner>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Release_Small|Win32'">MinSpace</Optimization>

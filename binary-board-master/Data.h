@@ -10,8 +10,27 @@ typedef rRundata * LPRRDATA;
 #ifndef DATA_H
 #define DATA_H
 
-#include <vector>
+#include <ctime>
+#include <time.h>
+#include <sstream>
+#include <iomanip>
+#include <bitset>
+#include <iostream>
+#include <cstdint>
+#include <limits.h>
 
+#include <vector>
+#include <algorithm>
+#include <iterator>
+#include <set>
+
+/*
+template <typename T>
+auto int_to_bitset(T x)
+{
+    return std::bitset<sizeof(T)*CHAR_BIT>{static_cast<std::make_unsigned_t<T>>(x)};
+}
+*/
 struct Board
 {
 	bool bProtected = false;

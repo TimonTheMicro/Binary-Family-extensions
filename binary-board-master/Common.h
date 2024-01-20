@@ -22,13 +22,20 @@ using namespace std;
 // Binary Board object
 #include	<assert.h>
 #include	<stdio.h>
+#include <stdlib.h>  
 
 #include	<algorithm>
 #include	<fstream>
 #include	<string>
-
+#include <iterator>
 // zlib
 #include	"zlib.h"
+// quaternions
+//#include "quaternion.h"
+//#include "quaternion_io.h"
+
+
+
 #if defined(MSDOS) || defined(OS2) || defined(WIN32) || defined(__CYGWIN__)
 #  include <fcntl.h>
 #  include <io.h>
@@ -73,7 +80,7 @@ extern WORD DebugTree[];
 
 using namespace std;
 
-bool strCompare( string a, string b, bool caseSensitive );
+bool strCompare( string a, string b );
 // End include guard
 #endif
 

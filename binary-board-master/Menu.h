@@ -26,7 +26,10 @@
 		ITEM(1,"Select")
 		ITEM(2,"Rename")
 		ITEM(3,"Resize")
+		ITEM(54, "Resize...")
 		ITEM(4,"Delete")
+		ITEM(53,"Delete...")
+		ITEM(57, "Clear Everything")
 		SEPARATOR
 		ITEM(5,"Protected mode")
 	SUB_END
@@ -56,6 +59,8 @@
 		ITEM(12,"Fill with Char")
 	SUB_END
 	SUB_START("Set")
+		ITEM(52,"bit")
+		//ITEM(53,"undefined")
 		ITEM(13,"Char")
 		ITEM(14,"Short Int")
 		ITEM(15,"Long Int")
@@ -134,8 +139,9 @@
 		ITEM(6,"Name from identifier")	
 	SUB_END
 	SUB_START("Get")
-		ITEM(7,"Sign")
-		SEPARATOR
+		ITEM(7,"sign")
+		ITEM(27,"bit")
+		//ITEM(28,"undefined")
 		ITEM(8,"Char")
 		ITEM(9,"Unsigned Char")
 		ITEM(10,"Short Int")
@@ -144,8 +150,19 @@
 		ITEM(13,"Floating-Point")
 		ITEM(14,"String")
 		SEPARATOR
+		ITEM(38,"Long Long Int")
+		ITEM(28,"null-terminated String length")
 		ITEM(15,"Value size")
 		ITEM(16,"File size")
+		SEPARATOR
+		SUB_START("Binary date")
+			ITEM(29,"Year")
+			ITEM(30,"Month")
+			ITEM(31,"Day")
+			ITEM(32,"Hour")
+			ITEM(33,"Minute")
+			ITEM(34,"Second")
+		SUB_END
 	SUB_END
 	SUB_START("Occurrences")
 		SUB_START("Count")
@@ -165,6 +182,26 @@
 		SEPARATOR
 		ITEM(25,"Flip Short Int endianness")
 		ITEM(26,"Flip Long Int endianness")
+		SEPARATOR
+		ITEM(35,"Integer to String")
+		ITEM(36,"Integer to Hexadecimal String")
+		ITEM(37,"Integer to Binary String")
+		ITEM(43,"Floating-Point to String")
+		SEPARATOR
+		SUB_START("4x4 Matrix")
+			SUB_START("Rotation To Quaternions")
+				ITEM(39,"Get rX")
+				ITEM(40,"Get rY")
+				ITEM(41,"Get rZ")
+				ITEM(42,"Get rW")
+			SUB_END
+
+			SUB_END
+			SUB_START("Math")
+				ITEM(44,"hyperbolic cosine")
+				ITEM(45,"hyperbolic sine")
+			SUB_END
+		SUB_END
 	SUB_END
 	SEPARATOR
 

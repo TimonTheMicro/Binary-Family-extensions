@@ -16,14 +16,14 @@ ACTION(
 	/* Params */        ( 2, PARAM_STRING,("Board name"), PARAM_NUMBER,("Size (in Bytes)") )
 )
 {
-	string p1(GetStr());
+	string p1 = GetStr();
     size_t p2 = GetInt();
 
-	if ( p1.length() )
+	if ( p1.length() ) //length
 	{
 		bool exists = false;
 		for (unsigned int i=0; i<numBoards; i++) //check if board already exists
-			if ( strCompare(d_sNamei, p1, rdPtr->bStrCmp) )
+			if ( strCompare(d_sNamei, p1) )
 			{
 				exists = true;
 				break;
@@ -41,6 +41,7 @@ ACTION(
 	}
 }
 
+
 ACTION(
 	/* ID */            1,
 	/* Name */          ("%o: Select board %0"),
@@ -52,10 +53,11 @@ ACTION(
 	if ( numBoards && p1.length() )
 	{		
 		for (unsigned int i=0; i<numBoards; i++) //check if board already exists
-			if ( strCompare(d_sNamei, p1, rdPtr->bStrCmp) )
+			if ( strCompare(d_sNamei, p1) )
 			{
 				rdPtr->iSelBoard = i;
-				break;
+					
+				break; //i = numBoards;
 			}
 	}
 }
@@ -73,7 +75,7 @@ ACTION(
 		
 		bool exists = false;
 		for (unsigned int i=0; i<numBoards; i++) //check if board already exists
-			   if ( strCompare(d_sNamei, p1, rdPtr->bStrCmp) )
+			   if ( strCompare(d_sNamei, p1) )
 			{
 				exists = true;
 				break;
@@ -93,20 +95,14 @@ ACTION(
 	size_t p1 = GetInt();
 
 	if ( numBoards && !d_bProtected )
-	{
-		const bool smaller = p1 <= d_vData.size();
-		if ( p1 )
+		if (p1 != -1)
 		{
-			if ( !smaller )
-				d_vData.reserve(p1);
-			d_vData.resize(p1);
-		}
-		else
-			d_vData.clear();
+				if ( p1 <= d_vData.size() )
+					d_vData.reserve(p1);
 
-		if ( smaller )
-			d_vData.shrink_to_fit();
-	}
+				d_vData.resize(p1);
+				d_vData.shrink_to_fit();
+		}
 }
 
 ACTION(
@@ -117,11 +113,13 @@ ACTION(
 ) {
 	if ( numBoards && !d_bProtected )
 	{
-		rdPtr->vBoards.erase( rdPtr->vBoards.begin()+rdPtr->iSelBoard, rdPtr->vBoards.begin()+rdPtr->iSelBoard+1 );
-		rdPtr->vBoards.shrink_to_fit();
-		
-		if ( rdPtr->iSelBoard == numBoards )
-			rdPtr->iSelBoard = numBoards-1;
+		d_sName = "";
+		//rdPtr->vBoards.erase( rdPtr->vBoards.begin()+rdPtr->iSelBoard, rdPtr->vBoards.begin()+rdPtr->iSelBoard+1 );
+		d_vData.clear();
+		d_vData.shrink_to_fit();
+
+		if (rdPtr->iSelBoard == numBoards)
+			rdPtr->iSelBoard--;
 	}
 }
 
@@ -140,40 +138,39 @@ ACTION(
 
 /* DATA */
 
-#include <fstream>
+
 ACTION(
 	/* ID */			6,
 	/* Name */			("%o: Load file %0, size %1 Bytes, offset %2 to current board"),
 	/* Flags */			0,
-	/* Params */		( 3, PARAM_FILENAME,("File"), PARAM_NUMBER,("Size (in Bytes), -1: End of File"), PARAM_NUMBER,("Offset") )
-) {
+	/* Params */		(3, PARAM_FILENAME, ("File"), PARAM_NUMBER, ("Size (in Bytes), -1: End of File"), PARAM_NUMBER, ("Offset"))
+	) {
 	char *p1 = GetStr();
 	size_t p2 = GetInt();
 	off_t p3 = GetInt();
 
-	if ( numBoards && !d_bProtected && strlen(p1) && p2 )
+	if (numBoards && !d_bProtected && strlen(p1) && p2)
 	{
-		ActionFunc3(rdPtr, 0, 0);
 
 		ifstream file(p1, ios::binary);
-		if ( file.good() )
+		if (file.good())
 		{
 			file.unsetf(ios::skipws);
 			if (p2 == -1)
 			{
 				file.seekg(0, ios::end);
 				streampos fileSize = file.tellg();
-				file.seekg(0, ios::beg);		
+				file.seekg(0, ios::beg);
 				p2 = fileSize;
 			}
 			d_vData.resize(p2);
 			file.seekg(p3);
-			file.read( (char *)&d_vData[0], p2 );
+			file.read((char *)&d_vData[0], p2);
+
 			file.close();
 		}
 	}
 }
-
 ACTION(
 	/* ID */			7,
 	/* Name */			("%o: Save board to file %0"),
@@ -204,24 +201,17 @@ ACTION(
 	{
 		bool exists = false;
 		unsigned int i;
-		if (!rdPtr->bStrCmp) transform(p3.begin(), p3.end(), p3.begin(), ::tolower);
-		for ( i=0; i<numBoards; i++) //check if board already exists
-			if ( d_sNamei[0] == p3[0] && d_sNamei == p3 )
+		if (numBoards && p3.length())
+		{
+		for (unsigned int i = 0; i<numBoards; i++) //check if board already exists
+			if (strCompare(d_sNamei, p3))
 			{
 				exists = true;
 				d_vDatai.clear();
-				break;
+				copy( d_vData.begin()+p2, d_vData.size()>p1 ? d_vData.begin()+p2+p1:d_vData.end(), back_inserter(d_vDatai) );
+				d_vDatai.shrink_to_fit();
 			}
-
-			if ( !exists )
-			{
-				i = numBoards;
-				rdPtr->vBoards.push_back(Board());
-				d_sNamei = p3;		
-			}
-			
-			copy( d_vData.begin()+p2, d_vData.size()>p1 ? d_vData.begin()+p2+p1:d_vData.end(), back_inserter(d_vDatai) );
-			d_vDatai.shrink_to_fit();
+		}
 	}
 }
 
@@ -237,14 +227,14 @@ ACTION(
 	{
 		bool exists = false;
 		long slot = 0;
-		if (!rdPtr->bStrCmp) transform(p1.begin(), p1.end(), p1.begin(), ::tolower);
+		transform(p1.begin(), p1.end(), p1.begin(), ::tolower);
 		for (unsigned int i=0; i<numBoards; i++) //check if board already exists
-			   if ( strCompare(d_sNamei, p1, rdPtr->bStrCmp) )
+			   if ( strCompare(d_sNamei, p1) )
 			{	
 				if ( !d_bProtectedi )
 					d_vData.swap(d_vDatai);
 				break;
-			}
+			} //you could just swap boards id's and names
 	}
 }
 
@@ -373,10 +363,10 @@ ACTION(
 
 	if ( numBoards && !d_bProtected && !p1.empty() )
 	{
-		if (!rdPtr->bStrCmp) transform(p1.begin(), p1.end(), p1.begin(), ::tolower);
+		transform(p1.begin(), p1.end(), p1.begin(), ::tolower);
 		for (unsigned int i=0; i<numBoards; i++) //check if board already exists
 		{
-			   if ( strCompare(d_sNamei, p1, rdPtr->bStrCmp) )
+			   if ( strCompare(d_sNamei, p1) )
 			{			
 				copy( d_vDatai.begin(), d_vDatai.size()+p2>d_vData.size() ? d_vDatai.end()-(d_vDatai.size()-d_vData.size())-p2:d_vDatai.end(), d_vData.begin()+p2 );
 				break;
@@ -408,7 +398,7 @@ ACTION(
 			if ( p2+fileSize <= d_vData.size() )			
 				file.read( (char *)&d_vData[p2], fileSize );			
 			file.close();
-			
+			d_vData.resize(d_vData.size() + fileSize);
 		}
 	}
 }
@@ -494,10 +484,10 @@ ACTION(
 
 	if ( numBoards && !d_bProtected && !p1.empty() )
 	{
-		if (!rdPtr->bStrCmp) transform(p1.begin(), p1.end(), p1.begin(), ::tolower);
+		transform(p1.begin(), p1.end(), p1.begin(), ::tolower);
 		for (unsigned int i=0; i<numBoards; i++) //check if board already exists
 		{
-			   if ( strCompare(d_sNamei, p1, rdPtr->bStrCmp) )
+			   if ( strCompare(d_sNamei, p1) )
 			{
 				d_vData.reserve(d_vData.size()+d_vDatai.size());
 				copy( d_vDatai.begin(), d_vDatai.end(), back_inserter(d_vData) );
@@ -621,10 +611,10 @@ ACTION(
 
 	if ( numBoards && !d_bProtected && !p1.empty() )
 	{
-		if (!rdPtr->bStrCmp) transform(p1.begin(), p1.end(), p1.begin(), ::tolower);
+		transform(p1.begin(), p1.end(), p1.begin(), ::tolower);
 		for (unsigned int i=0; i<numBoards; i++) //check if the board exists
 		{
-			   if ( strCompare(d_sNamei, p1, rdPtr->bStrCmp) )
+			   if ( strCompare(d_sNamei, p1) )
 			{				
 				d_vData.reserve( d_vData.size()+d_vDatai.size() );
 				d_vData.insert( d_vData.begin()+p2, d_vDatai.begin(), d_vDatai.end() );
@@ -758,10 +748,10 @@ ACTION(
 	if ( numBoards && !d_bProtected )
 	{			
 		long dist = 0;
-		if (!rdPtr->bStrCmp) transform(p1.begin(), p1.end(), p1.begin(), ::tolower);
-		if (!rdPtr->bStrCmp) transform(p2.begin(), p2.end(), p2.begin(), ::tolower);
+		transform(p1.begin(), p1.end(), p1.begin(), ::tolower);
+		transform(p2.begin(), p2.end(), p2.begin(), ::tolower);
 		for (unsigned int i=0; i<numBoards; i++) //check if board already exists
-			   if ( strCompare(d_sNamei, p1, rdPtr->bStrCmp) )
+			   if ( strCompare(d_sNamei, p1) )
 			{
 				for (long j=0; j<numBoards; j++) //check if board already exists
 					if ( d_sNamej[0] == p2[0] && d_sNamej == p2 )
@@ -858,9 +848,9 @@ ACTION(
 	if ( numBoards && !d_bProtected )
 	{			
 		long dist = 0;
-		if (!rdPtr->bStrCmp) transform(p1.begin(), p1.end(), p1.begin(), ::tolower);
+		transform(p1.begin(), p1.end(), p1.begin(), ::tolower);
 		for (unsigned int i=0; i<numBoards; i++) //check if board already exists
-			   if ( strCompare(d_sNamei, p1, rdPtr->bStrCmp) )			
+			   if ( strCompare(d_sNamei, p1) )			
 			{
 				while ( true )
 				{
@@ -1246,4 +1236,171 @@ ACTION(
 	{
 		Base64decode(d_vData.data(), d_vData.data());
 	}
+}
+
+
+ACTION(
+	/* ID */            52,
+	/* Name */          ("%o: Set bit %0 at %1"),
+	/* Flags */         0,
+	/* Params */        (2, PARAM_NUMBER, ("Boolean value"), PARAM_NUMBER, ("Offset"))
+	) {
+	int p1 = GetInt();
+	const off_t p2 = GetInt();
+	const off_t offset = p2 / 8;
+	const off_t bit = p2 % 8;
+
+	BYTE output = (char)d_vData.at(offset);
+
+	if (!rdPtr->bEndianness)
+	{
+		if (p1) output |= 1 << bit;
+		else output &= ~(1 << bit);
+	}
+	else
+	{
+		if (p1) output |= 1 << (7 - bit);
+		else output &= ~(1 << (7 - bit));
+	}
+
+	if (numBoards && !d_bProtected && offset < d_vData.size()) //I don't want errors in my extensions
+		d_vData.at(offset) = output;
+}
+
+
+//ACTION(
+//	/* ID */            53,
+//	/* Name */          ("%o: Set undefined %0 at %1"),
+//	/* Flags */         0,
+//	/* Params */        ( 3, PARAM_NUMBER,("Integer value"), PARAM_NUMBER,("reserved bits (1 - 8)"), PARAM_NUMBER,("Offset") )
+//) {
+//	long p1 = GetInt();
+//	unsigned char p2 = GetInt();
+//	off_t p3 = GetInt();
+//
+//	unsigned char p1b = p1 >> (8-p2);
+//
+//	off_t p3b = (GetInt()%8)*p2;
+//	BYTE output = (char)d_vData.at(p2);
+//
+//	if ( numBoards && !d_bProtected && p2 < d_vData.size() ) //I don't want errors in my extensions
+//		d_vData.at(p2) = output;
+//}
+
+ACTION(
+	/* ID */            53,
+	/* Name */          ("%o: Delete board %0"),
+	/* Flags */         0,
+	/* Params */        (1, PARAM_STRING, ("Board name"))
+	) {
+	string p1(GetStr());
+
+	if (numBoards && p1.length())
+	{
+		for (unsigned int i = 0; i<numBoards; i++) //check if board already exists
+			if (strCompare(d_sNamei, p1))
+			{
+
+				rdPtr->vBoards[i].sName = "";
+				rdPtr->vBoards.erase(rdPtr->vBoards.begin() + i, rdPtr->vBoards.begin() + i + 1);
+				//rdPtr->vBoards[i].vData.clear();
+				//rdPtr->vBoards[i].vData.resize(0); //we have resize board for that
+				rdPtr->vBoards[i].vData.shrink_to_fit(); //slow !
+
+			if (rdPtr->iSelBoard >= numBoards)
+				rdPtr->iSelBoard--;
+				break;
+			}
+	}
+}
+
+ACTION(
+	/* ID */            54,
+	/* Name */          ("%o: Resize board %0 to %1 Bytes"),
+	/* Flags */         0,
+	/* Params */        (2, PARAM_STRING, ("Board name"), PARAM_NUMBER, ("Size (in Bytes)"))
+	)
+{
+	string p1(GetStr());
+	size_t p2 = GetInt();
+	
+	for (unsigned int i = 0; i<numBoards; i++) //check if board already exists
+		if (strCompare(d_sNamei, p1))
+		{
+			if (numBoards && !d_bProtected)
+				if (p2 != -1)
+				{
+					if ( p2 > d_vData.size() )
+						d_vData.reserve(p2);
+
+					rdPtr->vBoards[i].vData.resize(p2);
+					rdPtr->vBoards[i].vData.shrink_to_fit();
+					break;
+				}
+		}
+}
+
+
+ACTION(
+	/* ID */            55,
+	/* Name */          ("%o: Add space to current board to %0 Bytes"),
+	/* Flags */         0,
+	/* Params */        (1, PARAM_NUMBER, ("Size (in Bytes)"))
+	) {
+	size_t p1 = GetInt();
+
+	if (numBoards && !d_bProtected)
+	{
+		if (p1)
+		{
+			d_vData.resize(d_vData.size() + p1);
+			d_vData.shrink_to_fit();
+		}
+	}
+}
+
+ACTION(
+	/* ID */            56,
+	/* Name */          ("%o: Add space to board %0 to %1 Bytes"),
+	/* Flags */         0,
+	/* Params */        (2, PARAM_STRING, ("Board name"), PARAM_NUMBER, ("Size (in Bytes)"))
+	)
+{
+	string p1(GetStr());
+	size_t p2 = GetInt();
+
+	for (unsigned int i = 0; i<numBoards; i++) //check if board already exists
+		if (strCompare(d_sNamei, p1))
+		{
+			if (numBoards && !d_bProtected)
+			{
+				if (p2)
+				{
+					rdPtr->vBoards[i].vData.resize(rdPtr->vBoards[i].vData.size() + p2);
+					d_vData.shrink_to_fit();
+				}
+			}
+			break;
+		}
+}
+
+ACTION(
+	/* ID */            57,
+	/* Name */          ("%o: Clear Everything"),
+	/* Flags */         0,
+	/* Params */        (0)
+	) {
+	unsigned int i = 0;
+
+	string p1(GetStr());
+	size_t p2 = GetInt();
+	
+	for (unsigned int i = 0; i<numBoards; i++) //check if board already exists	
+		if (numBoards && !d_bProtected)
+		{
+			rdPtr->vBoards[i].sName = "";
+			d_vDatai.clear();
+			d_vDatai.shrink_to_fit();
+		}
+	
 }
