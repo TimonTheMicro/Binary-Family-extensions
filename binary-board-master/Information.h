@@ -5,7 +5,7 @@
 // Basic object details
 #define	ObjectName			"Binary Board object"
 #define	ObjectAuthor		"Timon"
-#define	ObjectCopyright		"Copyright © 2016"
+#define	ObjectCopyright		"Copyright © 2024"
 #define	ObjectComment		"Load, save and manage binary data (version 1.1)"
 #define	ObjectURL			""
 #define	ObjectHelp			"Help\\Binary Board.chm"
@@ -45,7 +45,7 @@
 #define ForVersion			PRODUCT_VERSION_STANDARD
 
 // Set this to the latest MMF build out when you build the object
-#define	MinimumBuild		280
+#define	MinimumBuild		257
 
 // --------------------
 // Beta information
