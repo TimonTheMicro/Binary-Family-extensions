@@ -195,8 +195,6 @@
 				ITEM(41,"Get rZ")
 				ITEM(42,"Get rW")
 			SUB_END
-
-			SUB_END
 			SUB_START("Math")
 				ITEM(44,"hyperbolic cosine")
 				ITEM(45,"hyperbolic sine")
