@@ -113,13 +113,17 @@ ACTION(
 ) {
 	if ( numBoards && !d_bProtected )
 	{
-		d_sName = "";
-		//rdPtr->vBoards.erase( rdPtr->vBoards.begin()+rdPtr->iSelBoard, rdPtr->vBoards.begin()+rdPtr->iSelBoard+1 );
-		d_vData.clear();
-		d_vData.shrink_to_fit();
+		unsigned int i = rdPtr->iSelBoard;
+			{
+				rdPtr->vBoards[i].sName = "";
+				rdPtr->vBoards.erase(rdPtr->vBoards.begin() + i, rdPtr->vBoards.begin() + i + 1);
+				//rdPtr->vBoards[i].vData.clear();
+				//rdPtr->vBoards[i].vData.resize(0); //we have resize board for that
+				rdPtr->vBoards[i].vData.shrink_to_fit(); //slow !
 
-		if (rdPtr->iSelBoard == numBoards)
-			rdPtr->iSelBoard--;
+				if (rdPtr->iSelBoard == numBoards) //if selected board number is equal to boards number, decrease it to not overflow.
+					rdPtr->iSelBoard--;
+			}
 	}
 }
 
