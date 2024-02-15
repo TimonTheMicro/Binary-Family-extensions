@@ -1408,3 +1408,64 @@ ACTION(
 		}
 	
 }
+
+//NEW FUNCTION (load an icon (.ico) into a board)
+ACTION(
+	/* ID */			58,
+	/* Name */			("%o: Load icon from file %0, width %1, depth %2 to current board"),
+	/* Flags */			0,
+	/* Params */		(3, PARAM_FILENAME, ("File"), PARAM_NUMBER, ("Width (in pixels)"), PARAM_NUMBER, ("Depth (0: True Color, 1: Palletized)"))
+) {
+	char* p1 = GetStr();
+	int iconWidth = GetInt();
+	int iconDepth = GetInt();
+
+	int buffstart, buffend;
+
+	if (iconDepth > 0) //0 means the dib is a 16 color (palletized)
+		iconDepth = 16; //256 color (palletized)
+
+	if (numBoards && !d_bProtected && strlen(p1) && iconWidth >= 16)
+	{
+		ifstream file(p1, ios::binary);
+		if (file.good())
+		{
+			file.unsetf(ios::skipws);
+				file.seekg(0, ios::end);
+				streampos fileSize = file.tellg();
+				file.seekg(0, ios::beg);
+			d_vData.resize(fileSize);
+			file.seekg(0); //begin of the file
+			std::vector<char> iconContainer(fileSize); //prepare a vector of Bytes
+			if (file.read(iconContainer.data(), fileSize)) //if file loaded into vector memory
+			{
+				int iconsCount = *reinterpret_cast<const short*>(&iconContainer.at(4));
+				for (int i=0; i<iconsCount; i++)
+					if ((iconContainer.at(6 + i*16) == iconWidth) && (iconContainer.at(6 + i*16 + 2) == iconDepth))
+					{
+						buffstart = *reinterpret_cast<const int*>(&iconContainer.at(6 + i*16 + 12));
+						buffend = *reinterpret_cast<const int*>(&iconContainer.at(6 + i*16 + 8));
+					}
+				d_vData.clear();
+				d_vData.resize(14); //let's prepare header
+				d_vData.reserve(d_vData.size() + buffend);
+					//*(SHORT*)src == 0x4D42 // BITMAP
+				const char* headerMark = "BM"; //BM
+				copy(headerMark, strlen(headerMark) > d_vData.size() ? headerMark + strlen(headerMark) - (strlen(headerMark) - d_vData.size()) - 0 : headerMark + strlen(headerMark), d_vData.begin());
+				copy(iconContainer.begin() + buffstart, iconContainer.begin() + buffstart + buffend, back_inserter(d_vData));
+
+				*(long*)(&d_vData.at(22)) = iconWidth; //change height to width
+
+				if (iconDepth == 0)
+					*(long*)(&d_vData.at(10)) = 54 + 256*4; //set proper pointer to the bitmap array data for 16 color depth (palletized)
+				else
+					*(long*)(&d_vData.at(10)) = 54 + 16*4; //set proper pointer to the bitmap array data for 256 color depth (palletized)
+				//because of dumb common people not being keen to share any single XP icon over the Internet, I cannot do tests with other modes
+
+				*(long*)(&d_vData.at(2)) = d_vData.size(); //file size
+
+				d_vData.shrink_to_fit();
+				iconContainer.clear();
+				file.close();
+				/* worked! */ //I guess
+			}
