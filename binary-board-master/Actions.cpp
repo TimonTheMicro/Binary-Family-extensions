@@ -1456,11 +1456,11 @@ ACTION(
 
 				*(long*)(&d_vData.at(22)) = iconWidth; //change height to width
 
-				if (iconDepth == 0)
-					*(long*)(&d_vData.at(10)) = 54 + 256*4; //set proper pointer to the bitmap array data for 16 color depth (palletized)
+				if (iconDepth == 0)  //then header size + dib data info size + pallete size*(32bitRGBA) 
+					*(long*)(&d_vData.at(10)) = 14 + 40 + 256*4; //set proper pointer to the bitmap array data for 16 color depth (palletized)
 				else
-					*(long*)(&d_vData.at(10)) = 54 + 16*4; //set proper pointer to the bitmap array data for 256 color depth (palletized)
-				//because of dumb common people not being keen to share any single XP icon over the Internet, I cannot do tests with other modes
+					*(long*)(&d_vData.at(10)) = 14 + 40 + 16*4; //set proper pointer to the bitmap array data for 16 color depth (palletized)
+				//I cannot do tests with other modes now
 
 				*(long*)(&d_vData.at(2)) = d_vData.size(); //file size
 
