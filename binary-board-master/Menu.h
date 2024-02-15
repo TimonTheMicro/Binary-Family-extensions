@@ -37,6 +37,8 @@
 		ITEM(6,"Load from file")
 		ITEM(7,"Save to file")
 		SEPARATOR
+		ITEM(58, "Load icons from file")
+		SEPARATOR
 		SUB_START("Zlib compression")
 			ITEM(46,"Compress")
 			ITEM(47,"Decompress")
