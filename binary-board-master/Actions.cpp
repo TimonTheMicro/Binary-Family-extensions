@@ -1412,18 +1412,20 @@ ACTION(
 //NEW FUNCTION (load an icon (.ico) into a board)
 ACTION(
 	/* ID */			58,
-	/* Name */			("%o: Load icon from file %0, width %1, depth %2 to current board"),
+	/* Name */			("%o: Load icon from file %0, width %1, depth %2, index %3 to current board"),
 	/* Flags */			0,
-	/* Params */		(3, PARAM_FILENAME, ("File"), PARAM_NUMBER, ("Width (in pixels)"), PARAM_NUMBER, ("Depth (0: True Color, 1: Palletized)"))
+	/* Params */		(4, PARAM_FILENAME, ("File"), PARAM_NUMBER, ("Width (in pixels (above or equal 16))"), PARAM_NUMBER, ("Depth (in bits (4, 8, 16 or 32))"), PARAM_NUMBER, ("Icon Index (if resource)"))
 ) {
 	char* p1 = GetStr();
 	int iconWidth = GetInt();
 	int iconDepth = GetInt();
+	int iconIndex = GetInt();
 
-	int buffstart, buffend;
-
-	if (iconDepth > 0) //0 means the dib is a 16 color (palletized)
-		iconDepth = 16; //256 color (palletized)
+	string fileType = p1;
+	fileType = fileType.substr(fileType.find_last_of(".") + 1);
+	//bool VGAicon = (iconDepth > 4); //checks if the icon is high quality or not
+	//int bitsDepthsTypes[6] = { 1, 4, 8, 16, 24, 32 };
+	char BMHeader[] = { 0x42,0x4D, 0,0,0,0, 0,0,0,0, 0,0,0,0 }; //2B(BM), 4B(file size), 4B(padding), 4B(offset to pixel data)
 
 	if (numBoards && !d_bProtected && strlen(p1) && iconWidth >= 16)
 	{
@@ -1431,41 +1433,64 @@ ACTION(
 		if (file.good())
 		{
 			file.unsetf(ios::skipws);
-				file.seekg(0, ios::end);
-				streampos fileSize = file.tellg();
-				file.seekg(0, ios::beg);
-			d_vData.resize(fileSize);
-			file.seekg(0); //begin of the file
+			file.seekg(0, ios::end);
+			streampos fileSize = file.tellg();
+			file.seekg(0, ios::beg);
+
 			std::vector<char> iconContainer(fileSize); //prepare a vector of Bytes
+
 			if (file.read(iconContainer.data(), fileSize)) //if file loaded into vector memory
 			{
-				int iconsCount = *reinterpret_cast<const short*>(&iconContainer.at(4));
-				for (int i=0; i<iconsCount; i++)
-					if ((iconContainer.at(6 + i*16) == iconWidth) && (iconContainer.at(6 + i*16 + 2) == iconDepth))
+				if (fileType == "ico") //icon files (.ico)
+				{ 
+					int iDirSize = 6;
+					int idirentrySize = 16;
+					int iconsCount = *reinterpret_cast<const short*>(&iconContainer.at(4)); //how many dibs in the container
+					int iIndex;
+
+					for (iIndex = 0; iIndex < iconsCount; iIndex++) //seek for desired icon with given width and depth
 					{
-						buffstart = *reinterpret_cast<const int*>(&iconContainer.at(6 + i*16 + 12));
-						buffend = *reinterpret_cast<const int*>(&iconContainer.at(6 + i*16 + 8));
+						if ((iconContainer.at(iDirSize + iIndex * idirentrySize + 0) == iconWidth) && (iconContainer.at(iDirSize + iIndex * idirentrySize + 6) == iconDepth))
+							break; //found, break the loop with selected index.
+						if (iIndex == iconsCount - 1)
+						{
+								iconDepth = iconDepth/2;
+								iIndex = 0; //rescan icon directory size again, but with lower demanded depth, but
+						}
+						if (iconDepth < 4) //if no more acceptable depths available
+							break; //the loop with selected index 0;
 					}
-				d_vData.clear();
-				d_vData.resize(14); //let's prepare header
-				d_vData.reserve(d_vData.size() + buffend);
-					//*(SHORT*)src == 0x4D42 // BITMAP
-				const char* headerMark = "BM"; //BM
-				copy(headerMark, strlen(headerMark) > d_vData.size() ? headerMark + strlen(headerMark) - (strlen(headerMark) - d_vData.size()) - 0 : headerMark + strlen(headerMark), d_vData.begin());
-				copy(iconContainer.begin() + buffstart, iconContainer.begin() + buffstart + buffend, back_inserter(d_vData));
 
-				*(long*)(&d_vData.at(22)) = iconWidth; //change height to width
+					bool iPalletized = iDirSize + iIndex * idirentrySize + 2; //important, the icon pixel data is palletized or not
+					//if nothing has been found, iindex will be 0;
+					int buffstart = *reinterpret_cast<const int*>(&iconContainer.at(iDirSize + iIndex * idirentrySize + 12));
+					int buffsize = *reinterpret_cast<const int*>(&iconContainer.at(iDirSize + iIndex * idirentrySize + 8));
+					d_vData.clear();
+					d_vData.resize(0); //let's prepare header
+					d_vData.reserve(sizeof(BMHeader) + buffsize);
 
-				if (iconDepth == 0)  //then header size + dib data info size + pallete size*(32bitRGBA) 
-					*(long*)(&d_vData.at(10)) = 14 + 40 + 256*4; //set proper pointer to the bitmap array data for 16 color depth (palletized)
-				else
-					*(long*)(&d_vData.at(10)) = 14 + 40 + 16*4; //set proper pointer to the bitmap array data for 16 color depth (palletized)
-				//I cannot do tests with other modes now
+					copy(&BMHeader[0], &BMHeader[sizeof(BMHeader)], back_inserter(d_vData)); //copy the header array
+					copy(iconContainer.begin() + buffstart, iconContainer.begin() + buffstart + buffsize , back_inserter(d_vData));
 
-				*(long*)(&d_vData.at(2)) = d_vData.size(); //file size
+					int BMheaderSize = 54; //BITMAPV2INFOHEADER
+					int RGBAquadSize = 4;
+
+					if (iconDepth == 4)
+						*(long*)(&d_vData.at(10)) = BMheaderSize + 16*RGBAquadSize*iPalletized; //set proper pointer to the bitmap array data for 16 color depth (palletized)
+					if (iconDepth == 8)
+						*(long*)(&d_vData.at(10)) = BMheaderSize + 256 * RGBAquadSize * iPalletized; //set proper pointer to the bitmap array data for 256 color depth (palletized)
+					else
+						*(long*)(&d_vData.at(10)) = BMheaderSize;
+					*(long*)(&d_vData.at(2)) = d_vData.size(); //set file size at offset 0x2
+					
+					*(long*)(&d_vData.at(22)) = iconContainer.at(iDirSize + iIndex * idirentrySize + 0); //fix height, because people messed with logic again making icon not a square
+
+				}
 
 				d_vData.shrink_to_fit();
-				iconContainer.clear();
+				iconContainer.resize(0);
 				file.close();
-				/* worked! */ //I guess
 			}
+		}
+	}
+}
