@@ -1,970 +1,1465 @@
 
 // ============================================================================
 //
-// EXPRESSIONS
+// ACTIONS
 // 
 // ============================================================================
 
 #include "common.h"
+#include "icons\icons.h"
 
+#include <array>
 /* BOARD */
 
-/* CURRENT */
-
-EXPRESSION(
-	/* ID */			0,
-	/* Name */			"CurBoard$(",
-	/* Flags */			EXPFLAG_STRING,
-	/* Params */		(0)
-) {
-	if ( numBoards )
-	{
-		ReturnString(d_sName.c_str());
-	}
-	
-	ReturnString("");
-}
-
-EXPRESSION(
-	/* ID */			1,
-	/* Name */			"curBoardNum(",
-	/* Flags */			0,
-	/* Params */		(0)
-) {
-	if ( numBoards )
-		return rdPtr->iSelBoard;
-
-	return -1;
-}
-
-EXPRESSION(
-	/* ID */			2,
-	/* Name */			"boardAddr(",
-	/* Flags */			0,
-	/* Params */		(1,EXPPARAM_STRING,"Board name")
-) {
-	string p1( (LPSTR)ExParam(TYPE_STRING) );
-
-	if ( numBoards ) //memory address shouldn't point to an empty space!
-	{	
-		for (unsigned int i=0; i<numBoards; i++) //check if board already exists
-			if ( strCompare(d_sNamei, p1) )
-				if ( d_vDatai.size() >= 16 ) //minimum will be size of 16B
-					return (int)d_vDatai.data();
-	}
-
-	return 0;			
-}
-
-EXPRESSION(
-	/* ID */			3,
-	/* Name */			"boardSize(",
-	/* Flags */			0,
-	/* Params */		(1,EXPPARAM_STRING,"Board name")
-) {
-	string p1( (LPSTR)ExParam(TYPE_STRING) );
-
-	if ( numBoards )
-	{		
-		for (unsigned int i=0; i<numBoards; i++) //check if board already exists
-			   if ( strCompare(d_sNamei, p1) )
-				return d_vDatai.size();
-	}
-
-	return 0;
-}
-
-EXPRESSION(
-	/* ID */			4,
-	/* Name */			"Protected(",
-	/* Flags */			0,
-	/* Params */		(1, EXPPARAM_STRING, "Board name")
+ACTION(
+	/* ID */            0,
+	/* Name */          ("%o: Create a board %0, size %1 Bytes"),
+	/* Flags */         EXPFLAG_STRING,
+	/* Params */        (2, PARAM_STRING, ("Board name"), PARAM_NUMBER, ("Size (in Bytes)"))
 )
 {
-	string p1( (LPSTR)ExParam(TYPE_STRING) );
+	string p1 = GetStr();
+	size_t p2 = GetInt();
 
-	for (unsigned int i=0; i<numBoards; i++) //check if board already exists
-		   if ( strCompare(d_sNamei, p1) )
-			return d_bProtectedi;
-	return 0;
-}
-
-
-EXPRESSION(
-	/* ID */			5,
-	/* Name */			"NBoards(",
-	/* Flags */			0,
-	/* Params */		(0)
-) {
-	return numBoards;
-}
-
-
-EXPRESSION(
-	/* ID */			6,
-	/* Name */			("NameByNum$("),
-	/* Flags */			EXPFLAG_STRING,
-	/* Params */		(1, EXPPARAM_NUMBER, "Board number")
-) {
-	unsigned long i = ExParam(TYPE_INT);
-	
-	if ( numBoards && i < numBoards )
+	if (p1.length()) //length
 	{
-		ReturnString(d_sNamei.c_str());
-	}
-	
-	ReturnString("");
-}
-
-/* GET */
-
-EXPRESSION(
-	/* ID */			7,
-	/* Name */			"sign(",
-	/* Flags */			0,
-	/* Params */		(1, EXPPARAM_NUMBER, "Value")
-	) {
-	off_t p1tmp = ExParam(TYPE_FLOAT);
-	float p1 = *reinterpret_cast<const float *>(&p1tmp);
-	
-	if ( p1 < 0 )
-		return -1;
-
-		return 1;
-}
-
-EXPRESSION(
-	/* ID */			8,
-	/* Name */			"char(",
-	/* Flags */			0,
-	/* Params */		(1, EXPPARAM_NUMBER, "Offset")
-	) {
-	off_t p1 = ExParam(TYPE_INT);
-
-	if ( numBoards && p1 < d_vData.size() )
-		return (char)d_vData.at(p1);
-	
-	return 0;
-}
-
-EXPRESSION(
-	/* ID */			9,
-	/* Name */			"uchar(",
-	/* Flags */			0,
-	/* Params */		(1, EXPPARAM_NUMBER, "Offset")
-	) {
-	off_t p1 = ExParam(TYPE_INT);
-
-	if ( numBoards && p1 < d_vData.size() )
-		return (unsigned char)d_vData.at(p1);
-	
-	return 0;
-}
-
-EXPRESSION(
-	/* ID */			10,
-	/* Name */			"short(",
-	/* Flags */			0,
-	/* Params */		(1, EXPPARAM_NUMBER, "Offset")
-	) {
-	off_t p1 = ExParam(TYPE_INT);
-
-	if ( numBoards && p1+sizeof(short) <= d_vData.size() )
-	{
-		if ( !rdPtr->bEndianness )
-			return *reinterpret_cast<const short *>(&d_vData.at(p1));
-		else
-			return _byteswap_ushort(*reinterpret_cast<const short *>(&d_vData.at(p1)));
-	}
-	
-	return 0;
-}
-
-EXPRESSION(
-	/* ID */			11,
-	/* Name */			"ushort(",
-	/* Flags */			0,
-	/* Params */		(1, EXPPARAM_NUMBER, "Offset")
-	) {
-	off_t p1 = ExParam(TYPE_INT);
-
-	if ( numBoards && p1+sizeof(short) <= d_vData.size() )
-	{
-		if ( !rdPtr->bEndianness )
-			return *reinterpret_cast<const unsigned short *>(&d_vData.at(p1));
-		else
-			return _byteswap_ushort(*reinterpret_cast<const unsigned short *>(&d_vData.at(p1)));
-	}
-	
-	return 0;
-}
-
-EXPRESSION(
-	/* ID */			12,
-	/* Name */			"long(",
-	/* Flags */			0,
-	/* Params */		(1, EXPPARAM_NUMBER, "Offset")
-	) {
-	off_t p1 = ExParam(TYPE_INT);
-
-	if ( numBoards && p1+sizeof(long) <= d_vData.size() )
-	{
-		if ( !rdPtr->bEndianness )
-			return *reinterpret_cast<const long *>(&d_vData.at(p1));
-		else
-			return _byteswap_ulong(*reinterpret_cast<const long *>(&d_vData.at(p1)));
-	}
-	
-	return 0;
-}
-
-EXPRESSION(
-	/* ID */			13,
-	/* Name */			"float(",
-	/* Flags */			EXPFLAG_DOUBLE,
-	/* Params */		(1, EXPPARAM_NUMBER, "Offset")
-	) {
-	off_t p1 = ExParam(TYPE_INT);
-
-	if ( numBoards && p1+sizeof(float) <= d_vData.size() )
-	{
-		ReturnFloat(*reinterpret_cast<const float *>(&d_vData.at(p1)));
-	}
-	
-	return 0;
-}
-
-EXPRESSION(
-	/* ID */			14,
-	/* Name */			"string$(",
-	/* Flags */			EXPFLAG_STRING,
-	/* Params */		(2, EXPPARAM_NUMBER, "Offset", EXPPARAM_NUMBER, "Size")
-	) {
-	off_t p1 = ExParam(TYPE_INT);
-	size_t p2 = ExParam(TYPE_INT);
-
-	if ( numBoards && p2 )
-	{
-		if ( p2>d_vData.size() )
-			p2 = d_vData.size();
-		string output( d_vData.begin()+p1, p1+p2>d_vData.size() ? d_vData.end():d_vData.begin()+p1+p2 );
-		ReturnStringSafe(output.c_str());
-	}
-
-	ReturnString("");
-}
-
-EXPRESSION(
-	/* ID */			15,
-	/* Name */			"valueSize(",
-	/* Flags */			0,
-	/* Params */		(1, EXPPARAM_NUMBER, "Integer value")
-	) {
-	long p1 = ExParam(TYPE_INT);
-
-	if ( p1 < 0 || p1 > MAXWORD )
-		return sizeof(long);
-
-	if ( p1 <= MAXBYTE )
-		return sizeof(char);
-
-	return sizeof(short);
-}
-
-EXPRESSION(
-	/* ID */			16,
-	/* Name */			"fileSize(",
-	/* Flags */			0,
-	/* Params */		(1, EXPPARAM_STRING,"File")
-) {
-	LPSTR p1 = (LPSTR)ExParam(TYPE_STRING);
-
-	ifstream file( p1, ios::binary | ios::ate);
-
-	if ( file.is_open() )
-	{
-		const long size = file.tellg();
-		file.close();
-		return size;
-	}	
-	
-	return 0;
-}
-
-/* OCCURENCES */
-/* COUNT */
-
-EXPRESSION(
-	/* ID */			17,
-	/* Name */			"countInt(",
-	/* Flags */			0,
-	/* Params */		(2, EXPPARAM_NUMBER, "Integer value", EXPPARAM_NUMBER, "Value size")
-) {
-	long p1 = ExParam(TYPE_INT);
-	char p2 = ExParam(TYPE_INT);
-
-	if ( numBoards )
-	{
-		const char * value = reinterpret_cast<char *>(&p1);
-
-		if ( p2 == 1 )
-			return count(d_vData.begin(), d_vData.end(), (signed char)p1);
-
-		long dist = 0;
-		long counter = 0;
-		while ( true )
-		{
-			auto it = std::search( d_vData.begin()+dist, d_vData.end(), value, value + sizeof(char)*p2 );
-			dist = it - d_vData.begin();
-			if ( dist == d_vData.size() )
-				break;
-			counter++;
-			dist += sizeof(char)*p2;
-		}
-		return counter;
-	}
-
-	return 0;
-}
-
-EXPRESSION(
-	/* ID */			18,
-	/* Name */			"countStr(",
-	/* Flags */			0,
-	/* Params */		(1, EXPPARAM_STRING, "String")
-) {
-	LPSTR p1 = (LPSTR)ExParam(TYPE_STRING);
-	
-	if ( numBoards )
-	{
-		long counter = 0;
-		long dist = 0;
-		while ( true )
-		{
-			auto it = std::search( d_vData.begin()+dist, d_vData.end(), p1, p1 + strlen(p1) );			
-			dist = it - d_vData.begin();	
-			if ( dist == d_vData.size() )
-				break;
-			counter++;
-			dist += strlen(p1);				
-		}
-		return counter;
-	}
-	
-	return 0;
-}
-
-EXPRESSION(
-	/* ID */			19,
-	/* Name */			"countBoard(",
-	/* Flags */			0,
-	/* Params */		(1, EXPPARAM_STRING, "Board name")
-) {
-	string p1( (LPSTR)ExParam(TYPE_STRING) );
-
-	if ( numBoards )
-	{	
-		for (unsigned int i=0; i<numBoards; i++) //check if board already exists
-			   if ( strCompare(d_sNamei, p1) )
+		bool exists = false;
+		for (unsigned int i = 0; i < numBoards; i++) //check if board already exists
+			if (strCompare(d_sNamei, p1))
 			{
-				long dist = 0;
-				long counter = 0;
-				while ( true )
-				{
-					auto it = std::search( d_vData.begin()+dist, d_vData.end(), d_vDatai.begin(), d_vDatai.end() );			
-					dist = it - d_vData.begin();	
-					if ( dist == d_vData.size() )
-						break;
-					counter++;
-					dist += d_vDatai.size();				
-				}
-				return counter;
+				exists = true;
+				break;
 			}
-	}
 
-	return 0;
-}
-
-/* FIND */
-
-EXPRESSION(
-	/* ID */			20,
-	/* Name */			"findInt(",
-	/* Flags */			0,
-	/* Params */		(3, EXPPARAM_NUMBER, "Integer value", EXPPARAM_NUMBER, "Value size", EXPPARAM_NUMBER, "Occurrence")
-) {
-	long p1 = ExParam(TYPE_INT);
-	char p2 = ExParam(TYPE_INT);
-	long p3 = ExParam(TYPE_INT);
-
-	if ( numBoards && p3 )
-	{
-		const char * value = reinterpret_cast<char *>(&p1);
-
-		if ( p2 == 1 )
-			return count(d_vData.begin()+p3, d_vData.end(), (signed char)p1);
-
-		long dist = 0;
-		while ( true )
+		if (!exists)
 		{
-			auto it = std::search( d_vData.begin()+dist+1, d_vData.end(), value, value + sizeof(char)*p2 );
-			dist = it - d_vData.begin();
-			p3--;
-			if ( dist == d_vData.size() )
-				return -1;
-			if (p3)
-				dist += sizeof(char)*p2;
-			else
-				return dist;
-
-		}
-	}
-	
-	return -1;
-}
-
-EXPRESSION(
-	/* ID */			21,
-	/* Name */			"findStr(",
-	/* Flags */			0,
-	/* Params */		(4, EXPPARAM_STRING, "String", /*EXPPARAM_NUMBER, "Case sensitive", */EXPPARAM_NUMBER, "Occurrence",EXPPARAM_NUMBER,"Begins with NULL (0 for false, 1 for true)",EXPPARAM_NUMBER,"Ends with NULL (0 for false, 1 for true)")
-) {
-	LPSTR p1 = (LPSTR)ExParam(TYPE_STRING);
-	long p2 = ExParam(TYPE_INT);
-	bool p3 = ExParam(TYPE_INT);
-	bool p4 = ExParam(TYPE_INT);
-
-	if ( numBoards && p2 )
-	{
-		long dist = 0;
-		while ( p2 && dist != d_vData.size() )
-		{
-			auto it = std::search( d_vData.begin()+dist+1, d_vData.end(), p1, p1 + strlen(p1) );			
-			dist = it - d_vData.begin();						
-			if ( !p3 || (p3 && !((char)d_vData.at(dist-1))))
-				if ( !p4 || (p4 && ((dist+strlen(p1)) < d_vData.size()) && !((char)d_vData.at(dist+strlen(p1)))))
-					p2--;
-			if ( dist == d_vData.size() )
-				return -1;
+			rdPtr->vBoards.push_back(Board());
+			rdPtr->vBoards[numBoards - 1].sName = p1;
 			if (p2)
-				dist += strlen(p1);
-			else
-				return dist;
+				rdPtr->vBoards[numBoards - 1].vData.resize(p2);
+			if (rdPtr->bAutoSelect)
+				rdPtr->iSelBoard = numBoards - 1;
 		}
 	}
-	
-	return -1;
 }
 
-EXPRESSION(
-	/* ID */			22,
-	/* Name */			"findBoard(",
-	/* Flags */			0,
-	/* Params */		(2, EXPPARAM_STRING, "Board name", EXPPARAM_NUMBER, "Occurrence")
-) {
-	string p1( (LPSTR)ExParam(TYPE_STRING) );
-	long p2 = ExParam(TYPE_INT);
 
-	if ( numBoards )
-	{		
-		for (unsigned int i=0; i<numBoards; i++) //check if board already exists
-			   if ( strCompare(d_sNamei, p1) )
+ACTION(
+	/* ID */            1,
+	/* Name */          ("%o: Select board %0"),
+	/* Flags */         0,
+	/* Params */        (1, PARAM_STRING, ("Board name"))
+) {
+	string p1(GetStr());
+
+	if (numBoards && p1.length())
+	{
+		for (unsigned int i = 0; i < numBoards; i++) //check if board already exists
+			if (strCompare(d_sNamei, p1))
 			{
-				long dist = 0;
-				while ( true )
-				{
-					auto it = std::search( d_vData.begin()+dist, d_vData.end(), d_vDatai.begin(), d_vDatai.end() );
-					dist = it - d_vData.begin();
-					p2--;
-					if ( dist == d_vData.size() )
-						return -1;
-					if (p2)
-						dist += d_vDatai.size();
-					else
-						return dist;
-				}
+				rdPtr->iSelBoard = i;
+
+				break; //i = numBoards;
 			}
 	}
-
-	return -1;
 }
 
-/* Data conversions */
+ACTION(
+	/* ID */            2,
+	/* Name */          ("%o: Rename current board to %0"),
+	/* Flags */         0,
+	/* Params */        (1, PARAM_STRING, ("Board new name"))
+) {
+	string p1(GetStr());
 
-EXPRESSION(
-	/* ID */			23,
-	/* Name */			"BinToFlt(",
-	/* Flags */			EXPFLAG_DOUBLE,
-	/* Params */		(1, EXPPARAM_NUMBER, "Integer value")
-){	
-	long p1temp = ExParam(TYPE_INT);
-	float p1 = *reinterpret_cast<const float*>(&p1temp);
+	if (numBoards && !d_bProtected && !p1.empty())
+	{
 
-	ReturnFloat(p1);
+		bool exists = false;
+		for (unsigned int i = 0; i < numBoards; i++) //check if board already exists
+			if (strCompare(d_sNamei, p1))
+			{
+				exists = true;
+				break;
+			}
+
+		if (!exists)
+			d_sName = p1;
+	}
 }
 
-EXPRESSION(
-	/* ID */			24,
-	/* Name */			"FltToBin(",
+ACTION(
+	/* ID */            3,
+	/* Name */          ("%o: Resize current board to %0 Bytes"),
+	/* Flags */         0,
+	/* Params */        (1, PARAM_NUMBER, ("Size (in Bytes)"))
+) {
+	size_t p1 = GetInt();
+
+	if (numBoards && !d_bProtected)
+		if (p1 != -1)
+		{
+			if (p1 <= d_vData.size())
+				d_vData.reserve(p1);
+
+			d_vData.resize(p1);
+			d_vData.shrink_to_fit();
+		}
+}
+
+ACTION(
+	/* ID */            4,
+	/* Name */          ("%o: Delete current board"),
+	/* Flags */         0,
+	/* Params */        (0)
+) {
+
+	if (numBoards && !d_bProtected)
+	{
+		unsigned int i = rdPtr->iSelBoard;
+		{
+			/* //old
+				d_sName = "";
+				//rdPtr->vBoards.erase( rdPtr->vBoards.begin()+rdPtr->iSelBoard, rdPtr->vBoards.begin()+rdPtr->iSelBoard+1 );
+				d_vData.clear();
+				d_vData.shrink_to_fit(); //slow !
+
+			*/ //older
+			rdPtr->vBoards[i].sName = "";
+			rdPtr->vBoards.erase(rdPtr->vBoards.begin() + i, rdPtr->vBoards.begin() + i + 1);
+			//rdPtr->vBoards[i].vData.clear();
+			//rdPtr->vBoards[i].vData.resize(0); //we have resize board for that
+			rdPtr->vBoards[i].vData.shrink_to_fit(); //slow !
+
+			if (rdPtr->iSelBoard == numBoards) //if selected board number is equal to boards number, decrease it to not overflow.
+				rdPtr->iSelBoard--;
+		}
+	}
+}
+
+ACTION(
+	/* ID */            5,
+	/* Name */          ("%o: Set current board protected flag to %0"),
+	/* Flags */         0,
+	/* Params */        (1, PARAM_NUMBER, ("Protected mode (0: No, 1: Yes)"))
+
+) {
+	bool p1 = GetInt();
+
+	if (numBoards)
+		d_bProtected = p1;
+}
+
+/* DATA */
+
+
+ACTION(
+	/* ID */			6,
+	/* Name */			("%o: Load file %0, size %1 Bytes, offset %2 to current board"),
 	/* Flags */			0,
-	/* Params */		(1, EXPPARAM_NUMBER, "Floating-Point value")
-){	
-	long p1temp = ExParam(TYPE_FLOAT);
+	/* Params */		(3, PARAM_FILENAME, ("File"), PARAM_NUMBER, ("Size (in Bytes), -1: End of File"), PARAM_NUMBER, ("Offset"))
+) {
+	char* p1 = GetStr();
+	size_t p2 = GetInt();
+	off_t p3 = GetInt();
 
-	return p1temp;
+	if (numBoards && !d_bProtected && strlen(p1) && p2)
+	{
+
+		ifstream file(p1, ios::binary);
+		if (file.good())
+		{
+			file.unsetf(ios::skipws);
+			if (p2 == -1)
+			{
+				file.seekg(0, ios::end);
+				streampos fileSize = file.tellg();
+				file.seekg(0, ios::beg);
+				p2 = fileSize;
+			}
+			d_vData.resize(p2);
+			file.seekg(p3);
+			file.read((char*)&d_vData[0], p2);
+
+			file.close();
+		}
+	}
 }
-
-
-EXPRESSION(
-	/* ID */			25,
-	/* Name */			"flipShort(",
+ACTION(
+	/* ID */			7,
+	/* Name */			("%o: Save board to file %0"),
 	/* Flags */			0,
-	/* Params */		(1, EXPPARAM_NUMBER, "Integer value")
-	) {
-	short p1 = ExParam(TYPE_INT);
+	/* Params */		(2, PARAM_FILENAME, ("File"))
+) {
+	char* p1 = GetStr();
 
-	return _byteswap_ushort(p1);
+	if (numBoards && strlen(p1))
+	{
+		ofstream fout(p1, ios::out | ios::binary);
+		fout.write((char*)&(d_vData)[0], d_vData.size());
+		fout.close();
+	}
 }
 
-EXPRESSION(
+ACTION(
+	/* ID */            8,
+	/* Name */          ("%o: Copy %0 Bytes at %1 to board (%2)"),
+	/* Flags */         0,
+	/* Params */        (3, PARAM_NUMBER, ("size (in Bytes), -1: Size"), PARAM_NUMBER, ("at offset"), PARAM_STRING, ("Board name"))
+) {
+	size_t p1 = GetInt();
+	off_t p2 = GetInt();
+	string p3(GetStr());
+
+	if (rdPtr->vBoards.size() && !p3.empty())
+	{
+		bool exists = false;
+		unsigned int i;
+		if (numBoards && p3.length())
+		{
+			for (unsigned int i = 0; i < numBoards; i++) //check if board already exists
+				if (strCompare(d_sNamei, p3))
+				{
+					exists = true;
+					d_vDatai.clear();
+					copy(d_vData.begin() + p2, d_vData.size() > p1 ? d_vData.begin() + p2 + p1 : d_vData.end(), back_inserter(d_vDatai));
+					d_vDatai.shrink_to_fit();
+				}
+		}
+	}
+}
+
+ACTION(
+	/* ID */            9,
+	/* Name */          ("%o: Swap data of current board with %0"),
+	/* Flags */         0,
+	/* Params */        (1, PARAM_STRING, ("Board name"))
+) {
+	string p1(GetStr());
+
+	if (numBoards && !p1.empty() && !d_bProtected)
+	{
+		bool exists = false;
+		long slot = 0;
+		transform(p1.begin(), p1.end(), p1.begin(), ::tolower);
+		for (unsigned int i = 0; i < numBoards; i++) //check if board already exists
+			if (strCompare(d_sNamei, p1))
+			{
+				if (!d_bProtectedi)
+					d_vData.swap(d_vDatai);
+				break;
+			} //you could just swap boards id's and names
+	}
+}
+
+ACTION(
+	/* ID */            10,
+	/* Name */          ("%o: Crop %0 Bytes at %1"),
+	/* Flags */         0,
+	/* Params */        (2, PARAM_NUMBER, ("Size (in Bytes), -1: Size"), PARAM_NUMBER, ("Offset"))
+) {
+	size_t p1 = GetInt();
+	off_t p2 = GetInt();
+
+	if (numBoards && !d_bProtected)
+	{
+		d_vData.erase(d_vData.begin(), d_vData.begin() + p2);
+		d_vData.erase(p1 == -1 ? d_vData.end() : d_vData.begin() + p1, d_vData.end());
+		d_vData.shrink_to_fit();
+	}
+}
+
+ACTION(
+	/* ID */            11,
+	/* Name */          ("%o: Remove %0 Bytes at %1"),
+	/* Flags */         0,
+	/* Params */        (2, PARAM_NUMBER, ("Size (in Bytes)"), PARAM_NUMBER, ("Offset"))
+) {
+	size_t p1 = GetInt();
+	off_t p2 = GetInt();
+
+	if (numBoards && !d_bProtected && p2 < p1)
+	{
+		d_vData.erase(d_vData.begin() + p2, d_vData.begin() + p1 + p2);
+		d_vData.shrink_to_fit();
+	}
+}
+
+ACTION(
+	/* ID */            12,
+	/* Name */          ("%o: Fill data by char %0 in current board"),
+	/* Flags */         0,
+	/* Params */        (1, PARAM_NUMBER, ("Fill by"))
+) {
+	long p1 = GetInt();
+
+	if (numBoards && !d_bProtected)
+		fill(d_vData.begin(), d_vData.end(), p1);
+}
+
+/* SET */
+
+ACTION(
+	/* ID */            13,
+	/* Name */          ("%o: Set char %0 at %1"),
+	/* Flags */         0,
+	/* Params */        (2, PARAM_NUMBER, ("Integer value"), PARAM_NUMBER, ("Offset"))
+) {
+	long p1 = GetInt();
+	off_t p2 = GetInt();
+
+	if (numBoards && !d_bProtected && p2 < d_vData.size()) //I don't want errors in my extensions
+		d_vData.at(p2) = p1;
+}
+
+ACTION(
+	/* ID */            14,
+	/* Name */          ("%o: Set short %0 at %1"),
+	/* Flags */         0,
+	/* Params */        (2, PARAM_NUMBER, ("Integer value"), PARAM_NUMBER, ("Offset"))
+) {
+	long p1 = GetInt();
+	off_t p2 = GetInt();
+
+	if (numBoards && !d_bProtected && p2 + sizeof(short) <= d_vData.size())
+		*(short*)(&d_vData.at(p2)) = p1;
+}
+
+ACTION(
+	/* ID */            15,
+	/* Name */          ("%o: Set long %0 at %1"),
+	/* Flags */         0,
+	/* Params */        (2, PARAM_NUMBER, ("Integer value"), PARAM_NUMBER, ("Offset"))
+) {
+	long p1 = GetInt();
+	off_t p2 = GetInt();
+
+	if (numBoards && !d_bProtected && p2 + sizeof(long) <= d_vData.size())
+		*(long*)(&d_vData.at(p2)) = p1;
+}
+
+ACTION(
+	/* ID */            16,
+	/* Name */          ("%o: Set float %0 at %1"),
+	/* Flags */         0,
+	/* Params */        (2, PARAM_NUMBER, ("Floating-point value"), PARAM_NUMBER, ("Offset"))
+) {
+	long p1 = CNC_GetFloatParameter(rdPtr);
+	off_t p2 = GetInt();
+
+	if (numBoards && !d_bProtected && p2 + sizeof(float) <= d_vData.size())
+	{
+		*(long*)(&d_vData.at(p2)) = p1;
+	}
+}
+
+ACTION(
+	/* ID */            17,
+	/* Name */          ("%o: Set string %0 at %1"),
+	/* Flags */         0,
+	/* Params */        (2, PARAM_STRING, ("String"), PARAM_NUMBER, ("Offset"))
+) {
+	const char* p1 = GetStr();
+	off_t p2 = GetInt();
+
+	if (numBoards && !d_bProtected)
+		copy(p1, strlen(p1) + p2 > d_vData.size() ? p1 + strlen(p1) - (strlen(p1) - d_vData.size()) - p2 : p1 + strlen(p1), d_vData.begin() + p2);
+}
+
+ACTION(
+	/* ID */            18,
+	/* Name */          ("%o: Set board %0 at %1"),
+	/* Flags */         0,
+	/* Params */        (2, PARAM_STRING, ("Board name"), PARAM_NUMBER, ("Offset"))
+) {
+	string p1(GetStr());
+	off_t p2 = GetInt();
+
+	if (numBoards && !d_bProtected && !p1.empty())
+	{
+		transform(p1.begin(), p1.end(), p1.begin(), ::tolower);
+		for (unsigned int i = 0; i < numBoards; i++) //check if board already exists
+		{
+			if (strCompare(d_sNamei, p1))
+			{
+				copy(d_vDatai.begin(), d_vDatai.size() + p2 > d_vData.size() ? d_vDatai.end() - (d_vDatai.size() - d_vData.size()) - p2 : d_vDatai.end(), d_vData.begin() + p2);
+				break;
+			}
+		}
+	}
+}
+
+ACTION(
+	/* ID */			19,
+	/* Name */			("%o: Set file %0 at %1 to current board"),
+	/* Flags */			0,
+	/* Params */		(2, PARAM_FILENAME, ("File"), PARAM_NUMBER, ("Offset (-1: End)"))
+) {
+	char* p1 = GetStr();
+	long p2 = GetInt();
+
+	if (numBoards && !d_bProtected && strlen(p1))
+	{
+		ifstream file(p1, ios::binary);
+		if (file.good())
+		{
+			file.unsetf(ios::skipws);
+
+			file.seekg(0, ios::end);
+			streampos fileSize = file.tellg();
+			file.seekg(0, ios::beg);
+
+			if (p2 + fileSize <= d_vData.size())
+				file.read((char*)&d_vData[p2], fileSize);
+			file.close();
+			d_vData.resize(d_vData.size() + fileSize);
+		}
+	}
+}
+
+/* APPEND */
+
+ACTION(
+	/* ID */            20,
+	/* Name */          ("%o: Append char %0"),
+	/* Flags */         0,
+	/* Params */        (1, PARAM_NUMBER, ("Integer value"))
+) {
+	const char p1 = GetInt();
+	if (numBoards && !d_bProtected)
+		d_vData.push_back(p1);
+}
+
+ACTION(
+	/* ID */            21,
+	/* Name */          ("%o: Append short %0"),
+	/* Flags */         0,
+	/* Params */        (1, PARAM_NUMBER, ("Integer value"))
+) {
+	long p1 = GetInt();
+
+	if (numBoards && !d_bProtected)
+	{
+		d_vData.push_back(p1 & 0xFF);
+		d_vData.push_back((p1 >> 8) & 0xFF);
+	}
+}
+
+ACTION(
+	/* ID */            22,
+	/* Name */          ("%o: Append long %0"),
+	/* Flags */         0,
+	/* Params */        (1, PARAM_NUMBER, ("Integer value"))
+) {
+	long p1 = GetInt();
+
+	if (numBoards && !d_bProtected)
+	{
+		const char* chars = reinterpret_cast<char*>(&p1);
+		copy(chars, chars + sizeof(long), back_inserter(d_vData));
+	}
+}
+
+ACTION(
+	/* ID */            23,
+	/* Name */          ("%o: Append float %0"),
+	/* Flags */         0,
+	/* Params */        (1, PARAM_NUMBER, ("Floating-point value"))
+) {
+	long p1 = CNC_GetFloatParameter(rdPtr);
+	long p2 = GetInt();
+
+	if (numBoards && !d_bProtected)
+	{
+		const char* chars = reinterpret_cast<char*>(&p1);
+		copy(chars, chars + sizeof(float), back_inserter(d_vData));
+	}
+}
+
+ACTION(
+	/* ID */            24,
+	/* Name */          ("%o: Append string %0"),
+	/* Flags */         0,
+	/* Params */        (1, PARAM_STRING, ("String"))
+) {
+	const char* p1 = GetStr();
+
+	if (numBoards && !d_bProtected && strlen(p1))
+		copy(p1, p1 + strlen(p1), back_inserter(d_vData));
+}
+
+ACTION(
+	/* ID */            25,
+	/* Name */          ("%o: Append board %0"),
+	/* Flags */         0,
+	/* Params */        (1, PARAM_STRING, ("Board name"))
+) {
+	string p1(GetStr());
+
+	if (numBoards && !d_bProtected && !p1.empty())
+	{
+		transform(p1.begin(), p1.end(), p1.begin(), ::tolower);
+		for (unsigned int i = 0; i < numBoards; i++) //check if board already exists
+		{
+			if (strCompare(d_sNamei, p1))
+			{
+				d_vData.reserve(d_vData.size() + d_vDatai.size());
+				copy(d_vDatai.begin(), d_vDatai.end(), back_inserter(d_vData));
+				break;
+			}
+		}
+	}
+}
+
+ACTION(
 	/* ID */			26,
-	/* Name */			"flipLong(",
+	/* Name */			("%o: Append file %0 to current board"),
 	/* Flags */			0,
-	/* Params */		(1, EXPPARAM_NUMBER, "Integer value")
-	) {
-	long p1 = ExParam(TYPE_INT);
+	/* Params */		(1, PARAM_FILENAME, ("File"))
+) {
+	char* p1 = GetStr();
 
-	return _byteswap_ulong(p1);
+	if (numBoards && !d_bProtected && strlen(p1))
+	{
+		ifstream file(p1, ios::binary);
+		if (file.good())
+		{
+			file.unsetf(ios::skipws);
+
+			file.seekg(0, ios::end);
+			streampos fileSize = file.tellg();
+			file.seekg(0, ios::beg);
+
+			size_t tempSize = d_vData.size();
+			d_vData.resize(d_vData.size() + fileSize);
+			file.read((char*)&d_vData[d_vData.size() - fileSize], fileSize);
+			file.close();
+		}
+	}
 }
 
-EXPRESSION(
-	/* ID */			27,
-	/* Name */			"bit(",
-	/* Flags */			0,
-	/* Params */		(2, EXPPARAM_NUMBER, "Offset", EXPPARAM_NUMBER, "bit")
-	) {
-	off_t p1 = ExParam(TYPE_INT);
-	off_t bit = ExParam(TYPE_INT);
+/* INSERT */
 
-	if (numBoards && p1 < d_vData.size())
+ACTION(
+	/* ID */            27,
+	/* Name */          ("%o: Insert char %0 at %1"),
+	/* Flags */         0,
+	/* Params */        (2, PARAM_NUMBER, ("Value"), PARAM_NUMBER, ("Offset"))
+) {
+	long p1 = GetInt();
+	off_t p2 = GetInt();
+
+	if (numBoards && !d_bProtected)
+		d_vData.emplace(d_vData.begin() + p2, p1);
+}
+
+ACTION(
+	/* ID */            28,
+	/* Name */          ("%o: Insert short %0 at %1"),
+	/* Flags */         0,
+	/* Params */        (2, PARAM_NUMBER, ("Value"), PARAM_NUMBER, ("Offset"))
+) {
+	long p1 = GetInt();
+	off_t p2 = GetInt();
+
+	if (numBoards && !d_bProtected)
 	{
-		if (!rdPtr->bEndianness)
-			return ((char)d_vData.at(p1) >> bit) & 1;
+		const char* chars = reinterpret_cast<char*>(&p1);
+		d_vData.insert(d_vData.begin() + p2, chars, chars + sizeof(short));
+	}
+}
+
+ACTION(
+	/* ID */            29,
+	/* Name */          ("%o: Insert long %0 at %1"),
+	/* Flags */         0,
+	/* Params */        (2, PARAM_NUMBER, ("Value"), PARAM_NUMBER, ("Offset"))
+) {
+	long p1 = GetInt();
+	off_t p2 = GetInt();
+
+	if (numBoards && !d_bProtected)
+	{
+		const char* chars = reinterpret_cast<char*>(&p1);
+		d_vData.insert(d_vData.begin() + p2, chars, chars + sizeof(long));
+	}
+}
+
+ACTION(
+	/* ID */            30,
+	/* Name */          ("%o: Insert float %0 at %1"),
+	/* Flags */         0,
+	/* Params */        (2, PARAM_NUMBER, ("Value"), PARAM_NUMBER, ("Offset"))
+) {
+	long p1 = CNC_GetFloatParameter(rdPtr);
+	off_t p2 = GetInt();
+
+	if (numBoards && !d_bProtected)
+	{
+		const char* chars = reinterpret_cast<char*>(&p1);
+		d_vData.insert(d_vData.begin() + p2, chars, chars + sizeof(float));
+	}
+}
+
+ACTION(
+	/* ID */            31,
+	/* Name */          ("%o: Insert string %0 at %1"),
+	/* Flags */         0,
+	/* Params */        (2, PARAM_STRING, ("String"), PARAM_NUMBER, ("Offset"))
+) {
+	const char* p1 = GetStr();
+	off_t p2 = GetInt();
+
+	if (numBoards && !d_bProtected && strlen(p1))
+		d_vData.insert(d_vData.begin() + p2, p1, p1 + strlen(p1));
+}
+
+ACTION(
+	/* ID */            32,
+	/* Name */          ("%o: Insert board %0 at %1"),
+	/* Flags */         0,
+	/* Params */        (2, PARAM_STRING, ("Board name"), PARAM_NUMBER, ("Offset"))
+) {
+	string p1(GetStr());
+	off_t p2 = GetInt();
+
+	if (numBoards && !d_bProtected && !p1.empty())
+	{
+		transform(p1.begin(), p1.end(), p1.begin(), ::tolower);
+		for (unsigned int i = 0; i < numBoards; i++) //check if the board exists
+		{
+			if (strCompare(d_sNamei, p1))
+			{
+				d_vData.reserve(d_vData.size() + d_vDatai.size());
+				d_vData.insert(d_vData.begin() + p2, d_vDatai.begin(), d_vDatai.end());
+				break;
+			}
+		}
+	}
+}
+
+
+ACTION(
+	/* ID */			33,
+	/* Name */			("%o: Insert file %0 at %1 to current board"),
+	/* Flags */			0,
+	/* Params */		(2, PARAM_FILENAME, ("File"), PARAM_NUMBER, ("Offset (-1: End)"))
+) {
+	char* p1 = GetStr();
+	off_t p2 = GetInt();
+
+	if (numBoards && !d_bProtected && strlen(p1))
+	{
+		ifstream file(p1, ios::binary);
+		if (file.good())
+		{
+			file.unsetf(ios::skipws);
+
+			file.seekg(0, ios::end);
+			streampos fileSize = file.tellg();
+			file.seekg(0, ios::beg);
+
+			if (p2 > d_vData.size())
+				p2 = d_vData.size();
+
+			d_vData.insert(d_vData.begin() + p2, d_vData.begin(), d_vData.begin() + fileSize);
+			file.read((char*)&d_vData[p2], fileSize);
+			file.close();
+		}
+	}
+}
+
+/* OCCURRENCESS */
+/* REPLACE */
+
+ACTION(
+	/* ID */            34,
+	/* Name */          ("%o: Replace every integer %0 size %1 by %2 size %3 in current board"),
+	/* Flags */         0,
+	/* Params */        (4, PARAM_NUMBER, ("Old integer value"), PARAM_NUMBER, ("Size"), PARAM_NUMBER, ("New integer value"), PARAM_NUMBER, ("Size"))
+) {
+	long p1 = GetInt();
+	char p2 = GetInt();
+	long p3 = GetInt();
+	char p4 = GetInt();
+
+	if (numBoards && !d_bProtected)
+	{
+		if (p2 == 1 && p4 == 1)
+			replace(d_vData.begin(), d_vData.end(), (signed char)p1, (signed char)p3);
 		else
-			return ((char)d_vData.at(p1) >> (7-bit)) & 1;
-	}
+		{
+			const char* value = reinterpret_cast<char*>(&p1);
+			const char* value2 = reinterpret_cast<char*>(&p3);
 
-	return 0;
+			long dist = 0;
+			while (true)
+			{
+				auto it = search(d_vData.begin() + dist, d_vData.end(), value, value + sizeof(char) * p2);
+				dist = it - d_vData.begin();
+
+				if (dist != d_vData.size())
+				{
+					if (p4 > p2)
+						d_vData.insert(d_vData.begin() + dist, value2, value2 + sizeof(char) * (p4 - p2));
+					copy(value2, value2 + sizeof(char) * p4, d_vData.begin() + dist);
+					if (p4 < p2)
+						d_vData.erase(d_vData.begin() + dist + p4, d_vData.begin() + dist + p2);
+
+					dist += sizeof(char) * p4;
+				}
+				else
+					break;
+
+			}
+
+		}
+	}
 }
 
-EXPRESSION(
-	/* ID */			28,
-	/* Name */			"ntsl(",
-	/* Flags */			0,
-	/* Params */		(1, EXPPARAM_NUMBER, "Offset")
-	) {
-	off_t p1 = ExParam(TYPE_INT);
-	size_t p2 = 1024^2;
+ACTION(
+	/* ID */            35,
+	/* Name */          ("%o: Replace every string %0 by %1 in current board"),
+	/* Flags */         0,
+	/* Params */        (2, PARAM_STRING, ("Old string"), PARAM_STRING, ("New string"))
+) {
+	char* p1 = GetStr();
+	char* p2 = GetStr();
 
-	if ( numBoards && p2 )
+	if (numBoards && !d_bProtected)
 	{
-		if ( p2>d_vData.size() )
-			p2 = d_vData.size();
-		string str( d_vData.begin()+p1, p1+p2>d_vData.size() ? d_vData.end():d_vData.begin()+p1+p2 );
-		const char* output = str.c_str();
-		return strlen(output);
-	}
+		long dist = 0;
+		while (true)
+		{
+			auto it = search(d_vData.begin() + dist, d_vData.end(), p1, p1 + strlen(p1));
+			dist = it - d_vData.begin();
 
-	return 0;
+			if (dist != d_vData.size())
+			{
+				if (strlen(p2) > strlen(p1))
+					d_vData.insert(d_vData.begin() + dist, p2, p2 + (strlen(p2) - strlen(p1)));
+				copy(p2, p2 + strlen(p2), d_vData.begin() + dist);
+				if (strlen(p2) < strlen(p1))
+					d_vData.erase(d_vData.begin() + dist + strlen(p2), d_vData.begin() + dist + strlen(p1));
+
+				dist += strlen(p2);
+			}
+			else
+				break;
+		}
+	}
 }
-//EXPRESSION(
-//	/* ID */			28,
-//	/* Name */			"undefined(",
-//	/* Flags */			0,
-//	/* Params */		(2, EXPPARAM_NUMBER, "bits", EXPPARAM_NUMBER, "Offset")
-//	) {
-//	off_t p1 = ExParam(TYPE_INT);
+
+ACTION(
+	/* ID */            36,
+	/* Name */          ("%o: Replace every board %0 by %1 in current board"),
+	/* Flags */         0,
+	/* Params */        (2, PARAM_STRING, ("Old board name"), PARAM_STRING, ("New board name"))
+) {
+	string p1((LPSTR)Param(TYPE_STRING));
+	string p2((LPSTR)Param(TYPE_STRING));
+
+	if (numBoards && !d_bProtected)
+	{
+		long dist = 0;
+		transform(p1.begin(), p1.end(), p1.begin(), ::tolower);
+		transform(p2.begin(), p2.end(), p2.begin(), ::tolower);
+		for (unsigned int i = 0; i < numBoards; i++) //check if board already exists
+			if (strCompare(d_sNamei, p1))
+			{
+				for (long j = 0; j < numBoards; j++) //check if board already exists
+					if (d_sNamej[0] == p2[0] && d_sNamej == p2)
+					{
+						while (true)
+						{
+							auto it = search(d_vData.begin() + dist, d_vData.end(), d_vDatai.begin(), d_vDatai.end());
+							dist = it - d_vData.begin();
+							if (dist == d_vData.size())
+								break;
+							if (d_vDataj.size() > d_vDatai.size())
+								d_vData.insert(d_vData.begin() + dist, d_vDataj.begin(), d_vDataj.begin() + (d_vDataj.size() - d_vDatai.size()));
+							copy(d_vDataj.begin(), d_vDataj.end(), d_vData.begin() + dist);
+							if (d_vDataj.size() < d_vDatai.size())
+								d_vData.erase(d_vData.begin() + dist + d_vDataj.size(), d_vData.begin() + dist + d_vDatai.size());
+							dist += d_vDataj.size();
+						}
+						break;
+					}
+				break;
+			}
+
+
+	}
+}
+
+/* OCCURRENCES */
+/* REMOVE */
+
+ACTION(
+	/* ID */            37,
+	/* Name */          ("%o: Remove every integer %0, size %1 in current board"),
+	/* Flags */         0,
+	/* Params */        (2, PARAM_NUMBER, ("Integer value"), PARAM_NUMBER, ("Size"))
+) {
+	long p1 = GetInt();
+	char p2 = GetInt();
+
+	if (numBoards && !d_bProtected)
+	{
+		if (p2 == 1)
+			d_vData.erase(remove(d_vData.begin(), d_vData.end(), (signed char)p1), d_vData.end());
+		else
+		{
+			const char* value = reinterpret_cast<char*>(&p1);
+
+			long buff = -1, dist = -1;
+			while (dist != d_vData.size())
+			{
+				if (buff != dist)
+				{
+					d_vData.erase(d_vData.begin() + dist, d_vData.begin() + dist + sizeof(char) * p2);
+					buff = dist;
+				}
+				auto it = search(d_vData.begin() + dist + 1, d_vData.end(), value, value + sizeof(char) * p2);
+				dist = it - d_vData.begin();
+			}
+
+		}
+	}
+}
+
+ACTION(
+	/* ID */            38,
+	/* Name */          ("%o: Remove every string %0 in current board"),
+	/* Flags */         0,
+	/* Params */        (1, PARAM_STRING, ("String"))
+) {
+	char* p1 = GetStr();
+
+	if (numBoards && !d_bProtected)
+	{
+		long dist = 0;
+		while (true)
+		{
+			auto it = search(d_vData.begin() + dist, d_vData.end(), p1, p1 + strlen(p1));
+			dist = it - d_vData.begin();
+			if (dist != d_vData.size())
+				d_vData.erase(d_vData.begin() + dist, d_vData.begin() + dist + strlen(p1));
+			else
+				break;
+		}
+	}
+}
+
+ACTION(
+	/* ID */            39,
+	/* Name */          ("%o: Remove every board %0 in current board"),
+	/* Flags */         0,
+	/* Params */        (1, PARAM_STRING, ("Board name"))
+) {
+	string p1((LPSTR)Param(TYPE_STRING));
+
+	if (numBoards && !d_bProtected)
+	{
+		long dist = 0;
+		transform(p1.begin(), p1.end(), p1.begin(), ::tolower);
+		for (unsigned int i = 0; i < numBoards; i++) //check if board already exists
+			if (strCompare(d_sNamei, p1))
+			{
+				while (true)
+				{
+					auto it = search(d_vData.begin() + dist, d_vData.end(), d_vDatai.begin(), d_vDatai.end());
+					dist = it - d_vData.begin();
+
+					if (dist != d_vData.size())
+						d_vData.erase(d_vData.begin() + dist, d_vData.begin() + dist + d_vDatai.size());
+					else
+						break;
+				}
+				break;
+			}
+
+	}
+}
+
+/* ENDIANNESS */
+
+ACTION(
+	/* ID */            40,
+	/* Name */          ("%o: Set little endian"),
+	/* Flags */         0,
+	/* Params */        (0)
+) {
+	rdPtr->bEndianness = 0;
+}
+
+ACTION(
+	/* ID */            41,
+	/* Name */          ("%o: Set big endian"),
+	/* Flags */         0,
+	/* Params */        (0)
+) {
+	rdPtr->bEndianness = 1;
+}
+
+ACTION(
+	/* ID */            42,
+	/* Name */          ("%o: Flip short at %0"),
+	/* Flags */         0,
+	/* Params */        (1, PARAM_NUMBER, ("Offset"))
+) {
+	off_t p1 = GetInt();
+
+	if (numBoards && !d_bProtected && p1 + sizeof(short) <= d_vData.size())
+	{
+		const char buff = d_vData[p1];
+		d_vData.at(p1) = d_vData[p1 + 1];
+		d_vData.at(p1 + 1) = buff;
+	}
+}
+
+ACTION(
+	/* ID */            43,
+	/* Name */          ("%o: Flip integer at %0"),
+	/* Flags */         0,
+	/* Params */        (1, PARAM_NUMBER, ("Offset"))
+) {
+	off_t p1 = GetInt();
+	long buffer;
+
+	if (numBoards && !d_bProtected && p1 + sizeof(long) <= d_vData.size())
+		*(long*)(&d_vData.at(p1)) = _byteswap_ulong(*reinterpret_cast<const long*>(&d_vData.at(p1)));
+}
+
+/* WORKSPACE */
+
+struct BINBheader
+{
+	string magic = "BINB";
+	float version = 1.0;
+	char padding[8];
+} BINBheader;
+
+ACTION(
+	/* ID */			44,
+	/* Name */			("%o: Save workspace to file %0"),
+	/* Flags */			0,
+	/* Params */		(1, PARAM_FILENAME, ("File"))
+) {
+	char* p1 = GetStr();
+
+	if (numBoards && strlen(p1))
+	{
+		ofstream fout(p1, ios::out | ios::binary);
+		fout.write(BINBheader.magic.c_str(), BINBheader.magic.size());
+		fout.write((char*)&BINBheader.version, sizeof(float));
+		fout.write((char*)&BINBheader.padding, sizeof(BINBheader.padding));
+		for (unsigned int i = 0; i < numBoards; i++)
+		{
+			const unsigned char size = d_sNamei.size();
+			fout.write((char*)&size, sizeof(size));
+			fout.write(d_sNamei.c_str(), d_sNamei.size());
+			const long size2 = d_vDatai.size();
+			fout.write((char*)&size2, sizeof(size2));
+			fout.write((char*)&(d_vDatai)[0], d_vDatai.size());
+			fout.write((char*)&d_bProtectedi, sizeof(d_bProtectedi));
+		}
+		fout.close();
+	}
+}
+
+ACTION(
+	/* ID */			45,
+	/* Name */			("%o: Load workspace from file %0, merge Flag %1"),
+	/* Flags */			0,
+	/* Params */		(2, PARAM_FILENAME, ("File"), PARAM_NUMBER, ("Merge with current? (0: No, 1: Yes)"))
+) {
+	LPSTR p1 = GetStr();
+	bool p2 = GetInt();
+
+	if (strlen(p1))
+	{
+		string magic;
+		float version;
+		ifstream file(p1, ios::binary);
+		file.unsetf(ios::skipws);
+		file.seekg(0, ios::beg);
+
+		magic.resize(BINBheader.magic.size());
+		file.read(&magic[0], magic.size());
+		file.read((char*)&version, sizeof(float));
+		if (magic == BINBheader.magic && version == BINBheader.version)
+		{
+			file.seekg(0x10);
+			rdPtr->iSelBoard = 0;
+			if (!p2)
+			{
+				rdPtr->vBoards.clear();
+				rdPtr->vBoards.shrink_to_fit();
+				while (true)
+				{
+					unsigned char vnamelen = 0;
+					file.read((char*)&vnamelen, sizeof(unsigned char));
+					rdPtr->vBoards.push_back(Board());
+					d_sName.resize(vnamelen);
+					file.read(&d_sName[0], d_sName.size());
+					long vecsize = 0;
+					file.read((char*)&vecsize, sizeof(long));
+					d_vData.resize(vecsize);
+					file.read((char*)&d_vData[0], vecsize);
+					file.read((char*)&d_bProtected, sizeof(char));
+					if (file.peek() == EOF)
+						break;
+					rdPtr->iSelBoard++;
+				}
+			}
+			else
+				while (true)
+				{
+					bool exists = false;
+					unsigned char vnamelen = 0;
+					file.read((char*)&vnamelen, sizeof(unsigned char));
+					string name;
+					name.resize(vnamelen);
+					file.read(&name[0], vnamelen);
+
+					for (unsigned int i = 0; i < numBoards; i++) //check if board already exists
+						if (d_sNamei[0] == name[0] && d_sNamei == name)
+							exists = true;
+
+					long vecsize = 0;
+					file.read((char*)&vecsize, sizeof(long));
+
+					if (!exists)
+					{
+						rdPtr->iSelBoard = numBoards;
+						rdPtr->vBoards.push_back(Board());
+						d_sName = name;
+						d_vData.resize(vecsize);
+						file.read((char*)&d_vData[0], vecsize);
+						file.read((char*)&d_bProtected, sizeof(char));
+					}
+					else
+					{
+						off_t pos = file.tellg();
+						file.seekg(pos + vecsize + 1);
+					}
+
+					if (file.peek() == EOF)
+						break;
+				}
+		}
+		file.close();
+	}
+}
+
+//ACTION(
+//	/* ID */            46,
+//	/* Name */          ("%o: Select board %0"),
+//	/* Flags */         0,
+//	/* Params */        ( 1, PARAM_NUMBER,("Board unique number") )
+//) {
+//	long p1 = GetInt();
 //
-//	if ( numBoards && p1 < d_vData.size() )
-//		return (char)d_vData.at(p1);
-//	
-//	return 0;
+//	if ( numBoards && p1 < numBoards )
+//		rdPtr->iSelBoard = p1;
 //}
 
-/* Date conversion */
-EXPRESSION(
-	/* ID */			29,
-	/* Name */			"getYear(",
-	/* Flags */			0,
-	/* Params */		(1, EXPPARAM_STRING, "Hexadecimal 64bit value")
+/* Zlib (Mark Adler) */
+
+ACTION(
+	/* ID */            46,
+	/* Name */          ("%o: Compress current data using zlib, level %0"),
+	/* Flags */         0,
+	/* Params */        (1, PARAM_NUMBER, ("Compression level (0: No compression, -1: Default, 1: Best speed, 9: Best compression)"))
 ) {
-	LPSTR p1 = (LPSTR)ExParam(TYPE_STRING);
+	char p1 = GetInt();
 
-	long long value;
-    istringstream iss(p1);
-    iss >> hex >> value;
-
-	time_t timestamp = value;
-	struct tm time;
-	char date_time[256];
-	localtime_s(&time, &timestamp);
-	//asctime_s(date_time, sizeof(date_time), &time);
-
-	return (1900+time.tm_year);
-}
-EXPRESSION(
-	/* ID */			30,
-	/* Name */			"getMonth(",
-	/* Flags */			0,
-	/* Params */		(1, EXPPARAM_STRING, "Hexadecimal 64bit value")
-) {
-	LPSTR p1 = (LPSTR)ExParam(TYPE_STRING);
-
-	long long value;
-    istringstream iss(p1);
-    iss >> hex >> value;
-
-	time_t timestamp = value;
-	struct tm time;
-	char date_time[256];
-	localtime_s(&time, &timestamp);
-	//asctime_s(date_time, sizeof(date_time), &time);
-
-	return time.tm_mon;
-}
-EXPRESSION(
-	/* ID */			31,
-	/* Name */			"getDay(",
-	/* Flags */			0,
-	/* Params */		(1, EXPPARAM_STRING, "Hexadecimal 64bit value")
-) {
-	LPSTR p1 = (LPSTR)ExParam(TYPE_STRING);
-
-	long long value;
-    istringstream iss(p1);
-    iss >> hex >> value;
-
-	time_t timestamp = value;
-	struct tm time;
-	char date_time[256];
-	localtime_s(&time, &timestamp);
-	//asctime_s(date_time, sizeof(date_time), &time);
-
-	return time.tm_mday;
-}
-EXPRESSION(
-	/* ID */			32,
-	/* Name */			"getHour(",
-	/* Flags */			0,
-	/* Params */		(1, EXPPARAM_STRING, "Hexadecimal 64bit value")
-) {
-	LPSTR p1 = (LPSTR)ExParam(TYPE_STRING);
-
-	long long value;
-    istringstream iss(p1);
-    iss >> hex >> value;
-
-	time_t timestamp = value;
-	struct tm time;
-	char date_time[256];
-	localtime_s(&time, &timestamp);
-	//asctime_s(date_time, sizeof(date_time), &time);
-
-	return time.tm_hour;
-}
-EXPRESSION(
-	/* ID */			33,
-	/* Name */			"getMinute(",
-	/* Flags */			0,
-	/* Params */		(1, EXPPARAM_STRING, "Hexadecimal 64bit value")
-) {
-	LPSTR p1 = (LPSTR)ExParam(TYPE_STRING);
-
-	long long value;
-    istringstream iss(p1);
-    iss >> hex >> value;
-
-	time_t timestamp = value;
-	struct tm time;
-	char date_time[256];
-	localtime_s(&time, &timestamp);
-	//asctime_s(date_time, sizeof(date_time), &time);
-
-	return time.tm_min;
-}
-EXPRESSION(
-	/* ID */			34,
-	/* Name */			"getSecond(",
-	/* Flags */			0,
-	/* Params */		(1, EXPPARAM_STRING, "Hexadecimal 64bit value")
-) {
-	LPSTR p1 = (LPSTR)ExParam(TYPE_STRING);
-
-	long long value;
-    istringstream iss(p1);
-    iss >> hex >> value;
-
-	time_t timestamp = value;
-	struct tm time;
-	char date_time[256];
-	localtime_s(&time, &timestamp);
-	//asctime_s(date_time, sizeof(date_time), &time);
-
-	return time.tm_sec;
-}
-
-EXPRESSION(
-	/* ID */			35,
-	/* Name */			"IntToStr$(",
-	/* Flags */			EXPFLAG_STRING,
-	/* Params */		(2, EXPPARAM_NUMBER, "Integer", EXPPARAM_NUMBER, "Size" )
-	) {
-	long p1 = ExParam(TYPE_INT);
-	long p2 = ExParam(TYPE_INT);
-
-	stringstream ss;
-	ss << std::setw(p2) << std::setfill('0') << p1;
-	string str = ss.str();
-
-	ReturnStringSafe(str.c_str());
-}
-
-
-EXPRESSION(
-	/* ID */			36,
-	/* Name */			"IntToHex$(",
-	/* Flags */			EXPFLAG_STRING,
-	/* Params */		(2, EXPPARAM_NUMBER, "Integer", EXPPARAM_NUMBER, "Size" )
-	) {
-	long p1 = ExParam(TYPE_INT);
-	long p2 = ExParam(TYPE_INT);
-
-	stringstream ss;
-	ss << std::setfill('0') << std::setw(p2) << std::right << std::hex << p1;
-	string hex = ss.str();
-	std::transform(hex.begin(), hex.end(),hex.begin(), ::toupper);
-	hex = "0x"+hex;
-
-	ReturnStringSafe(hex.c_str());
-}
-
-
-EXPRESSION(
-	/* ID */			37,
-	/* Name */			"IntToBin$(",
-	/* Flags */			EXPFLAG_STRING,
-	/* Params */		(2, EXPPARAM_NUMBER, "Integer", EXPPARAM_NUMBER, "Size" )
-	) {
-	long p1 = ExParam(TYPE_INT);
-	long p2 = ExParam(TYPE_INT);
-
-	stringstream ss;
-/*
-switch(p2) {
-  case 1:
-    ss << int_to_bitset<char>(p1);
-    break;
-  case 2:
-    ss << int_to_bitset<short>(p1);
-    break;
-  case 4:
-    ss << int_to_bitset<int>(p1);
-    break;
-  case 8:
-    ss << int_to_bitset<long>(p1);
-    break;
-
-  default:
-    ss << int_to_bitset<int>(p1);
-}
-*/
-	string bin = ss.str();
-
-	ReturnString(bin.c_str());
-}
-
-EXPRESSION(
-	/* ID */			38,
-	/* Name */			"longlong$(",
-	/* Flags */			EXPFLAG_STRING,
-	/* Params */		(1, EXPPARAM_NUMBER, "Offset")
-	) {
-	off_t p1 = ExParam(TYPE_INT);
-	long long output(0);
-
-	if ( numBoards && p1+sizeof(long) <= d_vData.size() )
+	if (numBoards)
 	{
-		if ( !rdPtr->bEndianness )
-			output = *reinterpret_cast<const long long*>(&d_vData.at(p1));
+		vector <char> buffer;
+
+		const size_t BUFSIZE = 128 * 1024;
+		unsigned char temp_buffer[BUFSIZE];
+
+		z_stream strm;
+		strm.zalloc = 0;
+		strm.zfree = 0;
+		strm.next_in = reinterpret_cast<unsigned char*>(d_vData.data());
+		strm.avail_in = d_vData.size();
+		strm.next_out = temp_buffer;
+		strm.avail_out = BUFSIZE;
+
+		deflateInit(&strm, p1);
+
+		while (strm.avail_in)
+		{
+			int res = deflate(&strm, Z_NO_FLUSH);
+			assert(res == Z_OK);
+			if (!strm.avail_out)
+			{
+				buffer.insert(buffer.end(), temp_buffer, temp_buffer + BUFSIZE);
+				strm.next_out = temp_buffer;
+				strm.avail_out = BUFSIZE;
+			}
+		}
+
+		int deflate_res = Z_OK;
+		while (deflate_res == Z_OK)
+		{
+			deflate_res = deflate(&strm, Z_FINISH);
+		}
+
+		assert(deflate_res == Z_STREAM_END);
+		buffer.insert(buffer.end(), temp_buffer, temp_buffer + BUFSIZE - strm.avail_out); // rest
+		deflateEnd(&strm);
+
+		d_vData.swap(buffer);
+		buffer.clear();
+	}
+}
+
+ACTION(
+	/* ID */            47,
+	/* Name */          ("%o: Decompress current data using zlib"),
+	/* Flags */         0,
+	/* Params */        (0)
+) {
+	if (numBoards)
+	{
+		vector <char> buffer;
+
+		const size_t BUFSIZE = 128 * 1024;
+		unsigned char temp_buffer[BUFSIZE];
+
+		z_stream strm;
+		strm.zalloc = 0;
+		strm.zfree = 0;
+		strm.next_in = reinterpret_cast<unsigned char*>(d_vData.data());
+		strm.avail_in = d_vData.size();
+		strm.next_out = temp_buffer;
+		strm.avail_out = BUFSIZE;
+
+		if (inflateInit(&strm) == Z_OK)
+		{
+			while (strm.avail_in)
+			{
+				int res = inflate(&strm, Z_NO_FLUSH);
+				assert(res == Z_OK);
+				if (!strm.avail_out)
+				{
+					buffer.insert(buffer.end(), temp_buffer, temp_buffer + BUFSIZE);
+					strm.next_out = temp_buffer;
+					strm.avail_out = BUFSIZE;
+				}
+			}
+
+			int inflate_res = Z_OK;
+			while (inflate_res == Z_OK)
+			{
+				inflate_res = inflate(&strm, Z_FINISH);
+			}
+
+			assert(inflate_res == Z_STREAM_END);
+			buffer.insert(buffer.end(), temp_buffer, temp_buffer + BUFSIZE - strm.avail_out);
+			inflateEnd(&strm);
+
+			d_vData.swap(buffer);
+			buffer.clear();
+		}
+	}
+}
+
+/* Blowfish */
+
+ACTION(
+	/* ID */            48,
+	/* Name */          ("%o: Encrypt current data using blowfish, key %0, method %1"),
+	/* Flags */         0,
+	/* Params */        (2, PARAM_STRING, ("Set key string (length from 4 to 56 characters)"), PARAM_NUMBER, ("Method (0: Simple, 1: Strict)"))
+) {
+	LPSTR p1 = GetStr();
+	bool p2 = GetInt();
+
+	if (numBoards && strlen(p1) >= 4 && d_vData.size() >= 8)
+	{
+		BLOWFISH_CTX ctx;
+
+		Blowfish_Init(&ctx, (unsigned char*)p1, min(strlen(p1), 56));
+
+		if (p2)
+			for (size_t i = 0; i < d_vData.size() + 1 - 8; i++)
+				Blowfish_Encrypt(&ctx, (unsigned long*)(d_vData.data() + i), (unsigned long*)(d_vData.data() + i + 4));
 		else
-			output = _byteswap_ulong(*reinterpret_cast<const long long*>(&d_vData.at(p1)));
+			for (size_t i = 0; i < d_vData.size() / 8; i++)
+				Blowfish_Encrypt(&ctx, (unsigned long*)&d_vData.at(i * 4), (unsigned long*)&d_vData.at((i + 1) * 4));
 	}
-	
-	stringstream ss;
-	ss << std::right << std::hex << output; // << std::endl
-	string hex = ss.str();
-	std::transform(hex.begin(), hex.end(),hex.begin(), ::toupper);
-	hex = "0x"+hex;
-	ReturnStringSafe( hex.c_str());
 }
 
+ACTION(
+	/* ID */            49,
+	/* Name */          ("%o: Decrypt current data using blowfish, key %0, method %1"),
+	/* Flags */         0,
+	/* Params */        (2, PARAM_STRING, ("Set key string (length from 4 to 56 characters)"), PARAM_NUMBER, ("Strict mode (0: No, 1: Yes)"))
+) {
+	LPSTR p1 = GetStr();
+	bool p2 = GetInt();
 
-
-//MATRICES
-#include <rotm2quat.h>
-
-EXPRESSION(
-	/* ID */			39,
-	/* Name */			"m4x4getrW(",
-	/* Flags */			EXPFLAG_DOUBLE,
-	/* Params */		(1, EXPPARAM_NUMBER, "Matrix Offset")
-	) {
-	off_t p1 = ExParam(TYPE_INT);
-
-	if ( numBoards && p1+sizeof(float) <= d_vData.size() )
+	if (numBoards && strlen(p1) >= 4 && d_vData.size() >= 8)
 	{
-		ReturnFloat(
-			mRot2Quat(0,
-			*reinterpret_cast<const float *>(&d_vData.at(p1)),
-			*reinterpret_cast<const float *>(&d_vData.at(p1+4)),
-			*reinterpret_cast<const float *>(&d_vData.at(p1+8)),
-			*reinterpret_cast<const float *>(&d_vData.at(p1+16)),
-			*reinterpret_cast<const float *>(&d_vData.at(p1+20)),
-			*reinterpret_cast<const float *>(&d_vData.at(p1+24)),
-			*reinterpret_cast<const float *>(&d_vData.at(p1+32)),
-			*reinterpret_cast<const float *>(&d_vData.at(p1+36)),
-			*reinterpret_cast<const float *>(&d_vData.at(p1+40))
-			)
-		);
+		BLOWFISH_CTX ctx;
+
+		Blowfish_Init(&ctx, (unsigned char*)p1, min(strlen(p1), 56));
+
+		if (p2)
+			for (int i = d_vData.size() - 8; i >= 0; i--)
+				Blowfish_Decrypt(&ctx, (unsigned long*)(d_vData.data() + i), (unsigned long*)(d_vData.data() + i + 4));
+		else
+			for (size_t i = 0; i < d_vData.size() / 8; i++)
+				Blowfish_Decrypt(&ctx, (unsigned long*)&d_vData.at(i * 4), (unsigned long*)&d_vData.at((i + 1) * 4));
 	}
-	
-	return 0;
 }
 
-EXPRESSION(
-	/* ID */			40,
-	/* Name */			"m4x4getrX(",
-	/* Flags */			EXPFLAG_DOUBLE,
-	/* Params */		(1, EXPPARAM_NUMBER, "Matrix Offset")
-	) {
-	off_t p1 = ExParam(TYPE_INT);
+/* Base64 */
 
-	if ( numBoards && p1+sizeof(float) <= d_vData.size() )
+ACTION(
+	/* ID */            50,
+	/* Name */          ("%o: Encode current data using base64"),
+	/* Flags */         0,
+	/* Params */        (0)
+) {
+
+	if (numBoards)
 	{
-		ReturnFloat(
-			mRot2Quat(1,
-			*reinterpret_cast<const float *>(&d_vData.at(p1)),
-			*reinterpret_cast<const float *>(&d_vData.at(p1+4)),
-			*reinterpret_cast<const float *>(&d_vData.at(p1+8)),
-			*reinterpret_cast<const float *>(&d_vData.at(p1+16)),
-			*reinterpret_cast<const float *>(&d_vData.at(p1+20)),
-			*reinterpret_cast<const float *>(&d_vData.at(p1+24)),
-			*reinterpret_cast<const float *>(&d_vData.at(p1+32)),
-			*reinterpret_cast<const float *>(&d_vData.at(p1+36)),
-			*reinterpret_cast<const float *>(&d_vData.at(p1+40))
-			)
-		);
+		vector <char> buf;
+		buf.resize(Base64encode_len(d_vData.size()));
+		Base64encode(buf.data(), d_vData.data(), d_vData.size());
+		buf.swap(d_vData);
+		buf.clear();
 	}
-	
-	return 0;
 }
 
-EXPRESSION(
-	/* ID */			41,
-	/* Name */			"m4x4getrY(",
-	/* Flags */			EXPFLAG_DOUBLE,
-	/* Params */		(1, EXPPARAM_NUMBER, "Matrix Offset")
-	) {
-	off_t p1 = ExParam(TYPE_INT);
+ACTION(
+	/* ID */            51,
+	/* Name */          ("%o: Decode current data using base64"),
+	/* Flags */         0,
+	/* Params */        (0)
+) {
 
-	if ( numBoards && p1+sizeof(float) <= d_vData.size() )
+	if (numBoards)
 	{
-		ReturnFloat(
-			mRot2Quat(2,
-			*reinterpret_cast<const float *>(&d_vData.at(p1)),
-			*reinterpret_cast<const float *>(&d_vData.at(p1+4)),
-			*reinterpret_cast<const float *>(&d_vData.at(p1+8)),
-			*reinterpret_cast<const float *>(&d_vData.at(p1+16)),
-			*reinterpret_cast<const float *>(&d_vData.at(p1+20)),
-			*reinterpret_cast<const float *>(&d_vData.at(p1+24)),
-			*reinterpret_cast<const float *>(&d_vData.at(p1+32)),
-			*reinterpret_cast<const float *>(&d_vData.at(p1+36)),
-			*reinterpret_cast<const float *>(&d_vData.at(p1+40))
-			)
-		);
+		Base64decode(d_vData.data(), d_vData.data());
 	}
-	
-	return 0;
 }
 
-EXPRESSION(
-	/* ID */			42,
-	/* Name */			"m4x4getrZ(",
-	/* Flags */			EXPFLAG_DOUBLE,
-	/* Params */		(1, EXPPARAM_NUMBER, "4x4 Matrix Offset")
-	) {
-	off_t p1 = ExParam(TYPE_INT);
 
-	if ( numBoards && p1+sizeof(float) <= d_vData.size() )
+ACTION(
+	/* ID */            52,
+	/* Name */          ("%o: Set bit %0 at %1"),
+	/* Flags */         0,
+	/* Params */        (2, PARAM_NUMBER, ("Boolean value"), PARAM_NUMBER, ("Offset"))
+) {
+	int p1 = GetInt();
+	const off_t p2 = GetInt();
+	const off_t offset = p2 / 8;
+	const off_t bit = p2 % 8;
+
+	BYTE output = (char)d_vData.at(offset);
+
+	if (!rdPtr->bEndianness)
 	{
-		ReturnFloat(
-			mRot2Quat(3,
-			*reinterpret_cast<const float *>(&d_vData.at(p1)),
-			*reinterpret_cast<const float *>(&d_vData.at(p1+4)),
-			*reinterpret_cast<const float *>(&d_vData.at(p1+8)),
-			*reinterpret_cast<const float *>(&d_vData.at(p1+16)),
-			*reinterpret_cast<const float *>(&d_vData.at(p1+20)),
-			*reinterpret_cast<const float *>(&d_vData.at(p1+24)),
-			*reinterpret_cast<const float *>(&d_vData.at(p1+32)),
-			*reinterpret_cast<const float *>(&d_vData.at(p1+36)),
-			*reinterpret_cast<const float *>(&d_vData.at(p1+40))
-			)
-		);
+		if (p1) output |= 1 << bit;
+		else output &= ~(1 << bit);
 	}
-	
-	return 0;
+	else
+	{
+		if (p1) output |= 1 << (7 - bit);
+		else output &= ~(1 << (7 - bit));
+	}
+
+	if (numBoards && !d_bProtected && offset < d_vData.size()) //I don't want errors in my extensions
+		d_vData.at(offset) = output;
 }
 
 
-EXPRESSION(
-	/* ID */			43,
-	/* Name */			"FltToStr$(",
-	/* Flags */			EXPFLAG_STRING,
-	/* Params */		(3, EXPPARAM_NUMBER, "Floating-Point", EXPPARAM_NUMBER, "Width", EXPPARAM_NUMBER, "Precision" )
-	) {
-	float p1 = ExParam(TYPE_FLOAT);
-	long p2 = ExParam(TYPE_INT);
-	long p3 = ExParam(TYPE_INT);
+//ACTION(
+//	/* ID */            53,
+//	/* Name */          ("%o: Set undefined %0 at %1"),
+//	/* Flags */         0,
+//	/* Params */        ( 3, PARAM_NUMBER,("Integer value"), PARAM_NUMBER,("reserved bits (1 - 8)"), PARAM_NUMBER,("Offset") )
+//) {
+//	long p1 = GetInt();
+//	unsigned char p2 = GetInt();
+//	off_t p3 = GetInt();
+//
+//	unsigned char p1b = p1 >> (8-p2);
+//
+//	off_t p3b = (GetInt()%8)*p2;
+//	BYTE output = (char)d_vData.at(p2);
+//
+//	if ( numBoards && !d_bProtected && p2 < d_vData.size() ) //I don't want errors in my extensions
+//		d_vData.at(p2) = output;
+//}
 
-	stringstream ss;
-	ss << std::internal << std::showpos << std::setw(p2) << std::setprecision(p3) << std::setfill('0') << p1;
-	string str = ss.str();
+ACTION(
+	/* ID */            53,
+	/* Name */          ("%o: Delete board %0"),
+	/* Flags */         0,
+	/* Params */        (1, PARAM_STRING, ("Board name"))
+) {
+	string p1(GetStr());
 
-	ReturnStringSafe(str.c_str());
+	if (numBoards && p1.length())
+	{
+		for (unsigned int i = 0; i < numBoards; i++) //check if board already exists
+			if (strCompare(d_sNamei, p1))
+			{
+
+				rdPtr->vBoards[i].sName = "";
+				rdPtr->vBoards.erase(rdPtr->vBoards.begin() + i, rdPtr->vBoards.begin() + i + 1);
+				//rdPtr->vBoards[i].vData.clear();
+				//rdPtr->vBoards[i].vData.resize(0); //we have resize board for that
+				rdPtr->vBoards[i].vData.shrink_to_fit(); //slow !
+
+				if (rdPtr->iSelBoard >= numBoards)
+					rdPtr->iSelBoard--;
+				break;
+			}
+	}
 }
 
-//Alien Math
-EXPRESSION(
-	/* ID */			44,
-	/* Name */			"cosh(",
-	/* Flags */			EXPFLAG_DOUBLE,
-	/* Params */		(1, EXPPARAM_NUMBER, "Floating-Point value")
-){	
-	long input = ExParam(TYPE_FLOAT);
-	float output = coshf(*reinterpret_cast<const float *>(&input));
+ACTION(
+	/* ID */            54,
+	/* Name */          ("%o: Resize board %0 to %1 Bytes"),
+	/* Flags */         0,
+	/* Params */        (2, PARAM_STRING, ("Board name"), PARAM_NUMBER, ("Size (in Bytes)"))
+)
+{
+	string p1(GetStr());
+	size_t p2 = GetInt();
 
-	ReturnFloat(output);
+	for (unsigned int i = 0; i < numBoards; i++) //check if board already exists
+		if (strCompare(d_sNamei, p1))
+		{
+			if (numBoards && !d_bProtected)
+				if (p2 != -1)
+				{
+					if (p2 > d_vData.size())
+						d_vData.reserve(p2);
+
+					rdPtr->vBoards[i].vData.resize(p2);
+					rdPtr->vBoards[i].vData.shrink_to_fit();
+					break;
+				}
+		}
 }
 
-EXPRESSION(
-	/* ID */			45,
-	/* Name */			"sinh(",
-	/* Flags */			EXPFLAG_DOUBLE,
-	/* Params */		(1, EXPPARAM_NUMBER, "Floating-Point value")
-){	
-	long input = ExParam(TYPE_FLOAT);
-	float output = sinhf(*reinterpret_cast<const float *>(&input));
 
-	ReturnFloat(output);
+ACTION(
+	/* ID */            55,
+	/* Name */          ("%o: Add space to current board to %0 Bytes"),
+	/* Flags */         0,
+	/* Params */        (1, PARAM_NUMBER, ("Size (in Bytes)"))
+) {
+	size_t p1 = GetInt();
+
+	if (numBoards && !d_bProtected)
+	{
+		if (p1)
+		{
+			d_vData.resize(d_vData.size() + p1);
+			d_vData.shrink_to_fit();
+		}
+	}
 }
 
+ACTION(
+	/* ID */            56,
+	/* Name */          ("%o: Add space to board %0 to %1 Bytes"),
+	/* Flags */         0,
+	/* Params */        (2, PARAM_STRING, ("Board name"), PARAM_NUMBER, ("Size (in Bytes)"))
+)
+{
+	string p1(GetStr());
+	size_t p2 = GetInt();
+
+	for (unsigned int i = 0; i < numBoards; i++) //check if board already exists
+		if (strCompare(d_sNamei, p1))
+		{
+			if (numBoards && !d_bProtected)
+			{
+				if (p2)
+				{
+					rdPtr->vBoards[i].vData.resize(rdPtr->vBoards[i].vData.size() + p2);
+					d_vData.shrink_to_fit();
+				}
+			}
+			break;
+		}
+}
+
+ACTION(
+	/* ID */            57,
+	/* Name */          ("%o: Clear Everything"),
+	/* Flags */         0,
+	/* Params */        (0)
+) {
+	unsigned int i = 0;
+
+	string p1(GetStr());
+	size_t p2 = GetInt();
+
+	for (unsigned int i = 0; i < numBoards; i++) //check if board already exists	
+		if (numBoards && !d_bProtected)
+		{
+			rdPtr->vBoards[i].sName = "";
+			d_vDatai.clear();
+			d_vDatai.shrink_to_fit();
+		}
+
+}
+
+
+ACTION(
+	/* ID */			58,
+	/* Name */			("%o: Load resource (PE) from file %0 to current board, type %1, find %2,  index %3"),
+	/* Flags */			0,
+	/* Params */		(4, PARAM_FILENAME, ("File"), PARAM_NUMBER, ("Type (example: 0x00000020: LOAD_LIBRARY_AS_IMAGE_RESOURCE)"), PARAM_NUMBER,("Type (example: 3: RT_ICON)"), PARAM_NUMBER,("Index"))
+) {
+	char* p1 = GetStr();
+	int resType = GetInt();
+	int resFind = GetInt();
+	int resIndex = GetInt();
+
+	if(numBoards && !d_bProtected)
+	if (strlen(p1))
+	{
+		ifstream file(p1, ios::binary);
+		if (file.good())
+		{
+			d_vData.clear();
+
+			file.unsetf(ios::skipws);
+			file.seekg(0, ios::end);
+			streampos fileSize = file.tellg();
+			file.seekg(0, ios::beg);
+			std::vector<char> resContainer(fileSize); //prepare a vector of Bytes for the binary file
+			if (file.read(resContainer.data(), fileSize)) //if file loaded into the vector
+			{
+				file.close();
+				HMODULE hModule = LoadLibraryEx(p1, NULL, resType);
+				HRSRC hResource = FindResource(hModule, MAKEINTRESOURCE(resIndex), MAKEINTRESOURCE(resFind)); // substitute RESOURCE_ID and RESOURCE_TYPE.
+				HGLOBAL hMemory = LoadResource(hModule, hResource);
+				DWORD dwSize = SizeofResource(hModule, hResource);
+				LPVOID lpAddress = LockResource(hMemory);
+				copy(reinterpret_cast<char*>(lpAddress),reinterpret_cast<char*>(lpAddress)+dwSize, back_inserter(d_vData));
+				UnlockResource(hMemory);
+				FreeResource(hResource);
+				FreeLibrary(hModule);
+			}
+			resContainer.clear();
+			resContainer.shrink_to_fit();
+			d_vData.shrink_to_fit();
+		}
+	}
+}
