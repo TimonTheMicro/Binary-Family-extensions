@@ -45,11 +45,12 @@ EXPRESSION(
 ) {
 	string p1( (LPSTR)ExParam(TYPE_STRING) );
 
-	if ( numBoards )
+	if ( numBoards ) //memory address shouldn't point to an empty space!
 	{	
 		for (unsigned int i=0; i<numBoards; i++) //check if board already exists
 			if ( strCompare(d_sNamei, p1) )
-				return (int)d_vDatai.data();
+				if ( d_vDatai.size() >= 16 ) //minimum will be size of 16B
+					return (int)d_vDatai.data();
 	}
 
 	return 0;			
@@ -966,3 +967,4 @@ EXPRESSION(
 
 	ReturnFloat(output);
 }
+
