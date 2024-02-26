@@ -1452,9 +1452,10 @@ ACTION(
 				DWORD dwSize = SizeofResource(hModule, hResource);
 				LPVOID lpAddress = LockResource(hMemory);
 				copy(reinterpret_cast<char*>(lpAddress),reinterpret_cast<char*>(lpAddress)+dwSize, back_inserter(d_vData));
+				//clean
 				UnlockResource(hMemory);
-				FreeResource(hMemory);
-				//FreeResource(lpAddress);
+				FreeResource(hResource);
+				FreeLibrary(hModule);
 			}
 			resContainer.clear();
 			resContainer.shrink_to_fit();
