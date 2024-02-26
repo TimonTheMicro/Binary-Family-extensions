@@ -13,3 +13,11 @@ bool strCompare( string a, string b )
 	
 	return true;
 }
+
+void printLog(int value,string path)
+{
+	std::ofstream outfile;
+	outfile.open(path,std::ios_base::app); // append instead of overwrite
+	outfile << std::endl << std::to_string(value);
+	outfile.close();
+}

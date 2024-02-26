@@ -22,18 +22,12 @@ using namespace std;
 // Binary Board object
 #include	<assert.h>
 #include	<stdio.h>
-#include <stdlib.h>  
+#include	<stdlib.h>  
 
 #include	<algorithm>
 #include	<fstream>
 #include	<string>
-#include <iterator>
-// zlib
-#include	"zlib.h"
-// quaternions
-//#include "quaternion.h"
-//#include "quaternion_io.h"
-
+#include	<iterator>
 
 
 #if defined(MSDOS) || defined(OS2) || defined(WIN32) || defined(__CYGWIN__)
@@ -44,11 +38,18 @@ using namespace std;
 #  define SET_BINARY_MODE(file)
 #endif
 
+// zlib
+#include	"zlib.h"
+
 // blowfish
 #include	"blowfish.h"
 
 // base64
 #include	"base64.h"
+
+// quaternions
+//#include	"quaternion.h"
+//#include	"quaternion_io.h"
 
 // Globals and prototypes
 extern HINSTANCE hInstLib;
@@ -78,10 +79,7 @@ extern WORD DebugTree[];
 #define d_bProtectedj rdPtr->vBoards[j].bProtected
 #define numBoards rdPtr->vBoards.size()
 
-using namespace std;
-
+void printLog( int value, string path );
 bool strCompare( string a, string b );
 // End include guard
 #endif
-
-

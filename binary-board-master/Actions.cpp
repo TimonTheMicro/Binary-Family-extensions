@@ -6,9 +6,7 @@
 // ============================================================================
 
 #include "common.h"
-#include "icons\icons.h"
 
-#include <array>
 /* BOARD */
 
 ACTION(
