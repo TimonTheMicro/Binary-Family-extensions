@@ -2,22 +2,22 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>{0ab84c5c-2035-4041-9c2e-47c361f2139c}</UniqueIdentifier>
+      <UniqueIdentifier>{f3411a92-9612-484d-95f8-3a5db0a4a1e0}</UniqueIdentifier>
       <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>{1fc35a70-dca5-4259-97cb-52ebebe9ea75}</UniqueIdentifier>
+      <UniqueIdentifier>{08ce17b3-ddc9-461a-a650-268549f33276}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl</Extensions>
     </Filter>
     <Filter Include="Resource Files">
-      <UniqueIdentifier>{0b3ff5cc-39c2-489c-b62f-1ad66d3cf63b}</UniqueIdentifier>
+      <UniqueIdentifier>{eb660b22-3d7a-4691-9542-19f457d209b6}</UniqueIdentifier>
       <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
     </Filter>
     <Filter Include="MMF Headers">
-      <UniqueIdentifier>{de340aed-e7b4-465c-bdc5-641399588360}</UniqueIdentifier>
+      <UniqueIdentifier>{46287c6a-e689-4df3-9165-817715f1c354}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\addons">
-      <UniqueIdentifier>{91b60ccd-2cd5-4354-a125-ff4fce17e5f1}</UniqueIdentifier>
+    <Filter Include="Source Files\add-ons">
+      <UniqueIdentifier>{337c9dc7-8de3-459c-97db-c36e3e72b49d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -27,51 +27,39 @@
     <ClCompile Include="General.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Runtime.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Actions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Conditions.cpp">
+    <ClCompile Include="Runtime.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Expressions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="blowfish\blowfish.cpp">
-      <Filter>Source Files\addons</Filter>
-    </ClCompile>
-    <ClCompile Include="base64\base64.cpp">
-      <Filter>Source Files\addons</Filter>
-    </ClCompile>
-    <ClCompile Include="Common.cpp">
+    <ClCompile Include="Conditions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="base64\base64.cpp">
+      <Filter>Source Files\add-ons</Filter>
+    </ClCompile>
+    <ClCompile Include="blowfish\blowfish.cpp">
+      <Filter>Source Files\add-ons</Filter>
+    </ClCompile>
     <ClCompile Include="quaternion\rotm2quat.cpp">
-      <Filter>Source Files\addons</Filter>
+      <Filter>Source Files\add-ons</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Data.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FlagsPrefs.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Information.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Menu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Resource.h">
       <Filter>Resource Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\Program Files\Microsoft Visual Studio\Vc98\Include\Basetsd.h">
+    <ClInclude Include="..\..\..\..\..\Program Files\Microsoft Visual Studio\Vc98\Include\Basetsd.h">
       <Filter>MMF Headers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Inc\Ccx.h">
@@ -166,21 +154,30 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Ext.def">
+      <Filter>Header Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
     <ResourceCompile Include="Ext.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="EXTICON.BMP">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="EXTIMG.BMP">
-      <Filter>Resource Files</Filter>
-    </Image>
-  </ItemGroup>
-  <ItemGroup>
-    <CustomBuild Include="Ext.def">
+    <CustomBuild Include="Data.h">
       <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="FlagsPrefs.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Menu.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="EXTICON.BMP">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="EXTIMG.BMP">
+      <Filter>Resource Files</Filter>
     </CustomBuild>
   </ItemGroup>
 </Project>

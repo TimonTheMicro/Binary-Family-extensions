@@ -5,10 +5,10 @@
 // Basic object details
 #define	ObjectName			"Binary Board object"
 #define	ObjectAuthor		"Timon"
-#define	ObjectCopyright		"Copyright © 2024"
-#define	ObjectComment		"Load, save and manage binary data (version 1.1)"
+#define	ObjectCopyright		"Copyright Â© 2024"
+#define	ObjectComment		"Load, save and manage binary data (Unicode Edition)"
 #define	ObjectURL			""
-#define	ObjectHelp			"Help\\Binary Board.chm"
+#define	ObjectHelp			_T("Help\\BinaryBoard.chm")
 
 // If you register your object with Clickteam, change this to the ID you were given
 #define ObjectRegID			REGID_PRIVATE
@@ -16,26 +16,7 @@
 // Change N,O,N,E to 4 unique characters (MMF currently still uses this to keep track)
 #define	IDENTIFIER			MAKEID(B,I,N,B)
 
-// ------------------------------
-// DEFINITION OF CONDITIONS CODES
-// ------------------------------
-#define	CND_CONDITION				0
-#define	CND_LAST					1
-
-// ---------------------------
-// DEFINITION OF ACTIONS CODES
-// ---------------------------
-#define	ACT_ACTION					0
-#define	ACT_LAST					1
-
-// -------------------------------
-// DEFINITION OF EXPRESSIONS CODES
-// -------------------------------
-#define	EXP_EXPRESSION				0
-#define EXP_EXPRESSION2				1
-#define EXP_EXPRESSION3				2
-#define	EXP_LAST                    3
-
+#define	ObjectVersion		1
 
 // --------------------
 // Version information

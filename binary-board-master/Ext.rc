@@ -1,32 +1,21 @@
-// Microsoft Visual C++ generated resource script.
-//
+#include "information.h"
 #include "resource.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
-/////////////////////////////////////////////////////////////////////////////
-//
-// Generated from the TEXTINCLUDE 2 resource.
-//
 #include "..\..\Inc\ccx.h"
 #define APSTUDIO_HIDDEN_SYMBOLS
 #include "windows.h"
 #undef APSTUDIO_HIDDEN_SYMBOLS
 
-
-/////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
 
-/////////////////////////////////////////////////////////////////////////////
-// English (United States) resources
-
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
+#endif //_WIN32
 
-/////////////////////////////////////////////////////////////////////////////
-//
-// Version
-//
+#ifndef _MAC
 
 1 VERSIONINFO
  FILEVERSION 1,0,0,0
@@ -43,7 +32,21 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 BEGIN
     BLOCK "StringFileInfo"
     BEGIN
-        VALUE "040904e4", ""
+        BLOCK "040904e4"
+        BEGIN
+            VALUE "Comments", "\0"
+            VALUE "CompanyName", "\0"
+            VALUE "FileDescription", "\0"
+            VALUE "FileVersion", "\0"
+            VALUE "InternalName", "\0"
+            VALUE "LegalCopyright", "\0"
+            VALUE "LegalTrademarks", "\0"
+            VALUE "OriginalFilename", "\0"
+            VALUE "PrivateBuild", "\0"
+            VALUE "ProductName", "\0"
+            VALUE "ProductVersion", "\0"
+            VALUE "SpecialBuild", "\0"
+        END
     END
     BLOCK "VarFileInfo"
     BEGIN
@@ -51,50 +54,36 @@ BEGIN
     END
 END
 
+#endif    // !_MAC
 
-/////////////////////////////////////////////////////////////////////////////
-//
-// RCDATA
-//
-
-KPX_MAGICNUMBER RCDATA 
+KPX_MAGICNUMBER RCDATA MOVEABLE PURE 
 BEGIN
     0x2516, 0x5908
 END
 
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Bitmap
-//
-
 #if defined(APSTUDIO_INVOKED) || defined(EDITOR)
 #if defined(APSTUDIO_INVOKED)
-EXO_ICON$(EDITOR)       BITMAP                  "EXTICON.BMP"
+EXO_ICON$(EDITOR)       BITMAP  MOVEABLE PURE   "EXTICON.BMP"
 #else
-EXO_ICON                BITMAP                  "EXTICON.BMP"
+EXO_ICON                BITMAP  MOVEABLE PURE   "EXTICON.BMP"
 #endif
 #endif
 #if defined(APSTUDIO_INVOKED) || defined(EDITOR)
 #if defined(APSTUDIO_INVOKED)
-EXO_IMAGE$(EDITOR)      BITMAP                  "EXTIMG.BMP"
+EXO_IMAGE$(EDITOR)      BITMAP  MOVEABLE PURE   "EXTIMG.BMP"
 #else
-EXO_IMAGE               BITMAP                  "EXTIMG.BMP"
+EXO_IMAGE               BITMAP  MOVEABLE PURE   "EXTIMG.BMP"
 #endif
 #endif
 
 #ifdef APSTUDIO_INVOKED
-/////////////////////////////////////////////////////////////////////////////
-//
-// TEXTINCLUDE
-//
 
-1 TEXTINCLUDE 
+1 TEXTINCLUDE DISCARDABLE 
 BEGIN
     "resource.h\0"
 END
 
-2 TEXTINCLUDE 
+2 TEXTINCLUDE DISCARDABLE 
 BEGIN
     "#include ""..\\..\\Inc\\ccx.h""\r\n"
     "#define APSTUDIO_HIDDEN_SYMBOLS\r\n"
@@ -104,7 +93,7 @@ BEGIN
     "\0"
 END
 
-3 TEXTINCLUDE 
+3 TEXTINCLUDE DISCARDABLE 
 BEGIN
     "\r\n"
     "\0"
@@ -112,30 +101,15 @@ END
 
 #endif    // APSTUDIO_INVOKED
 
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// String Table
-//
-
-STRINGTABLE
+STRINGTABLE DISCARDABLE 
 BEGIN
     KPX_MARK                "MF2"
-    KPX_NAME                "Binary Board object"
+    KPX_NAME                ObjectName
 END
 
-#endif    // English (United States) resources
-/////////////////////////////////////////////////////////////////////////////
-
-
+#endif    // English (U.S.) resources
 
 #ifndef APSTUDIO_INVOKED
-/////////////////////////////////////////////////////////////////////////////
-//
-// Generated from the TEXTINCLUDE 3 resource.
-//
 
-
-/////////////////////////////////////////////////////////////////////////////
-#endif    // not APSTUDIO_INVOKED
+#endif    // !APSTUDIO_INVOKED
 

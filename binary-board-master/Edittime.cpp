@@ -15,25 +15,25 @@
 
 PROPS_IDS_START()
 
-	// PROPID_TEXT1,
-	// PROPID_NUM1,
+// PROPID_TEXT1,
+// PROPID_NUM1,
 
-	//Settings
-	PROPID_GRP0,
-		PROPID_ENDIANNESS,
-	PROPID_GRP1,
-		PROPID_AUTOSELECT,
+//Settings
+PROPID_GRP0,
+PROPID_ENDIANNESS,
+PROPID_GRP1,
+PROPID_AUTOSELECT,
 
 PROPS_IDS_END()
 
 PROPS_DATA_START()
 
-	// PropData_EditString(PROPID_TEXT1,PSTR("Text item"),PSTR("I'm more textual than you")),
-	// PropData_EditNumber(PROPID_NUM1,PSTR("Number item"),PSTR("I'm more numeric than text")),
-	PropData_Group(PROPID_GRP0,(int)_T("Endianness"),(int)_T("")),
-	PropData_CheckBox(PROPID_ENDIANNESS,(int)_T("Big endian"),(int)_T("Read integer values in big endian format")),
-	PropData_Group(PROPID_GRP1,(int)_T("Other options"),(int)_T("")),
-	PropData_CheckBox(PROPID_AUTOSELECT,(int)_T("Board autoselect"),(int)_T("Automatically select board after create")),
+// PropData_EditString(PROPID_TEXT1,PSTR("Text item"),PSTR("I'm more textual than you")),
+// PropData_EditNumber(PROPID_NUM1,PSTR("Number item"),PSTR("I'm more numeric than text")),
+PropData_Group(PROPID_GRP0,(int)_T("Endianness"),(int)_T("")),
+PropData_CheckBox(PROPID_ENDIANNESS,(int)_T("Big endian"),(int)_T("Read integer values in big endian format")),
+PropData_Group(PROPID_GRP1,(int)_T("Other options"),(int)_T("")),
+PropData_CheckBox(PROPID_AUTOSELECT,(int)_T("Board autoselect"),(int)_T("Automatically select board after create")),
 PROPS_DATA_END()
 
 // --------------------
@@ -42,17 +42,17 @@ PROPS_DATA_END()
 
 DEBUGGER_IDS_START()
 
-	// DB_CURRENTSTRING,
+// DB_CURRENTSTRING,
 
 DEBUGGER_IDS_END()
 
 DEBUGGER_ITEMS_START()
 
-	//  DB_CURRENTSTRING,
-	//	DB_CURRENTSTRING|DB_EDITABLE,
-	//	DB_CURRENTVALUE|DB_EDITABLE,
-	//	DB_CURRENTCHECK,
-	//	DB_CURRENTCOMBO,
+//  DB_CURRENTSTRING,
+//	DB_CURRENTSTRING|DB_EDITABLE,
+//	DB_CURRENTVALUE|DB_EDITABLE,
+//	DB_CURRENTCHECK,
+//	DB_CURRENTCOMBO,
 
 DEBUGGER_ITEMS_END()
 
@@ -62,10 +62,10 @@ DEBUGGER_ITEMS_END()
 // Inserts properties into the properties of the object.
 //
 
-BOOL WINAPI DLLExport GetProperties(LPMV mV, LPEDATA edPtr, BOOL bMasterItem)
+BOOL WINAPI DLLExport GetProperties(LPMV mV,LPEDATA edPtr,BOOL bMasterItem)
 {
 #ifndef RUN_ONLY
-	mvInsertProps(mV, edPtr, Properties, PROPID_TAB_GENERAL, TRUE);
+	mvInsertProps(mV,edPtr,Properties,PROPID_TAB_GENERAL,TRUE);
 #endif // !RUN_ONLY
 
 	// OK
@@ -78,7 +78,7 @@ BOOL WINAPI DLLExport GetProperties(LPMV mV, LPEDATA edPtr, BOOL bMasterItem)
 // Called when the properties are removed from the property window.
 //
 
-void WINAPI DLLExport ReleaseProperties(LPMV mV, LPEDATA edPtr, BOOL bMasterItem)
+void WINAPI DLLExport ReleaseProperties(LPMV mV,LPEDATA edPtr,BOOL bMasterItem)
 {
 #ifndef RUN_ONLY
 	// Write your code here
@@ -92,7 +92,7 @@ void WINAPI DLLExport ReleaseProperties(LPMV mV, LPEDATA edPtr, BOOL bMasterItem
 // Allows you, for example, to change the content of a combobox property according to specific settings in the EDITDATA structure.
 //
 
-LPARAM WINAPI DLLExport GetPropCreateParam(LPMV mV, LPEDATA edPtr, UINT nPropID)
+LPARAM WINAPI DLLExport GetPropCreateParam(LPMV mV,LPEDATA edPtr,UINT nPropID)
 {
 #ifndef RUN_ONLY
 	// Example
@@ -118,7 +118,7 @@ LPARAM WINAPI DLLExport GetPropCreateParam(LPMV mV, LPEDATA edPtr, UINT nPropID)
 // Allows you, for example, to free memory allocated in GetPropCreateParam.
 //
 
-void WINAPI DLLExport ReleasePropCreateParam(LPMV mV, LPEDATA edPtr, UINT nPropID, LPARAM lParam)
+void WINAPI DLLExport ReleasePropCreateParam(LPMV mV,LPEDATA edPtr,UINT nPropID,LPARAM lParam)
 {
 #ifndef RUN_ONLY
 #endif // !RUN_ONLY
@@ -131,7 +131,7 @@ void WINAPI DLLExport ReleasePropCreateParam(LPMV mV, LPEDATA edPtr, UINT nPropI
 // Note: see GetPropCheck for checkbox properties
 //
 
-LPVOID WINAPI DLLExport GetPropValue(LPMV mV, LPEDATA edPtr, UINT nPropID)
+LPVOID WINAPI DLLExport GetPropValue(LPMV mV,LPEDATA edPtr,UINT nPropID)
 {
 #ifndef RUN_ONLY
 	// Example
@@ -160,14 +160,14 @@ LPVOID WINAPI DLLExport GetPropValue(LPMV mV, LPEDATA edPtr, UINT nPropID)
 // Returns the checked state of properties that have a check box.
 //
 
-BOOL WINAPI DLLExport GetPropCheck(LPMV mV, LPEDATA edPtr, UINT nPropID)
+BOOL WINAPI DLLExport GetPropCheck(LPMV mV,LPEDATA edPtr,UINT nPropID)
 {
 #ifndef RUN_ONLY
 	// Example
 	// -------
-	switch (nPropID) {
+	switch(nPropID) {
 
-	// Return 0 (unchecked) or 1 (checked)
+		// Return 0 (unchecked) or 1 (checked)
 	case PROPID_ENDIANNESS:
 		return edPtr->bEndianness;
 		break;
@@ -186,7 +186,7 @@ BOOL WINAPI DLLExport GetPropCheck(LPMV mV, LPEDATA edPtr, UINT nPropID)
 // This routine is called by MMF after a property has been modified.
 //
 
-void WINAPI DLLExport SetPropValue(LPMV mV, LPEDATA edPtr, UINT nPropID, LPVOID lParam)
+void WINAPI DLLExport SetPropValue(LPMV mV,LPEDATA edPtr,UINT nPropID,LPVOID lParam)
 {
 #ifndef RUN_ONLY
 	// Gets the pointer to the CPropValue structure
@@ -250,22 +250,22 @@ void WINAPI DLLExport SetPropValue(LPMV mV, LPEDATA edPtr, UINT nPropID, LPVOID 
 // This routine is called by MMF when the user modifies a checkbox in the properties.
 //
 
-void WINAPI DLLExport SetPropCheck(LPMV mV, LPEDATA edPtr, UINT nPropID, BOOL nCheck)
+void WINAPI DLLExport SetPropCheck(LPMV mV,LPEDATA edPtr,UINT nPropID,BOOL nCheck)
 {
 #ifndef RUN_ONLY
 	// Example
 	// -------
-	switch (nPropID)
+	switch(nPropID)
 	{
 	case PROPID_ENDIANNESS:
-		edPtr->bEndianness = nCheck;		
-		mvInvalidateObject(mV, edPtr);
-		mvRefreshProp(mV, edPtr, PROPID_ENDIANNESS,false);
+		edPtr->bEndianness = nCheck;
+		mvInvalidateObject(mV,edPtr);
+		mvRefreshProp(mV,edPtr,PROPID_ENDIANNESS,false);
 		break;
 	case PROPID_AUTOSELECT:
-		edPtr->bAutoSelect = nCheck;		
-		mvInvalidateObject(mV, edPtr);
-		mvRefreshProp(mV, edPtr, PROPID_AUTOSELECT,false);
+		edPtr->bAutoSelect = nCheck;
+		mvInvalidateObject(mV,edPtr);
+		mvRefreshProp(mV,edPtr,PROPID_AUTOSELECT,false);
 		break;
 		//mvRefreshProp(mV, edPtr, PROPID_COMBO);
 	}
@@ -278,7 +278,7 @@ void WINAPI DLLExport SetPropCheck(LPMV mV, LPEDATA edPtr, UINT nPropID, BOOL nC
 // This routine is called when the user clicks the button of a Button or EditButton property.
 //
 
-BOOL WINAPI DLLExport EditProp(LPMV mV, LPEDATA edPtr, UINT nPropID)
+BOOL WINAPI DLLExport EditProp(LPMV mV,LPEDATA edPtr,UINT nPropID)
 {
 #ifndef RUN_ONLY
 
@@ -302,7 +302,7 @@ BOOL WINAPI DLLExport EditProp(LPMV mV, LPEDATA edPtr, UINT nPropID)
 // This routine returns the enabled state of a property.
 //
 
-BOOL WINAPI IsPropEnabled(LPMV mV, LPEDATA edPtr, UINT nPropID)
+BOOL WINAPI IsPropEnabled(LPMV mV,LPEDATA edPtr,UINT nPropID)
 {
 #ifndef RUN_ONLY
 	// Example
@@ -331,7 +331,7 @@ BOOL WINAPI IsPropEnabled(LPMV mV, LPEDATA edPtr, UINT nPropID)
 // Return the text capabilities of the object under the frame editor.
 //
 
-DWORD WINAPI DLLExport GetTextCaps(mv _far *mV, LPEDATA edPtr)
+DWORD WINAPI DLLExport GetTextCaps(mv _far *mV,LPEDATA edPtr)
 {
 	return 0;	// (TEXT_ALIGN_LEFT|TEXT_ALIGN_HCENTER|TEXT_ALIGN_RIGHT|TEXT_ALIGN_TOP|TEXT_ALIGN_VCENTER|TEXT_ALIGN_BOTTOM|TEXT_FONT|TEXT_COLOR);
 }
@@ -343,7 +343,7 @@ DWORD WINAPI DLLExport GetTextCaps(mv _far *mV, LPEDATA edPtr)
 // Note: the pStyle and cbSize parameters are obsolete and passed for compatibility reasons only.
 //
 
-BOOL WINAPI DLLExport GetTextFont(mv _far *mV, LPEDATA edPtr, LPLOGFONT plf, LPSTR pStyle, UINT cbSize)
+BOOL WINAPI DLLExport GetTextFont(mv _far *mV,LPEDATA edPtr,LPLOGFONT plf,LPSTR pStyle,UINT cbSize)
 {
 #if !RUN_ONLY
 	// Example: copy LOGFONT structure from EDITDATA
@@ -360,7 +360,7 @@ BOOL WINAPI DLLExport GetTextFont(mv _far *mV, LPEDATA edPtr, LPLOGFONT plf, LPS
 // Note: the pStyle parameter is obsolete and passed for compatibility reasons only.
 //
 
-BOOL WINAPI DLLExport SetTextFont(mv _far *mV, LPEDATA edPtr, LPLOGFONT plf, LPCSTR pStyle)
+BOOL WINAPI DLLExport SetTextFont(mv _far *mV,LPEDATA edPtr,LPLOGFONT plf,LPCSTR pStyle)
 {
 #if !RUN_ONLY
 	// Example: copy LOGFONT structure to EDITDATA
@@ -376,7 +376,7 @@ BOOL WINAPI DLLExport SetTextFont(mv _far *mV, LPEDATA edPtr, LPLOGFONT plf, LPC
 // Get the text color of the object.
 //
 
-COLORREF WINAPI DLLExport GetTextClr(mv _far *mV, LPEDATA edPtr)
+COLORREF WINAPI DLLExport GetTextClr(mv _far *mV,LPEDATA edPtr)
 {
 	// Example
 	return 0;	// edPtr->fontColor;
@@ -388,7 +388,7 @@ COLORREF WINAPI DLLExport GetTextClr(mv _far *mV, LPEDATA edPtr)
 // Set the text color of the object.
 //
 
-void WINAPI DLLExport SetTextClr(mv _far *mV, LPEDATA edPtr, COLORREF color)
+void WINAPI DLLExport SetTextClr(mv _far *mV,LPEDATA edPtr,COLORREF color)
 {
 	// Example
 	//edPtr->fontColor = color;
@@ -400,7 +400,7 @@ void WINAPI DLLExport SetTextClr(mv _far *mV, LPEDATA edPtr, COLORREF color)
 // Get the text alignment of the object.
 //
 
-DWORD WINAPI DLLExport GetTextAlignment(mv _far *mV, LPEDATA edPtr)
+DWORD WINAPI DLLExport GetTextAlignment(mv _far *mV,LPEDATA edPtr)
 {
 	DWORD dw = 0;
 #if !RUN_ONLY
@@ -429,7 +429,7 @@ DWORD WINAPI DLLExport GetTextAlignment(mv _far *mV, LPEDATA edPtr)
 // Set the text alignment of the object.
 //
 
-void WINAPI DLLExport SetTextAlignment(mv _far *mV, LPEDATA edPtr, DWORD dwAlignFlags)
+void WINAPI DLLExport SetTextAlignment(mv _far *mV,LPEDATA edPtr,DWORD dwAlignFlags)
 {
 #if !RUN_ONLY
 	// Example
@@ -516,15 +516,15 @@ WORD BmpToImg(int bmID, npAppli idApp, short HotX = 0, short HotY = 0, short Act
 //
 
 
-int WINAPI DLLExport MakeIconEx ( mv _far *mV, cSurface* pIconSf, LPSTR lpName, fpObjInfo oiPtr, LPEDATA edPtr )
+int WINAPI DLLExport MakeIconEx (mv _far *mV,cSurface* pIconSf,LPSTR lpName,fpObjInfo oiPtr,LPEDATA edPtr)
 {
 	int error = -1;
 #ifndef RUN_ONLY
-		if(pIconSf->LoadImage(hInstLib, EXO_ICON))
-		{
-			error = 0;
-			pIconSf->SetTransparentColor(0xff00ff);
-		}
+	if(pIconSf->LoadImage(hInstLib,EXO_ICON))
+	{
+		error = 0;
+		pIconSf->SetTransparentColor(0xff00ff);
+	}
 #endif // !RUN_ONLY
 	return error;
 }
@@ -537,17 +537,17 @@ int WINAPI DLLExport MakeIconEx ( mv _far *mV, cSurface* pIconSf, LPSTR lpName, 
 // Called when you choose "Create new object". It should display the setup box 
 // and initialize everything in the datazone.
 
-int WINAPI DLLExport CreateObject(mv _far *mV, fpLevObj loPtr, LPEDATA edPtr)
+int WINAPI DLLExport CreateObject(mv _far *mV,fpLevObj loPtr,LPEDATA edPtr)
 {
 #ifndef RUN_ONLY
 
 	// Do some rSDK stuff
-	#include "rCreateObject.h"
-	
-	// Set default object settings
+#include "rCreateObject.h"
+
+// Set default object settings
 	{
-//		edPtr->swidth = 32;
-//		edPtr->sheight = 32;
+		//		edPtr->swidth = 32;
+		//		edPtr->sheight = 32;
 
 		edPtr->bEndianness = false;
 		return 0;	// No error
@@ -566,10 +566,10 @@ int WINAPI DLLExport CreateObject(mv _far *mV, fpLevObj loPtr, LPEDATA edPtr)
 // automatically handled by MMF2: this routine is then called.
 //
 
-BOOL WINAPI EditObject (mv _far *mV, fpObjInfo oiPtr, fpLevObj loPtr, LPEDATA edPtr)
+BOOL WINAPI EditObject (mv _far *mV,fpObjInfo oiPtr,fpLevObj loPtr,LPEDATA edPtr)
 {
 #ifndef RUN_ONLY
-	
+
 	return TRUE;
 
 #endif // !RUN_ONLY
@@ -602,7 +602,7 @@ BOOL WINAPI SetEditSize(LPMV mv, LPEDATA edPtr, int cx, int cy)
 // Called when each individual object is dropped in the frame.
 //
 
-void WINAPI	DLLExport PutObject(mv _far *mV, fpLevObj loPtr, LPEDATA edPtr, ushort cpt)
+void WINAPI	DLLExport PutObject(mv _far *mV,fpLevObj loPtr,LPEDATA edPtr,ushort cpt)
 {
 #ifndef RUN_ONLY
 #endif // !RUN_ONLY
@@ -614,11 +614,11 @@ void WINAPI	DLLExport PutObject(mv _far *mV, fpLevObj loPtr, LPEDATA edPtr, usho
 // Called when each individual object is removed from the frame.
 //
 
-void WINAPI	DLLExport RemoveObject(mv _far *mV, fpLevObj loPtr, LPEDATA edPtr, ushort cpt)
+void WINAPI	DLLExport RemoveObject(mv _far *mV,fpLevObj loPtr,LPEDATA edPtr,ushort cpt)
 {
 #ifndef RUN_ONLY
 	// Is the last object removed?
-    if (0 == cpt)
+	if(0 == cpt)
 	{
 		// Do whatever necessary to remove our data
 	}
@@ -631,7 +631,7 @@ void WINAPI	DLLExport RemoveObject(mv _far *mV, fpLevObj loPtr, LPEDATA edPtr, u
 // Called when an object is created from another one (note: should be called CloneObject instead...)
 //
 
-void WINAPI DLLExport DuplicateObject(mv __far *mV, fpObjInfo oiPtr, LPEDATA edPtr)
+void WINAPI DLLExport DuplicateObject(mv __far *mV,fpObjInfo oiPtr,LPEDATA edPtr)
 {
 #ifndef RUN_ONLY
 #endif // !RUN_ONLY
@@ -643,7 +643,7 @@ void WINAPI DLLExport DuplicateObject(mv __far *mV, fpObjInfo oiPtr, LPEDATA edP
 // Returns the size of the rectangle of the object in the frame editor.
 //
 
-void WINAPI DLLExport GetObjectRect(mv _far *mV, RECT FAR *rc, fpLevObj loPtr, LPEDATA edPtr)
+void WINAPI DLLExport GetObjectRect(mv _far *mV,RECT FAR *rc,fpLevObj loPtr,LPEDATA edPtr)
 {
 #ifndef RUN_ONLY
 	rc->right = rc->left + 32;	// edPtr->swidth;
@@ -702,7 +702,7 @@ void WINAPI DLLExport EditorDisplay(mv _far *mV, fpObjInfo oiPtr, fpLevObj loPtr
 // This routine tells MMF2 if the mouse pointer is over a transparent zone of the object.
 // 
 
-extern "C" BOOL WINAPI DLLExport IsTransparent(mv _far *mV, fpLevObj loPtr, LPEDATA edPtr, int dx, int dy)
+extern "C" BOOL WINAPI DLLExport IsTransparent(mv _far *mV,fpLevObj loPtr,LPEDATA edPtr,int dx,int dy)
 {
 #ifndef RUN_ONLY
 	// Write your code here
@@ -716,7 +716,7 @@ extern "C" BOOL WINAPI DLLExport IsTransparent(mv _far *mV, fpLevObj loPtr, LPED
 // Just before writing the datazone when saving the application, MMF2 calls this routine.
 // 
 
-void WINAPI	DLLExport PrepareToWriteObject(mv _far *mV, LPEDATA edPtr, fpObjInfo adoi)
+void WINAPI	DLLExport PrepareToWriteObject(mv _far *mV,LPEDATA edPtr,fpObjInfo adoi)
 {
 #ifndef RUN_ONLY
 	// Write your code here
@@ -728,7 +728,7 @@ void WINAPI	DLLExport PrepareToWriteObject(mv _far *mV, LPEDATA edPtr, fpObjInfo
 // --------------------
 //
 
-BOOL WINAPI GetFilters(LPMV mV, LPEDATA edPtr, DWORD dwFlags, LPVOID pReserved)
+BOOL WINAPI GetFilters(LPMV mV,LPEDATA edPtr,DWORD dwFlags,LPVOID pReserved)
 {
 #ifndef RUN_ONLY
 	// If your extension uses image filters
@@ -749,13 +749,13 @@ BOOL WINAPI GetFilters(LPMV mV, LPEDATA edPtr, DWORD dwFlags, LPVOID pReserved)
 // Return TRUE if you can create an object from the given file
 //
 
-BOOL WINAPI	DLLExport UsesFile (LPMV mV, LPSTR fileName)
+BOOL WINAPI	DLLExport UsesFile (LPMV mV,LPSTR fileName)
 {
 	BOOL r = FALSE;
 #ifndef RUN_ONLY
 
 	// Example: return TRUE if file extension is ".txt"
-/*	
+/*
 	LPSTR	ext, npath;
 
 	if ( fileName != NULL )
@@ -784,7 +784,7 @@ BOOL WINAPI	DLLExport UsesFile (LPMV mV, LPSTR fileName)
 // Creates a new object from file
 //
 
-void WINAPI	DLLExport CreateFromFile (LPMV mV, LPSTR fileName, LPEDATA edPtr)
+void WINAPI	DLLExport CreateFromFile (LPMV mV,LPSTR fileName,LPEDATA edPtr)
 {
 #ifndef RUN_ONLY
 	// Initialize your extension data from the given file
@@ -811,28 +811,35 @@ void WINAPI	DLLExport CreateFromFile (LPMV mV, LPSTR fileName, LPEDATA edPtr)
 // Internal routine used later, copy one menu onto another
 // 
 #ifndef RUN_ONLY
-void menucpy(HMENU hTargetMenu, HMENU hSourceMenu)
+void menucpy(HMENU hTargetMenu,HMENU hSourceMenu)
 {
-	int			n, id, nMn;
-	NPSTR		strBuf;
+	int			n,id,nMn;
+	LPTSTR		strBuf;
 	HMENU		hSubMenu;
 
 	nMn = GetMenuItemCount(hSourceMenu);
-	strBuf = (NPSTR)LocalAlloc(LPTR, 80);
-	for (n=0; n<nMn; n++)
+	strBuf = (LPTSTR)LocalAlloc(LPTR,sizeof(TCHAR)*80);
+	for(n=0; n<nMn; n++)
 	{
-		if (0 == (id = GetMenuItemID(hSourceMenu, n)))
-			AppendMenu(hTargetMenu, MF_SEPARATOR, 0, 0L);
+		if(0 == (id = GetMenuItemID(hSourceMenu,n)))
+			AppendMenu(hTargetMenu,MF_SEPARATOR,0,0L);
 		else
 		{
-			GetMenuString(hSourceMenu, n, strBuf, 80, MF_BYPOSITION);
-			if (id != -1)
-				AppendMenu(hTargetMenu, GetMenuState(hSourceMenu, n, MF_BYPOSITION), id, strBuf);
+			GetMenuString(hSourceMenu,n,strBuf,80,MF_BYPOSITION);
+			if(strBuf[0] == '~')
+			{
+				AppendMenu(hTargetMenu,MF_DISABLED | MF_GRAYED,id,strBuf+1);
+			}
 			else
 			{
-				hSubMenu = CreatePopupMenu();
-				AppendMenu(hTargetMenu, MF_POPUP | MF_STRING, (uint)hSubMenu, strBuf);
-				menucpy(hSubMenu, GetSubMenu(hSourceMenu, n));
+				if(id != -1)
+					AppendMenu(hTargetMenu,GetMenuState(hSourceMenu,n,MF_BYPOSITION),id,strBuf);
+				else
+				{
+					hSubMenu = CreatePopupMenu();
+					AppendMenu(hTargetMenu,MF_POPUP | MF_STRING,(uint)hSubMenu,strBuf);
+					menucpy(hSubMenu,GetSubMenu(hSourceMenu,n));
+				}
 			}
 		}
 	}
@@ -847,7 +854,7 @@ void menucpy(HMENU hTargetMenu, HMENU hSourceMenu)
 HMENU GetPopupMenu(LPEDATA edPtr,short mn)
 {
 	HMENU hPopup=CreatePopupMenu();
-	
+
 	if(mn == MN_CONDITIONS)
 		menucpy(hPopup,ConditionMenu(edPtr));
 	else if(mn == MN_ACTIONS)
@@ -865,12 +872,12 @@ HMENU GetPopupMenu(LPEDATA edPtr,short mn)
 // No protection to go faster: you must properly enter the conditions/actions!
 //
 
-static LPEVENTINFOS2 GetEventInformations(LPEVENTINFOS2 eiPtr, short code)
+static LPEVENTINFOS2 GetEventInformations(LPEVENTINFOS2 eiPtr,short code)
 
 {
 	while(eiPtr->infos.code != code)
 		eiPtr = EVINFO2_NEXT(eiPtr);
-	
+
 	return eiPtr;
 }
 #endif // !RUN_ONLY
@@ -883,7 +890,7 @@ static LPEVENTINFOS2 GetEventInformations(LPEVENTINFOS2 eiPtr, short code)
 // enable or disable some options, and returns it to MMF2.
 //
 
-HMENU WINAPI DLLExport GetConditionMenu(mv _far *mV, fpObjInfo oiPtr, LPEDATA edPtr)
+HMENU WINAPI DLLExport GetConditionMenu(mv _far *mV,fpObjInfo oiPtr,LPEDATA edPtr)
 {
 #ifndef RUN_ONLY
 	// Check compatibility
@@ -892,7 +899,7 @@ HMENU WINAPI DLLExport GetConditionMenu(mv _far *mV, fpObjInfo oiPtr, LPEDATA ed
 	return NULL;
 }
 
-HMENU WINAPI DLLExport GetActionMenu(mv _far *mV, fpObjInfo oiPtr, LPEDATA edPtr)
+HMENU WINAPI DLLExport GetActionMenu(mv _far *mV,fpObjInfo oiPtr,LPEDATA edPtr)
 {
 #ifndef RUN_ONLY
 	// Check compatibility
@@ -901,7 +908,7 @@ HMENU WINAPI DLLExport GetActionMenu(mv _far *mV, fpObjInfo oiPtr, LPEDATA edPtr
 	return NULL;
 }
 
-HMENU WINAPI DLLExport GetExpressionMenu(mv _far *mV, fpObjInfo oiPtr, LPEDATA edPtr)
+HMENU WINAPI DLLExport GetExpressionMenu(mv _far *mV,fpObjInfo oiPtr,LPEDATA edPtr)
 {
 #ifndef RUN_ONLY
 	// Check compatibility
@@ -920,40 +927,41 @@ HMENU WINAPI DLLExport GetExpressionMenu(mv _far *mV, fpObjInfo oiPtr, LPEDATA e
 //
 
 #ifndef RUN_ONLY
-void GetCodeTitle(LPEVENTINFOS2 eiPtr, short code, short param, short mn, LPSTR strBuf, WORD maxLen)
+void GetCodeTitle(LPEVENTINFOS2 eiPtr,short code,short param,short mn,LPTSTR strBuf,WORD maxLen)
 {
 	HMENU		hMn;
 
 	// Finds event in array
-	eiPtr=GetEventInformations(eiPtr, code);
+	eiPtr=GetEventInformations(eiPtr,code);
 
 	// If a special string is to be returned
-	short strID = EVINFO2_PARAMTITLE(eiPtr, param);
+	short strID = EVINFO2_PARAMTITLE(eiPtr,param);
 
 	if(strID) {
 		switch(mn) {
 		case MN_CONDITIONS:
 			if(code>=0&&code<(short)Conditions.size()) {
 				if(param>=0&&param<(short)Conditions[code]->getParamCount())
-					strcpy(strBuf,Conditions[code]->getParamName(param));
+					_tcscpy(strBuf,Conditions[code]->getParamName(param));
 			}
 			break;
 		case MN_ACTIONS:
 			if(code>=0&&code<(short)Actions.size()) {
 				if(param>=0&&param<(short)Actions[code]->getParamCount())
-					strcpy(strBuf,Actions[code]->getParamName(param));
+					_tcscpy(strBuf,Actions[code]->getParamName(param));
 			}
 			break;
 		case MN_EXPRESSIONS:
 			if(code>=0&&code<(short)Expressions.size()) {
 				if(param>=0&&param<(short)Expressions[code]->getParamCount())
-					strcpy(strBuf,Expressions[code]->getParamName(param));
+					_tcscpy(strBuf,Expressions[code]->getParamName(param));
 			}
 			break;
 		}
-	} else {
-		if((hMn=LoadMenu(hInstLib, MAKEINTRESOURCE(mn)))) {
-			GetMenuString(hMn, eiPtr->menu, strBuf, maxLen, MF_BYCOMMAND);
+	}
+	else {
+		if((hMn=LoadMenu(hInstLib,MAKEINTRESOURCE(mn)))) {
+			GetMenuString(hMn,eiPtr->menu,strBuf,maxLen,MF_BYCOMMAND);
 			DestroyMenu(hMn);
 		}
 	}
@@ -962,14 +970,14 @@ void GetCodeTitle(LPEVENTINFOS2 eiPtr, short code, short param, short mn, LPSTR 
 #define GetCodeTitle(a,b,c,d,e,f)
 #endif // !RUN_ONLY
 
-void WINAPI DLLExport GetConditionTitle(mv _far *mV, short code, short param, LPSTR strBuf, short maxLen) {
-	GetCodeTitle((LPEVENTINFOS2)conditionsInfos, code, param, MN_CONDITIONS, strBuf, maxLen);
+void WINAPI DLLExport GetConditionTitle(mv _far *mV,short code,short param,LPTSTR strBuf,short maxLen) {
+	GetCodeTitle((LPEVENTINFOS2)conditionsInfos,code,param,MN_CONDITIONS,strBuf,maxLen);
 }
-void WINAPI DLLExport GetActionTitle(mv _far *mV, short code, short param, LPSTR strBuf, short maxLen) {
-	GetCodeTitle((LPEVENTINFOS2)actionsInfos, code, param, MN_ACTIONS, strBuf, maxLen);
+void WINAPI DLLExport GetActionTitle(mv _far *mV,short code,short param,LPTSTR strBuf,short maxLen) {
+	GetCodeTitle((LPEVENTINFOS2)actionsInfos,code,param,MN_ACTIONS,strBuf,maxLen);
 }
-void WINAPI DLLExport GetExpressionTitle(mv _far *mV, short code, LPSTR strBuf, short maxLen) {
-	GetCodeTitle((LPEVENTINFOS2)expressionsInfos, code, 0, MN_EXPRESSIONS, strBuf, maxLen);
+void WINAPI DLLExport GetExpressionTitle(mv _far *mV,short code,LPTSTR strBuf,short maxLen) {
+	GetCodeTitle((LPEVENTINFOS2)expressionsInfos,code,0,MN_EXPRESSIONS,strBuf,maxLen);
 }
 
 // -------------------------------------------------------
@@ -979,7 +987,7 @@ void WINAPI DLLExport GetExpressionTitle(mv _far *mV, short code, LPSTR strBuf, 
 // action or expression, as defined in the .H file
 //
 
-short WINAPI DLLExport GetConditionCodeFromMenu(mv _far *mV, short menuId)
+short WINAPI DLLExport GetConditionCodeFromMenu(mv _far *mV,short menuId)
 {
 #ifndef RUN_ONLY
 	LPEVENTINFOS2 eiPtr;
@@ -992,28 +1000,28 @@ short WINAPI DLLExport GetConditionCodeFromMenu(mv _far *mV, short menuId)
 	return -1;
 }
 
-short WINAPI DLLExport GetActionCodeFromMenu(mv _far *mV, short menuId)
+short WINAPI DLLExport GetActionCodeFromMenu(mv _far *mV,short menuId)
 {
 #ifndef RUN_ONLY
 	LPEVENTINFOS2 eiPtr;
 	int n;
 
-	for (n=Actions.size(),eiPtr=(LPEVENTINFOS2)actionsInfos;n>0&&eiPtr->menu!=menuId;n--)
+	for(n=Actions.size(),eiPtr=(LPEVENTINFOS2)actionsInfos;n>0&&eiPtr->menu!=menuId;n--)
 		eiPtr = EVINFO2_NEXT(eiPtr);
-	if (n>0) 
+	if(n>0)
 		return eiPtr->infos.code;
 #endif // !RUN_ONLY
 	return -1;
 }
 
-short WINAPI DLLExport GetExpressionCodeFromMenu(mv _far *mV, short menuId)
+short WINAPI DLLExport GetExpressionCodeFromMenu(mv _far *mV,short menuId)
 {
 #ifndef RUN_ONLY
 	LPEVENTINFOS2 eiPtr;
 	int	n;
-	for (n=Expressions.size(),eiPtr=(LPEVENTINFOS2)expressionsInfos;n>0&&eiPtr->menu!=menuId;n--)
+	for(n=Expressions.size(),eiPtr=(LPEVENTINFOS2)expressionsInfos;n>0&&eiPtr->menu!=menuId;n--)
 		eiPtr = EVINFO2_NEXT(eiPtr);
-	if (n>0) 
+	if(n>0)
 		return eiPtr->infos.code;
 #endif // !RUN_ONLY
 	return -1;
@@ -1027,28 +1035,28 @@ short WINAPI DLLExport GetExpressionCodeFromMenu(mv _far *mV, short menuId)
 // an infosEvents structure. 
 //
 
-LPINFOEVENTSV2 WINAPI DLLExport GetConditionInfos(mv _far *mV, short code)
+LPINFOEVENTSV2 WINAPI DLLExport GetConditionInfos(mv _far *mV,short code)
 {
 #ifndef RUN_ONLY
-	return &GetEventInformations((LPEVENTINFOS2)conditionsInfos, code)->infos;
+	return &GetEventInformations((LPEVENTINFOS2)conditionsInfos,code)->infos;
 #else
 	return NULL;
 #endif // !RUN_ONLY
 }
 
-LPINFOEVENTSV2 WINAPI DLLExport GetActionInfos(mv _far *mV, short code)
+LPINFOEVENTSV2 WINAPI DLLExport GetActionInfos(mv _far *mV,short code)
 {
 #ifndef RUN_ONLY
-	return &GetEventInformations((LPEVENTINFOS2)actionsInfos, code)->infos;
+	return &GetEventInformations((LPEVENTINFOS2)actionsInfos,code)->infos;
 #else
 	return NULL;
 #endif // !RUN_ONLY
 }
 
-LPINFOEVENTSV2 WINAPI DLLExport GetExpressionInfos(mv _far *mV, short code)
+LPINFOEVENTSV2 WINAPI DLLExport GetExpressionInfos(mv _far *mV,short code)
 {
 #ifndef RUN_ONLY
-	return &GetEventInformations((LPEVENTINFOS2)expressionsInfos, code)->infos;
+	return &GetEventInformations((LPEVENTINFOS2)expressionsInfos,code)->infos;
 #else
 	return NULL;
 #endif // !RUN_ONLY
@@ -1062,27 +1070,27 @@ LPINFOEVENTSV2 WINAPI DLLExport GetExpressionInfos(mv _far *mV, short code)
 // the string to use for displaying it under the event editor
 //
 
-void WINAPI DLLExport GetConditionString(mv _far *mV, short code, LPSTR strPtr, short maxLen)
+void WINAPI DLLExport GetConditionString(mv _far *mV,short code,LPTSTR strPtr,short maxLen)
 {
 #ifndef RUN_ONLY
-		if(code>=0&&code<(short)Conditions.size())
-			strcpy(strPtr,Conditions[code]->getName());
+	if(code>=0&&code<(short)Conditions.size())
+		_tcscpy(strPtr,Conditions[code]->getName());
 #endif // !RUN_ONLY
 }
 
-void WINAPI DLLExport GetActionString(mv _far *mV, short code, LPSTR strPtr, short maxLen)
+void WINAPI DLLExport GetActionString(mv _far *mV,short code,LPTSTR strPtr,short maxLen)
 {
 #ifndef RUN_ONLY
-		if(code>=0&&code<(short)Actions.size())
-			strcpy(strPtr,Actions[code]->getName());
+	if(code>=0&&code<(short)Actions.size())
+		_tcscpy(strPtr,Actions[code]->getName());
 #endif // !RUN_ONLY
 }
 
-void WINAPI DLLExport GetExpressionString(mv _far *mV, short code, LPSTR strPtr, short maxLen)
+void WINAPI DLLExport GetExpressionString(mv _far *mV,short code,LPTSTR strPtr,short maxLen)
 {
 #ifndef RUN_ONLY
-		if(code>=0&&code<(short)Expressions.size())
-			strcpy(strPtr,Expressions[code]->getName());
+	if(code>=0&&code<(short)Expressions.size())
+		_tcscpy(strPtr,Expressions[code]->getName());
 #endif // !RUN_ONLY
 }
 
@@ -1092,11 +1100,11 @@ void WINAPI DLLExport GetExpressionString(mv _far *mV, short code, LPSTR strPtr,
 // Returns the parameter name to display in the expression editor
 //
 
-void WINAPI DLLExport GetExpressionParam(mv _far *mV, short code, short param, LPSTR strBuf, short maxLen)
+void WINAPI DLLExport GetExpressionParam(mv _far *mV,short code,short param,LPTSTR strBuf,short maxLen)
 {
 #ifndef RUN_ONLY
-	if(strlen(Expressions[code]->getParamName(param)))
-		strcpy(strBuf,Expressions[code]->getParamName(param));
+	if(_tcslen(Expressions[code]->getParamName(param)))
+		_tcscpy(strBuf,Expressions[code]->getParamName(param));
 	else
 		*strBuf=0;
 #endif
@@ -1112,12 +1120,12 @@ void WINAPI DLLExport GetExpressionParam(mv _far *mV, short code, short param, L
 // Initialize the parameter.
 //
 
-void WINAPI InitParameter(mv _far *mV, short code, paramExt* pExt)
+void WINAPI InitParameter(mv _far *mV,short code,paramExt* pExt)
 {
 #if !RUN_ONLY
 	// Example
 	// -------
-	// strcpy(&pExt->pextData[0], "Parameter Test");
+	// _tcscpy(&pExt->pextData[0], "Parameter Test");
 	// pExt->pextSize = sizeof(paramExt) + strlen(pExt->pextData)+1;
 #endif // !RUN_ONLY
 }
@@ -1173,7 +1181,7 @@ BOOL CALLBACK DLLExport SetupProc(HWND hDlg, UINT msgType, WPARAM wParam, LPARAM
 // Edit the parameter.
 //
 
-void WINAPI EditParameter(mv _far *mV, short code, paramExt* pExt)
+void WINAPI EditParameter(mv _far *mV,short code,paramExt* pExt)
 {
 #if !RUN_ONLY
 
@@ -1190,7 +1198,7 @@ void WINAPI EditParameter(mv _far *mV, short code, paramExt* pExt)
 // Initialize the parameter.
 //
 
-void WINAPI GetParameterString(mv _far *mV, short code, paramExt* pExt, LPSTR pDest, short size)
+void WINAPI GetParameterString(mv _far *mV,short code,paramExt* pExt,LPTSTR pDest,short size)
 {
 #if !RUN_ONLY
 
@@ -1210,14 +1218,14 @@ void WINAPI GetParameterString(mv _far *mV, short code, paramExt* pExt, LPSTR pD
 // Note: ObjComment is also displayed in the Quick Description box in the Insert Object dialog box
 //
 
-void WINAPI	DLLExport GetObjInfos (mv _far *mV, LPEDATA edPtr, LPSTR ObjName, LPSTR ObjAuthor, LPSTR ObjCopyright, LPSTR ObjComment, LPSTR ObjHttp)
+void WINAPI	DLLExport GetObjInfos (mv _far *mV,LPEDATA edPtr,LPTSTR ObjName,LPTSTR ObjAuthor,LPTSTR ObjCopyright,LPTSTR ObjComment,LPTSTR ObjHttp)
 {
 #ifndef RUN_ONLY
-	strcpy(ObjName,ObjectName);
-	strcpy(ObjAuthor,ObjectAuthor);
-	strcpy(ObjCopyright,ObjectCopyright);
-	strcpy(ObjComment,ObjectComment);
-	strcpy(ObjHttp,ObjectURL);
+	_tcscpy(ObjName,_T(ObjectName));
+	_tcscpy(ObjAuthor,_T(ObjectAuthor));
+	_tcscpy(ObjCopyright,_T(ObjectCopyright));
+	_tcscpy(ObjComment,_T(ObjectComment));
+	_tcscpy(ObjHttp,_T(ObjectURL));
 #endif
 }
 
@@ -1227,7 +1235,7 @@ void WINAPI	DLLExport GetObjInfos (mv _far *mV, LPEDATA edPtr, LPSTR ObjName, LP
 // Returns the help filename of the object.
 //
 
-LPCSTR WINAPI GetHelpFileName()
+LPCTSTR WINAPI GetHelpFileName()
 {
 #ifndef RUN_ONLY
 	return ObjectHelp;

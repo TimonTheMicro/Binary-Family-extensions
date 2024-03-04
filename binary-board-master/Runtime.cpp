@@ -12,7 +12,7 @@
 // --------------------
 // Returns the size of the runtime datazone of the object
 // 
-short WINAPI DLLExport GetRunObjectDataSize(fprh rhPtr, LPEDATA edPtr)
+short WINAPI DLLExport GetRunObjectDataSize(fprh rhPtr,LPEDATA edPtr)
 {
 	return(sizeof(RUNDATA));
 }
@@ -23,19 +23,19 @@ short WINAPI DLLExport GetRunObjectDataSize(fprh rhPtr, LPEDATA edPtr)
 // ---------------
 // The routine where the object is actually created
 // 
-short WINAPI DLLExport CreateRunObject(LPRDATA rdPtr, LPEDATA edPtr, fpcob cobPtr)
+short WINAPI DLLExport CreateRunObject(LPRDATA rdPtr,LPEDATA edPtr,fpcob cobPtr)
 {
 	// Do some rSDK stuff
-	#include "rCreateRunObject.h"
-	
-	/*
-	   This routine runs when your object is created, as you might have guessed.
-	   It is here that you must transfer any data you need in rdPtr from edPtr,
-	   because after this has finished you cannot access it again!
-	   Also, if you have anything to initialise (e.g. dynamic arrays, surface objects)
-	   you should do it here, and free your resources in DestroyRunObject.
-	   See Graphic_Object_Ex.txt for an example of what you may put here.
-	*/
+#include "rCreateRunObject.h"
+
+/*
+   This routine runs when your object is created, as you might have guessed.
+   It is here that you must transfer any data you need in rdPtr from edPtr,
+   because after this has finished you cannot access it again!
+   Also, if you have anything to initialise (e.g. dynamic arrays, surface objects)
+   you should do it here, and free your resources in DestroyRunObject.
+   See Graphic_Object_Ex.txt for an example of what you may put here.
+*/
 	rdPtr->bEndianness = edPtr->bEndianness; // kiss <3 =)
 	rdPtr->bAutoSelect = edPtr->bAutoSelect; // kiss <3 =)
 
@@ -49,13 +49,13 @@ short WINAPI DLLExport CreateRunObject(LPRDATA rdPtr, LPEDATA edPtr, fpcob cobPt
 // ----------------
 // Destroys the run-time object
 // 
-short WINAPI DLLExport DestroyRunObject(LPRDATA rdPtr, long fast)
+short WINAPI DLLExport DestroyRunObject(LPRDATA rdPtr,long fast)
 {
-/*
-   When your object is destroyed (either with a Destroy action or at the end of
-   the frame) this routine is called. You must free any resources you have allocated!
-   See Graphic_Object_Ex.txt for an example of what you may put here.
-*/
+	/*
+	   When your object is destroyed (either with a Destroy action or at the end of
+	   the frame) this routine is called. You must free any resources you have allocated!
+	   See Graphic_Object_Ex.txt for an example of what you may put here.
+	*/
 	// No errors
 	delete rdPtr->rRd;
 	delete rdPtr->vBoards.data();
@@ -71,31 +71,31 @@ short WINAPI DLLExport DestroyRunObject(LPRDATA rdPtr, long fast)
 // 
 short WINAPI DLLExport HandleRunObject(LPRDATA rdPtr)
 {
-/*
-   If your extension will draw to the MMF window you should first 
-   check if anything about its display has changed :
+	/*
+	   If your extension will draw to the MMF window you should first
+	   check if anything about its display has changed :
 
-       return rdPtr->roc.rcChanged?REFLAG_DISPLAY:0;
+		   return rdPtr->roc.rcChanged?REFLAG_DISPLAY:0;
 
-   You will also need to make sure you change this flag yourself 
-   to 1 whenever you want to redraw your object
- 
-   If your extension won't draw to the window, but it still needs 
-   to do something every MMF loop use :
+	   You will also need to make sure you change this flag yourself
+	   to 1 whenever you want to redraw your object
 
-        return 0;
+	   If your extension won't draw to the window, but it still needs
+	   to do something every MMF loop use :
 
-   If you don't need to do something every loop, use :
+			return 0;
 
-        return REFLAG_ONESHOT;
+	   If you don't need to do something every loop, use :
 
-   This doesn't mean this function can never run again. If you want MMF
-   to handle your object again (causing this code to run) use this function:
+			return REFLAG_ONESHOT;
 
-        rdPtr->rRd->Rehandle();
+	   This doesn't mean this function can never run again. If you want MMF
+	   to handle your object again (causing this code to run) use this function:
 
-   At the end of the loop this code will run
-*/
+			rdPtr->rRd->Rehandle();
+
+	   At the end of the loop this code will run
+	*/
 	// Will not be called next loop	
 	return REFLAG_ONESHOT;
 }
@@ -107,10 +107,10 @@ short WINAPI DLLExport HandleRunObject(LPRDATA rdPtr)
 // 
 short WINAPI DLLExport DisplayRunObject(LPRDATA rdPtr)
 {
-/*
-   If you return REFLAG_DISPLAY in HandleRunObject this routine will run.
-   See Graphic_Object_Ex.txt for an example of what you may put here.
-*/
+	/*
+	   If you return REFLAG_DISPLAY in HandleRunObject this routine will run.
+	   See Graphic_Object_Ex.txt for an example of what you may put here.
+	*/
 	// Ok
 	return 0;
 }
@@ -216,7 +216,7 @@ short WINAPI DLLExport ContinueRunObject(LPRDATA rdPtr)
 // Called when the application starts or restarts.
 // Useful for storing global data
 // 
-void WINAPI DLLExport StartApp(mv _far *mV, CRunApp* pApp)
+void WINAPI DLLExport StartApp(mv _far *mV,CRunApp* pApp)
 {
 	// Example
 	// -------
@@ -234,7 +234,7 @@ void WINAPI DLLExport StartApp(mv _far *mV, CRunApp* pApp)
 // -------------------
 // Called when the application ends.
 // 
-void WINAPI DLLExport EndApp(mv _far *mV, CRunApp* pApp)
+void WINAPI DLLExport EndApp(mv _far *mV,CRunApp* pApp)
 {
 	// Example
 	// -------
@@ -252,7 +252,7 @@ void WINAPI DLLExport EndApp(mv _far *mV, CRunApp* pApp)
 // -------------------
 // Called when the frame starts or restarts.
 // 
-void WINAPI DLLExport StartFrame(mv _far *mV, DWORD dwReserved, int nFrameIndex)
+void WINAPI DLLExport StartFrame(mv _far *mV,DWORD dwReserved,int nFrameIndex)
 {
 
 }
@@ -262,7 +262,7 @@ void WINAPI DLLExport StartFrame(mv _far *mV, DWORD dwReserved, int nFrameIndex)
 // -------------------
 // Called when the frame ends.
 // 
-void WINAPI DLLExport EndFrame(mv _far *mV, DWORD dwReserved, int nFrameIndex)
+void WINAPI DLLExport EndFrame(mv _far *mV,DWORD dwReserved,int nFrameIndex)
 {
 
 }
@@ -280,7 +280,7 @@ void WINAPI DLLExport EndFrame(mv _far *mV, DWORD dwReserved, int nFrameIndex)
 // 
 /*
 
-  // Note: do not forget to enable the functions in the .def file 
+  // Note: do not forget to enable the functions in the .def file
   // if you remove the comments below.
 
 void WINAPI GetRunObjectFont(LPRDATA rdPtr, LOGFONT* pLf)
@@ -294,7 +294,7 @@ void WINAPI GetRunObjectFont(LPRDATA rdPtr, LOGFONT* pLf)
 // SetRunObjectFont
 // -------------------
 // Change the font used by the object.
-// 
+//
 void WINAPI SetRunObjectFont(LPRDATA rdPtr, LOGFONT* pLf, RECT* pRc)
 {
 	// Example
@@ -314,7 +314,7 @@ void WINAPI SetRunObjectFont(LPRDATA rdPtr, LOGFONT* pLf, RECT* pRc)
 // GetRunObjectTextColor
 // ---------------------
 // Return the text color of the object.
-// 
+//
 COLORREF WINAPI GetRunObjectTextColor(LPRDATA rdPtr)
 {
 	// Example
@@ -326,7 +326,7 @@ COLORREF WINAPI GetRunObjectTextColor(LPRDATA rdPtr)
 // SetRunObjectTextColor
 // ---------------------
 // Change the text color of the object.
-// 
+//
 void WINAPI SetRunObjectTextColor(LPRDATA rdPtr, COLORREF rgb)
 {
 	// Example
@@ -362,7 +362,7 @@ LPWORD WINAPI DLLExport GetDebugTree(LPRDATA rdPtr)
 // -----------------
 // This routine returns the text of a given item.
 //
-void WINAPI DLLExport GetDebugItem(LPSTR pBuffer, LPRDATA rdPtr, int id)
+void WINAPI DLLExport GetDebugItem(LPSTR pBuffer,LPRDATA rdPtr,int id)
 {
 #if !defined(RUN_ONLY)
 
@@ -403,7 +403,7 @@ void WINAPI DLLExport GetDebugItem(LPSTR pBuffer, LPRDATA rdPtr, int id)
 // -----------------
 // This routine allows to edit editable items.
 //
-void WINAPI DLLExport EditDebugItem(LPRDATA rdPtr, int id)
+void WINAPI DLLExport EditDebugItem(LPRDATA rdPtr,int id)
 {
 #if !defined(RUN_ONLY)
 

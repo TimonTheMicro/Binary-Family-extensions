@@ -23,7 +23,6 @@ EXT_INIT()
 
 BOOL WINAPI DllMain(HINSTANCE hDLL, DWORD dwReason, LPVOID lpReserved)
 {
-
 	conditionsInfos = getConditionInfos();
 	actionsInfos = getActionInfos();
 	expressionsInfos = getExpressionInfos();
@@ -94,7 +93,6 @@ extern "C"
 {
 	DWORD WINAPI DLLExport GetInfos(int info)
 	{
-		
 		switch (info)
 		{
 			case KGI_VERSION:
@@ -105,6 +103,12 @@ extern "C"
 				return ForVersion;
 			case KGI_BUILD:
 				return MinimumBuild;
+			case KGI_UNICODE:
+				#ifdef _UNICODE
+					return TRUE;
+				#else
+					return FALSE;
+				#endif
 			default:
 				return 0;
 		}
@@ -137,7 +141,7 @@ short WINAPI DLLExport GetRunObjectInfos(mv _far *mV, fpKpxRunInfos infoPtr)
 	MagicPrefs(infoPtr->editPrefs);
 
 	infoPtr->identifier = IDENTIFIER;
-	infoPtr->version = 1;
+	infoPtr->version = ObjectVersion;
 	
 	return TRUE;
 }
@@ -191,9 +195,36 @@ void WINAPI DLLExport UnloadObject(mv _far *mV, LPEDATA edPtr, int reserved)
 // For you to update your object structure to newer versions
 // Called at both edit time and run time
 // 
+
 HGLOBAL WINAPI DLLExport UpdateEditStructure(mv __far *mV, void __far * OldEdPtr)
 {
-	// We do nothing here
+#ifdef UNICODE
+
+	// Update ANSI to Unicode EDITDATA
+	if (!mvIsUnicodeApp(mV, mV->mvEditApp))
+	{
+		if(HGLOBAL hgNew = GlobalAlloc(GPTR, sizeof(EDITDATAW)))
+		{
+			EDITDATAA* ansiPtr = (EDITDATAA*)OldEdPtr;
+			EDITDATAW* edPtr = (EDITDATA*)GlobalLock(hgNew);
+			memcpy(&edPtr->eHeader, &ansiPtr->eHeader, sizeof(extHeader));
+			edPtr->eHeader.extVersion = ObjectVersion;
+			edPtr->eHeader.extSize = sizeof(EDITDATAW);
+	
+			// Copy non-text stuff
+			//memcpy(&edPtr->width, &ansiPtr->width, (size_t)&ansiPtr->textFont.lfFaceName[0] - (size_t)&ansiPtr->width);
+			//edPtr->textColor = ansiPtr->textColor;
+			//edPtr->textFlags = ansiPtr->textFlags;
+
+			// Convert font face
+			//MultiByteToWideChar(mvGetAppCodePage(mV, mV->mvEditApp), 0, ansiPtr->textFont.lfFaceName, -1, edPtr->textFont.lfFaceName, LF_FACESIZE);
+
+			GlobalUnlock(hgNew);
+			return (HGLOBAL)hgNew;
+		}
+	}
+#endif
+
 	return 0;
 }
 
@@ -219,21 +250,3 @@ void WINAPI DLLExport UpdateFileNames(mv _far *mV, LPSTR appName, LPEDATA edPtr,
 // Note: do not forget to enable the function in the .def file 
 // if you remove the comments below.
 //
-/*
-int WINAPI DLLExport EnumElts (mv __far *mV, LPEDATA edPtr, ENUMELTPROC enumProc, ENUMELTPROC undoProc, LPARAM lp1, LPARAM lp2)
-{  
-	int error = 0;
-
-	// Replace wImgIdx with the name of the WORD variable you create within the edit structure
-  
-	// Enum images  
-	if ( (error = enumProc(&edPtr->wImgIdx, IMG_TAB, lp1, lp2)) != 0 )
-	{
-		// Undo enum images      
-		undoProc (&edPtr->wImgIdx, IMG_TAB, lp1, lp2);    
-	}  
-
-	return error;
-}
-*/
-

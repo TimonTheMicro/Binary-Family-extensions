@@ -13,37 +13,39 @@
 
 EXPRESSION(
 	/* ID */			0,
-	/* Name */			"CurBoard$(",
+	/* Name */			_T("CurBoard$("),
 	/* Flags */			EXPFLAG_STRING,
 	/* Params */		(0)
 ) {
-	if ( numBoards )
-	{
-		ReturnString(d_sName.c_str());
+	if(numBoards) //what the actual ***k?! There is no boards but it crashes. EDIT: Added token for one code preventing crash.
+	{ //One line under braces but it worked differently than without. Weird.
+		ReturnString((d_sName.c_str())); 
 	}
-	
-	ReturnString("");
+
+	ReturnString(L"");
 }
 
 EXPRESSION(
 	/* ID */			1,
-	/* Name */			"curBoardNum(",
+	/* Name */			_T("curBoardNum("),
 	/* Flags */			0,
 	/* Params */		(0)
 ) {
-	if ( numBoards )
+	if (numBoards)
+	{ 
 		return rdPtr->iSelBoard;
+	}
 
 	return -1;
 }
 
 EXPRESSION(
 	/* ID */			2,
-	/* Name */			"boardAddr(",
+	/* Name */			_T("boardAddr("),
 	/* Flags */			0,
-	/* Params */		(1,EXPPARAM_STRING,"Board name")
+	/* Params */		(1,EXPPARAM_STRING,_T("Board name"))
 ) {
-	string p1( (LPSTR)ExParam(TYPE_STRING) );
+	wstring p1(GetStr2());
 
 	if ( numBoards ) //memory address shouldn't point to an empty space!
 	{	
@@ -58,11 +60,11 @@ EXPRESSION(
 
 EXPRESSION(
 	/* ID */			3,
-	/* Name */			"boardSize(",
+	/* Name */			_T("boardSize("),
 	/* Flags */			0,
-	/* Params */		(1,EXPPARAM_STRING,"Board name")
+	/* Params */		(1,EXPPARAM_STRING,_T("Board name"))
 ) {
-	string p1( (LPSTR)ExParam(TYPE_STRING) );
+	wstring p1(GetStr2());
 
 	if ( numBoards )
 	{		
@@ -76,23 +78,24 @@ EXPRESSION(
 
 EXPRESSION(
 	/* ID */			4,
-	/* Name */			"Protected(",
+	/* Name */			_T("Protected("),
 	/* Flags */			0,
-	/* Params */		(1, EXPPARAM_STRING, "Board name")
+	/* Params */		(1, EXPPARAM_STRING,_T("Board name"))
 )
 {
-	string p1( (LPSTR)ExParam(TYPE_STRING) );
+	wstring p1(GetStr2());
 
 	for (unsigned int i=0; i<numBoards; i++) //check if board already exists
-		   if ( strCompare(d_sNamei, p1) )
+		if ( strCompare(d_sNamei, p1) )
 			return d_bProtectedi;
+
 	return 0;
 }
 
 
 EXPRESSION(
 	/* ID */			5,
-	/* Name */			"NBoards(",
+	/* Name */			_T("NBoards("),
 	/* Flags */			0,
 	/* Params */		(0)
 ) {
@@ -102,13 +105,13 @@ EXPRESSION(
 
 EXPRESSION(
 	/* ID */			6,
-	/* Name */			("NameByNum$("),
+	/* Name */			_T("NameByNum$("),
 	/* Flags */			EXPFLAG_STRING,
-	/* Params */		(1, EXPPARAM_NUMBER, "Board number")
+	/* Params */		(1, EXPPARAM_NUMBER,_T("Board number"))
 ) {
 	unsigned long i = ExParam(TYPE_INT);
 	
-	if ( numBoards && i < numBoards )
+	if ( i < numBoards )
 	{
 		ReturnString(d_sNamei.c_str());
 	}
@@ -120,38 +123,43 @@ EXPRESSION(
 
 EXPRESSION(
 	/* ID */			7,
-	/* Name */			"sign(",
+	/* Name */			_T("sign("),
 	/* Flags */			0,
-	/* Params */		(1, EXPPARAM_NUMBER, "Value")
+	/* Params */		(1, EXPPARAM_NUMBER,_T("Value"))
 	) {
 	off_t p1tmp = ExParam(TYPE_FLOAT);
 	float p1 = *reinterpret_cast<const float *>(&p1tmp);
 	
-	if ( p1 < 0 )
+	if(p1 < 0)
+	{
 		return -1;
-
+	}
+		
 		return 1;
 }
 
 EXPRESSION(
 	/* ID */			8,
-	/* Name */			"char(",
+	/* Name */			_T("char("),
 	/* Flags */			0,
-	/* Params */		(1, EXPPARAM_NUMBER, "Offset")
+	/* Params */		(1, EXPPARAM_NUMBER,_T("Offset"))
 	) {
 	off_t p1 = ExParam(TYPE_INT);
 
-	if ( numBoards && p1 < d_vData.size() )
+	if(numBoards && p1 < d_vData.size())
+	{
 		return (char)d_vData.at(p1);
+	}
+		
 	
 	return 0;
 }
 
 EXPRESSION(
 	/* ID */			9,
-	/* Name */			"uchar(",
+	/* Name */			_T("uchar("),
 	/* Flags */			0,
-	/* Params */		(1, EXPPARAM_NUMBER, "Offset")
+	/* Params */		(1, EXPPARAM_NUMBER,_T("Offset"))
 	) {
 	off_t p1 = ExParam(TYPE_INT);
 
@@ -163,9 +171,9 @@ EXPRESSION(
 
 EXPRESSION(
 	/* ID */			10,
-	/* Name */			"short(",
+	/* Name */			_T("short("),
 	/* Flags */			0,
-	/* Params */		(1, EXPPARAM_NUMBER, "Offset")
+	/* Params */		(1, EXPPARAM_NUMBER,_T("Offset"))
 	) {
 	off_t p1 = ExParam(TYPE_INT);
 
@@ -182,9 +190,9 @@ EXPRESSION(
 
 EXPRESSION(
 	/* ID */			11,
-	/* Name */			"ushort(",
+	/* Name */			_T("ushort("),
 	/* Flags */			0,
-	/* Params */		(1, EXPPARAM_NUMBER, "Offset")
+	/* Params */		(1, EXPPARAM_NUMBER,_T("Offset"))
 	) {
 	off_t p1 = ExParam(TYPE_INT);
 
@@ -201,9 +209,9 @@ EXPRESSION(
 
 EXPRESSION(
 	/* ID */			12,
-	/* Name */			"long(",
+	/* Name */			_T("long("),
 	/* Flags */			0,
-	/* Params */		(1, EXPPARAM_NUMBER, "Offset")
+	/* Params */		(1, EXPPARAM_NUMBER,_T("Offset"))
 	) {
 	off_t p1 = ExParam(TYPE_INT);
 
@@ -220,9 +228,9 @@ EXPRESSION(
 
 EXPRESSION(
 	/* ID */			13,
-	/* Name */			"float(",
+	/* Name */			_T("float("),
 	/* Flags */			EXPFLAG_DOUBLE,
-	/* Params */		(1, EXPPARAM_NUMBER, "Offset")
+	/* Params */		(1, EXPPARAM_NUMBER,_T("Offset"))
 	) {
 	off_t p1 = ExParam(TYPE_INT);
 
@@ -236,9 +244,9 @@ EXPRESSION(
 
 EXPRESSION(
 	/* ID */			14,
-	/* Name */			"string$(",
+	/* Name */			_T("string$("),
 	/* Flags */			EXPFLAG_STRING,
-	/* Params */		(2, EXPPARAM_NUMBER, "Offset", EXPPARAM_NUMBER, "Size")
+	/* Params */		(2, EXPPARAM_NUMBER,_T("Offset"), EXPPARAM_NUMBER,_T("Size"))
 	) {
 	off_t p1 = ExParam(TYPE_INT);
 	size_t p2 = ExParam(TYPE_INT);
@@ -247,8 +255,8 @@ EXPRESSION(
 	{
 		if ( p2>d_vData.size() )
 			p2 = d_vData.size();
-		string output( d_vData.begin()+p1, p1+p2>d_vData.size() ? d_vData.end():d_vData.begin()+p1+p2 );
-		ReturnStringSafe(output.c_str());
+		wstring output( d_vData.begin()+p1, p1+p2>d_vData.size() ? d_vData.end():d_vData.begin()+p1+p2 );
+		ReturnString(output.c_str());
 	}
 
 	ReturnString("");
@@ -256,9 +264,9 @@ EXPRESSION(
 
 EXPRESSION(
 	/* ID */			15,
-	/* Name */			"valueSize(",
+	/* Name */			_T("valueSize("),
 	/* Flags */			0,
-	/* Params */		(1, EXPPARAM_NUMBER, "Integer value")
+	/* Params */		(1, EXPPARAM_NUMBER,_T("Integer value"))
 	) {
 	long p1 = ExParam(TYPE_INT);
 
@@ -273,13 +281,14 @@ EXPRESSION(
 
 EXPRESSION(
 	/* ID */			16,
-	/* Name */			"fileSize(",
+	/* Name */			_T("fileSize("),
 	/* Flags */			0,
-	/* Params */		(1, EXPPARAM_STRING,"File")
+	/* Params */		(1, EXPPARAM_STRING,_T("File"))
 ) {
-	LPSTR p1 = (LPSTR)ExParam(TYPE_STRING);
+	wstring p1(GetStr2());
+	if(!p1[0]) return 0;
 
-	ifstream file( p1, ios::binary | ios::ate);
+	std::ifstream file( p1,std::ios::binary | std::ios::ate);
 
 	if ( file.is_open() )
 	{
@@ -296,9 +305,9 @@ EXPRESSION(
 
 EXPRESSION(
 	/* ID */			17,
-	/* Name */			"countInt(",
+	/* Name */			_T("countInt("),
 	/* Flags */			0,
-	/* Params */		(2, EXPPARAM_NUMBER, "Integer value", EXPPARAM_NUMBER, "Value size")
+	/* Params */		(2, EXPPARAM_NUMBER,_T("Integer value"), EXPPARAM_NUMBER,_T("Value size"))
 ) {
 	long p1 = ExParam(TYPE_INT);
 	char p2 = ExParam(TYPE_INT);
@@ -329,38 +338,43 @@ EXPRESSION(
 
 EXPRESSION(
 	/* ID */			18,
-	/* Name */			"countStr(",
+	/* Name */			_T("countStr("),
 	/* Flags */			0,
-	/* Params */		(1, EXPPARAM_STRING, "String")
+	/* Params */		(1, EXPPARAM_STRING,_T("String"))
 ) {
+	/*
+	char * p1(GetStr());
 	LPSTR p1 = (LPSTR)ExParam(TYPE_STRING);
-	
+	if(!p1[0]) return 0;
+
+	//std::string p1s = wstrToStr(p1);
+	//const char *p1s2 = p1s.c_str();
 	if ( numBoards )
 	{
 		long counter = 0;
 		long dist = 0;
 		while ( true )
-		{
-			auto it = std::search( d_vData.begin()+dist, d_vData.end(), p1, p1 + strlen(p1) );			
+		{ 
+			auto it = std::search( d_vData.begin()+dist, d_vData.end(),p1, p1 + strlen(p1) );
 			dist = it - d_vData.begin();	
 			if ( dist == d_vData.size() )
 				break;
 			counter++;
-			dist += strlen(p1);				
+			dist += strlen(p1s2);
 		}
 		return counter;
 	}
-	
+	*/
 	return 0;
 }
 
 EXPRESSION(
 	/* ID */			19,
-	/* Name */			"countBoard(",
+	/* Name */			_T("countBoard("),
 	/* Flags */			0,
-	/* Params */		(1, EXPPARAM_STRING, "Board name")
+	/* Params */		(1, EXPPARAM_STRING,_T("Board name"))
 ) {
-	string p1( (LPSTR)ExParam(TYPE_STRING) );
+	wstring p1(GetStr2());
 
 	if ( numBoards )
 	{	
@@ -389,9 +403,9 @@ EXPRESSION(
 
 EXPRESSION(
 	/* ID */			20,
-	/* Name */			"findInt(",
+	/* Name */			_T("findInt("),
 	/* Flags */			0,
-	/* Params */		(3, EXPPARAM_NUMBER, "Integer value", EXPPARAM_NUMBER, "Value size", EXPPARAM_NUMBER, "Occurrence")
+	/* Params */		(3, EXPPARAM_NUMBER,_T("Integer value"), EXPPARAM_NUMBER,_T("Value size"), EXPPARAM_NUMBER,_T("Occurrence"))
 ) {
 	long p1 = ExParam(TYPE_INT);
 	char p2 = ExParam(TYPE_INT);
@@ -425,11 +439,11 @@ EXPRESSION(
 
 EXPRESSION(
 	/* ID */			21,
-	/* Name */			"findStr(",
+	/* Name */			_T("findStr("),
 	/* Flags */			0,
-	/* Params */		(4, EXPPARAM_STRING, "String", /*EXPPARAM_NUMBER, "Case sensitive", */EXPPARAM_NUMBER, "Occurrence",EXPPARAM_NUMBER,"Begins with NULL (0 for false, 1 for true)",EXPPARAM_NUMBER,"Ends with NULL (0 for false, 1 for true)")
+	/* Params */		(4, EXPPARAM_STRING,_T("String"), /*EXPPARAM_NUMBER,_T("Case sensitive"), */EXPPARAM_NUMBER,_T("Occurrence"),EXPPARAM_NUMBER,_T("Begins with NULL (0 for false, 1 for true)"),EXPPARAM_NUMBER,_T("Ends with NULL (0 for false, 1 for true)"))
 ) {
-	LPSTR p1 = (LPSTR)ExParam(TYPE_STRING);
+	wstring p1(GetStr2());
 	long p2 = ExParam(TYPE_INT);
 	bool p3 = ExParam(TYPE_INT);
 	bool p4 = ExParam(TYPE_INT);
@@ -439,6 +453,7 @@ EXPRESSION(
 		long dist = 0;
 		while ( p2 && dist != d_vData.size() )
 		{
+			/*
 			auto it = std::search( d_vData.begin()+dist+1, d_vData.end(), p1, p1 + strlen(p1) );			
 			dist = it - d_vData.begin();						
 			if ( !p3 || (p3 && !((char)d_vData.at(dist-1))))
@@ -450,6 +465,7 @@ EXPRESSION(
 				dist += strlen(p1);
 			else
 				return dist;
+				*/
 		}
 	}
 	
@@ -458,11 +474,11 @@ EXPRESSION(
 
 EXPRESSION(
 	/* ID */			22,
-	/* Name */			"findBoard(",
+	/* Name */			_T("findBoard("),
 	/* Flags */			0,
-	/* Params */		(2, EXPPARAM_STRING, "Board name", EXPPARAM_NUMBER, "Occurrence")
+	/* Params */		(2, EXPPARAM_STRING,_T("Board name"), EXPPARAM_NUMBER,_T("Occurrence"))
 ) {
-	string p1( (LPSTR)ExParam(TYPE_STRING) );
+	wstring p1(GetStr2());
 	long p2 = ExParam(TYPE_INT);
 
 	if ( numBoards )
@@ -493,9 +509,9 @@ EXPRESSION(
 
 EXPRESSION(
 	/* ID */			23,
-	/* Name */			"BinToFlt(",
+	/* Name */			_T("BinToFlt("),
 	/* Flags */			EXPFLAG_DOUBLE,
-	/* Params */		(1, EXPPARAM_NUMBER, "Integer value")
+	/* Params */		(1, EXPPARAM_NUMBER,_T("Integer value"))
 ){	
 	long p1temp = ExParam(TYPE_INT);
 	float p1 = *reinterpret_cast<const float*>(&p1temp);
@@ -505,9 +521,9 @@ EXPRESSION(
 
 EXPRESSION(
 	/* ID */			24,
-	/* Name */			"FltToBin(",
+	/* Name */			_T("FltToBin("),
 	/* Flags */			0,
-	/* Params */		(1, EXPPARAM_NUMBER, "Floating-Point value")
+	/* Params */		(1, EXPPARAM_NUMBER,_T("Floating-Point value"))
 ){	
 	long p1temp = ExParam(TYPE_FLOAT);
 
@@ -517,9 +533,9 @@ EXPRESSION(
 
 EXPRESSION(
 	/* ID */			25,
-	/* Name */			"flipShort(",
+	/* Name */			_T("flipShort("),
 	/* Flags */			0,
-	/* Params */		(1, EXPPARAM_NUMBER, "Integer value")
+	/* Params */		(1, EXPPARAM_NUMBER,_T("Integer value"))
 	) {
 	short p1 = ExParam(TYPE_INT);
 
@@ -528,9 +544,9 @@ EXPRESSION(
 
 EXPRESSION(
 	/* ID */			26,
-	/* Name */			"flipLong(",
+	/* Name */			_T("flipLong("),
 	/* Flags */			0,
-	/* Params */		(1, EXPPARAM_NUMBER, "Integer value")
+	/* Params */		(1, EXPPARAM_NUMBER,_T("Integer value"))
 	) {
 	long p1 = ExParam(TYPE_INT);
 
@@ -539,9 +555,9 @@ EXPRESSION(
 
 EXPRESSION(
 	/* ID */			27,
-	/* Name */			"bit(",
+	/* Name */			_T("bit("),
 	/* Flags */			0,
-	/* Params */		(2, EXPPARAM_NUMBER, "Offset", EXPPARAM_NUMBER, "bit")
+	/* Params */		(2, EXPPARAM_NUMBER,_T("Offset"), EXPPARAM_NUMBER,_T("bit"))
 	) {
 	off_t p1 = ExParam(TYPE_INT);
 	off_t bit = ExParam(TYPE_INT);
@@ -559,9 +575,9 @@ EXPRESSION(
 
 EXPRESSION(
 	/* ID */			28,
-	/* Name */			"ntsl(",
+	/* Name */			_T("ntsl("),
 	/* Flags */			0,
-	/* Params */		(1, EXPPARAM_NUMBER, "Offset")
+	/* Params */		(1, EXPPARAM_NUMBER,_T("Offset"))
 	) {
 	off_t p1 = ExParam(TYPE_INT);
 	size_t p2 = 1024^2;
@@ -570,18 +586,17 @@ EXPRESSION(
 	{
 		if ( p2>d_vData.size() )
 			p2 = d_vData.size();
-		string str( d_vData.begin()+p1, p1+p2>d_vData.size() ? d_vData.end():d_vData.begin()+p1+p2 );
-		const char* output = str.c_str();
-		return strlen(output);
+		wstring str( d_vData.begin()+p1, p1+p2>d_vData.size() ? d_vData.end():d_vData.begin()+p1+p2 );
+		return str.size();
 	}
 
 	return 0;
 }
 //EXPRESSION(
 //	/* ID */			28,
-//	/* Name */			"undefined(",
+//	/* Name */			_T("undefined("),
 //	/* Flags */			0,
-//	/* Params */		(2, EXPPARAM_NUMBER, "bits", EXPPARAM_NUMBER, "Offset")
+//	/* Params */		(2, EXPPARAM_NUMBER,_T("bits"), EXPPARAM_NUMBER,_T("Offset"))
 //	) {
 //	off_t p1 = ExParam(TYPE_INT);
 //
@@ -594,15 +609,15 @@ EXPRESSION(
 /* Date conversion */
 EXPRESSION(
 	/* ID */			29,
-	/* Name */			"getYear(",
+	/* Name */			_T("getYear("),
 	/* Flags */			0,
-	/* Params */		(1, EXPPARAM_STRING, "Hexadecimal 64bit value")
+	/* Params */		(1, EXPPARAM_STRING,_T("Hexadecimal 64bit value"))
 ) {
 	LPSTR p1 = (LPSTR)ExParam(TYPE_STRING);
 
 	long long value;
-    istringstream iss(p1);
-    iss >> hex >> value;
+	std::istringstream iss(p1);
+    iss >> std::hex >> value;
 
 	time_t timestamp = value;
 	struct tm time;
@@ -614,15 +629,15 @@ EXPRESSION(
 }
 EXPRESSION(
 	/* ID */			30,
-	/* Name */			"getMonth(",
+	/* Name */			_T("getMonth("),
 	/* Flags */			0,
-	/* Params */		(1, EXPPARAM_STRING, "Hexadecimal 64bit value")
+	/* Params */		(1, EXPPARAM_STRING,_T("Hexadecimal 64bit value"))
 ) {
 	LPSTR p1 = (LPSTR)ExParam(TYPE_STRING);
 
 	long long value;
-    istringstream iss(p1);
-    iss >> hex >> value;
+	std::istringstream iss(p1);
+    iss >> std::hex >> value;
 
 	time_t timestamp = value;
 	struct tm time;
@@ -634,15 +649,15 @@ EXPRESSION(
 }
 EXPRESSION(
 	/* ID */			31,
-	/* Name */			"getDay(",
+	/* Name */			_T("getDay("),
 	/* Flags */			0,
-	/* Params */		(1, EXPPARAM_STRING, "Hexadecimal 64bit value")
+	/* Params */		(1, EXPPARAM_STRING,_T("Hexadecimal 64bit value"))
 ) {
 	LPSTR p1 = (LPSTR)ExParam(TYPE_STRING);
 
 	long long value;
-    istringstream iss(p1);
-    iss >> hex >> value;
+	std::istringstream iss(p1);
+    iss >> std::hex >> value;
 
 	time_t timestamp = value;
 	struct tm time;
@@ -654,15 +669,15 @@ EXPRESSION(
 }
 EXPRESSION(
 	/* ID */			32,
-	/* Name */			"getHour(",
+	/* Name */			_T("getHour("),
 	/* Flags */			0,
-	/* Params */		(1, EXPPARAM_STRING, "Hexadecimal 64bit value")
+	/* Params */		(1, EXPPARAM_STRING,_T("Hexadecimal 64bit value"))
 ) {
 	LPSTR p1 = (LPSTR)ExParam(TYPE_STRING);
 
 	long long value;
-    istringstream iss(p1);
-    iss >> hex >> value;
+	std::istringstream iss(p1);
+    iss >> std::hex >> value;
 
 	time_t timestamp = value;
 	struct tm time;
@@ -674,15 +689,15 @@ EXPRESSION(
 }
 EXPRESSION(
 	/* ID */			33,
-	/* Name */			"getMinute(",
+	/* Name */			_T("getMinute("),
 	/* Flags */			0,
-	/* Params */		(1, EXPPARAM_STRING, "Hexadecimal 64bit value")
+	/* Params */		(1, EXPPARAM_STRING,_T("Hexadecimal 64bit value"))
 ) {
 	LPSTR p1 = (LPSTR)ExParam(TYPE_STRING);
 
 	long long value;
-    istringstream iss(p1);
-    iss >> hex >> value;
+	std::istringstream iss(p1);
+    iss >> std::hex >> value;
 
 	time_t timestamp = value;
 	struct tm time;
@@ -694,15 +709,15 @@ EXPRESSION(
 }
 EXPRESSION(
 	/* ID */			34,
-	/* Name */			"getSecond(",
+	/* Name */			_T("getSecond("),
 	/* Flags */			0,
-	/* Params */		(1, EXPPARAM_STRING, "Hexadecimal 64bit value")
+	/* Params */		(1, EXPPARAM_STRING,_T("Hexadecimal 64bit value"))
 ) {
 	LPSTR p1 = (LPSTR)ExParam(TYPE_STRING);
 
 	long long value;
-    istringstream iss(p1);
-    iss >> hex >> value;
+	std::istringstream iss(p1);
+    iss >> std::hex >> value;
 
 	time_t timestamp = value;
 	struct tm time;
@@ -713,81 +728,33 @@ EXPRESSION(
 	return time.tm_sec;
 }
 
+
 EXPRESSION(
 	/* ID */			35,
-	/* Name */			"IntToStr$(",
+	/* Name */			_T("FltToStr$("),
 	/* Flags */			EXPFLAG_STRING,
-	/* Params */		(2, EXPPARAM_NUMBER, "Integer", EXPPARAM_NUMBER, "Size" )
-	) {
-	long p1 = ExParam(TYPE_INT);
+	/* Params */		(3,EXPPARAM_STRING,_T("Floating-Point"),EXPPARAM_NUMBER,_T("Width"),EXPPARAM_NUMBER,_T("Precision"))
+) {
+	string p1(GetStr2());
 	long p2 = ExParam(TYPE_INT);
+	long p3 = ExParam(TYPE_INT);
 
-	stringstream ss;
-	ss << std::setw(p2) << std::setfill('0') << p1;
-	string str = ss.str();
+	long double input = std::stold(p1);
+	std::stringstream ss;
 
-	ReturnStringSafe(str.c_str());
+	ss << std::internal << std::setw(p2) << std::setprecision(p3) << std::setfill('0') << input;
+	//std::fixed
+	const std::string str = ss.str();
+	const std::wstring output(str.begin(),str.end());
+
+	ReturnStringSafe(output.c_str());
 }
-
 
 EXPRESSION(
 	/* ID */			36,
-	/* Name */			"IntToHex$(",
+	/* Name */			_T("longlong$("),
 	/* Flags */			EXPFLAG_STRING,
-	/* Params */		(2, EXPPARAM_NUMBER, "Integer", EXPPARAM_NUMBER, "Size" )
-	) {
-	long p1 = ExParam(TYPE_INT);
-	long p2 = ExParam(TYPE_INT);
-
-	stringstream ss;
-	ss << std::setfill('0') << std::setw(p2) << std::right << std::hex << p1;
-	string hex = ss.str();
-	std::transform(hex.begin(), hex.end(),hex.begin(), ::toupper);
-	hex = "0x"+hex;
-
-	ReturnStringSafe(hex.c_str());
-}
-
-
-EXPRESSION(
-	/* ID */			37,
-	/* Name */			"IntToBin$(",
-	/* Flags */			EXPFLAG_STRING,
-	/* Params */		(2, EXPPARAM_NUMBER, "Integer", EXPPARAM_NUMBER, "Size" )
-	) {
-	long p1 = ExParam(TYPE_INT);
-	long p2 = ExParam(TYPE_INT);
-
-	stringstream ss;
-/*
-switch(p2) {
-  case 1:
-    ss << int_to_bitset<char>(p1);
-    break;
-  case 2:
-    ss << int_to_bitset<short>(p1);
-    break;
-  case 4:
-    ss << int_to_bitset<int>(p1);
-    break;
-  case 8:
-    ss << int_to_bitset<long>(p1);
-    break;
-
-  default:
-    ss << int_to_bitset<int>(p1);
-}
-*/
-	string bin = ss.str();
-
-	ReturnString(bin.c_str());
-}
-
-EXPRESSION(
-	/* ID */			38,
-	/* Name */			"longlong$(",
-	/* Flags */			EXPFLAG_STRING,
-	/* Params */		(1, EXPPARAM_NUMBER, "Offset")
+	/* Params */		(1, EXPPARAM_NUMBER,_T("Offset"))
 	) {
 	off_t p1 = ExParam(TYPE_INT);
 	long long output(0);
@@ -800,12 +767,12 @@ EXPRESSION(
 			output = _byteswap_ulong(*reinterpret_cast<const long long*>(&d_vData.at(p1)));
 	}
 	
-	stringstream ss;
+	std::stringstream ss;
 	ss << std::right << std::hex << output; // << std::endl
-	string hex = ss.str();
+	std::string hex = ss.str();
 	std::transform(hex.begin(), hex.end(),hex.begin(), ::toupper);
 	hex = "0x"+hex;
-	ReturnStringSafe( hex.c_str());
+	ReturnString( hex.c_str());
 }
 
 
@@ -815,9 +782,9 @@ EXPRESSION(
 
 EXPRESSION(
 	/* ID */			39,
-	/* Name */			"m4x4getrW(",
+	/* Name */			_T("m4x4getrW("),
 	/* Flags */			EXPFLAG_DOUBLE,
-	/* Params */		(1, EXPPARAM_NUMBER, "Matrix Offset")
+	/* Params */		(1, EXPPARAM_NUMBER,_T("Matrix Offset"))
 	) {
 	off_t p1 = ExParam(TYPE_INT);
 
@@ -843,9 +810,9 @@ EXPRESSION(
 
 EXPRESSION(
 	/* ID */			40,
-	/* Name */			"m4x4getrX(",
+	/* Name */			_T("m4x4getrX("),
 	/* Flags */			EXPFLAG_DOUBLE,
-	/* Params */		(1, EXPPARAM_NUMBER, "Matrix Offset")
+	/* Params */		(1, EXPPARAM_NUMBER,_T("Matrix Offset"))
 	) {
 	off_t p1 = ExParam(TYPE_INT);
 
@@ -871,9 +838,9 @@ EXPRESSION(
 
 EXPRESSION(
 	/* ID */			41,
-	/* Name */			"m4x4getrY(",
+	/* Name */			_T("m4x4getrY("),
 	/* Flags */			EXPFLAG_DOUBLE,
-	/* Params */		(1, EXPPARAM_NUMBER, "Matrix Offset")
+	/* Params */		(1, EXPPARAM_NUMBER,_T("Matrix Offset"))
 	) {
 	off_t p1 = ExParam(TYPE_INT);
 
@@ -899,9 +866,9 @@ EXPRESSION(
 
 EXPRESSION(
 	/* ID */			42,
-	/* Name */			"m4x4getrZ(",
+	/* Name */			_T("m4x4getrZ("),
 	/* Flags */			EXPFLAG_DOUBLE,
-	/* Params */		(1, EXPPARAM_NUMBER, "4x4 Matrix Offset")
+	/* Params */		(1, EXPPARAM_NUMBER,_T("4x4 Matrix Offset"))
 	) {
 	off_t p1 = ExParam(TYPE_INT);
 
@@ -926,29 +893,12 @@ EXPRESSION(
 }
 
 
-EXPRESSION(
-	/* ID */			43,
-	/* Name */			"FltToStr$(",
-	/* Flags */			EXPFLAG_STRING,
-	/* Params */		(3, EXPPARAM_NUMBER, "Floating-Point", EXPPARAM_NUMBER, "Width", EXPPARAM_NUMBER, "Precision" )
-	) {
-	float p1 = ExParam(TYPE_FLOAT);
-	long p2 = ExParam(TYPE_INT);
-	long p3 = ExParam(TYPE_INT);
-
-	stringstream ss;
-	ss << std::internal << std::showpos << std::setw(p2) << std::setprecision(p3) << std::setfill('0') << p1;
-	string str = ss.str();
-
-	ReturnStringSafe(str.c_str());
-}
-
 //Alien Math
 EXPRESSION(
 	/* ID */			44,
-	/* Name */			"cosh(",
+	/* Name */			_T("cosh("),
 	/* Flags */			EXPFLAG_DOUBLE,
-	/* Params */		(1, EXPPARAM_NUMBER, "Floating-Point value")
+	/* Params */		(1, EXPPARAM_NUMBER,_T("Floating-Point value"))
 ){	
 	long input = ExParam(TYPE_FLOAT);
 	float output = coshf(*reinterpret_cast<const float *>(&input));
@@ -958,9 +908,9 @@ EXPRESSION(
 
 EXPRESSION(
 	/* ID */			45,
-	/* Name */			"sinh(",
+	/* Name */			_T("sinh("),
 	/* Flags */			EXPFLAG_DOUBLE,
-	/* Params */		(1, EXPPARAM_NUMBER, "Floating-Point value")
+	/* Params */		(1, EXPPARAM_NUMBER,_T("Floating-Point value"))
 ){	
 	long input = ExParam(TYPE_FLOAT);
 	float output = sinhf(*reinterpret_cast<const float *>(&input));
