@@ -51,8 +51,20 @@ using std::swap;
 #ifdef UNICODE
 using std::wstring;
 typedef wstring string;
+
+using std::wofstream;
+typedef wofstream ofstream;
+
+using std::wstringstream;
+typedef wstringstream stringstream;
+
+using std::wifstream;
+typedef wifstream ifstream;
 #else
 using std::string;
+using std::ofstream;
+using std::ifstream;
+using std::stringstream;
 #endif
 
 // Specific to this extension
@@ -91,6 +103,43 @@ using std::string;
 #define d_bProtectedj rdPtr->vBoards[j].bProtected
 #define numBoards rdPtr->vBoards.size()
 
+/*
+#include <string>
+#include <codecvt>
+inline std::wstring wstring_convert_from_char(const char *str)
+{
+	std::wstring_convert<std::codecvt_utf8<wchar_t>,wchar_t> converter;
+	return converter.from_bytes(str);
+}
+inline std::string string_convert_from_wchar(const wchar_t *str)
+{
+	std::wstring_convert<std::codecvt_utf8<wchar_t>,wchar_t> converter;
+	return converter.to_bytes(str);
+}
+inline std::wstring wstring_convert_from_bytes(const std::vector< char > &v)
+{
+	std::wstring_convert<std::codecvt_utf8<wchar_t>,wchar_t> converter;
+	return converter.from_bytes(v.data(),v.data() + v.size());
+}
+inline std::vector< char > wstring_convert_to_bytes(const wchar_t *str)
+{
+	std::wstring_convert<std::codecvt_utf8<wchar_t>,wchar_t> converter;
+	std::string string = converter.to_bytes(str);
+	return std::vector< char >(string.begin(),string.end());
+}
+*/
+inline size_t count(std::string const &haystack,std::string const &needle, unsigned int size) {
+	auto occurrences = 0;
+	auto len = size;
+	auto pos = 0;
+
+	while(std::string::npos != (pos = haystack.find(needle,pos))) {
+		++occurrences;
+		pos += len;
+	}
+	return occurrences;
+}
+
 inline void skipPadding(std::ifstream &stream)
 {
 	unsigned char padSize = 16;
@@ -122,17 +171,21 @@ inline bool strCompare(string a, string b)
 	return true;
 }
 
-inline void printLog(int value,string path)
+inline void printLogInt(int value, string path)
 {
-	std::ofstream outfile;
+	ofstream outfile;
 	outfile.open(path,std::ios_base::app); // append instead of overwrite
+#ifdef UNICODE
+	outfile << std::endl << std::to_wstring(value);
+#else
 	outfile << std::endl << std::to_string(value);
+#endif
 	outfile.close();
 }
 
-inline void printLogWStr(wstring value,wstring path)
+inline void printLogString(string value, string path)
 {
-	std::wofstream outfile;
+	ofstream outfile;
 	outfile.open(path,std::ios_base::app); // append instead of overwrite
 	outfile << std::endl << value;
 	outfile.close();

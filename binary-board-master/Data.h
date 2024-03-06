@@ -27,7 +27,7 @@ enum //FillType
 struct Board
 {
 	bool bProtected;
-	wstring sName;
+	string sName;
 	vector <char> vData;
 };
 //#pragma pack(pop)
@@ -44,10 +44,13 @@ typedef struct tagRDATA
 	bool bStrCmp;
 
 	unsigned int iSelBoard;
+	string lastBoard; //new (boards can change their ids because their vector position is not constant, so it is string)
+	string lastPath; //new
 	vector <Board> vBoards; //vector of structs
 
 } RUNDATA;
 typedef	RUNDATA	* LPRDATA;
+
 
 
 // --------------------------------
@@ -95,51 +98,3 @@ typedef struct tagEDATAW_V1
 
 typedef EDITDATA * LPEDATA;
 
-
-//Callback
-class CFillUser : public CFillData
-{
-public:
-	RUNDATA*	rdPtr;
-	TCHAR*	fillName;
-
-public:
-	CFillUser(RUNDATA* __rdPtr,const TCHAR* name);
-	~CFillUser();
-	virtual BOOL Fill(cSurface FAR * pSf, int l, int t, int r, int b, BOOL bForceOpaqueBlack=FALSE);
-};
-
-//Radial gradient
-class CFillRadial : public CFillData
-{
-public:
-	COLORREF	m_crFrom;
-	COLORREF	m_crTo;
-
-public:
-	CFillRadial(COLORREF crFrom, COLORREF crTo);
-	void SetColors(COLORREF crFrom, COLORREF crTo);
-	virtual BOOL Fill(cSurface FAR * pSf, int l, int t, int r, int b, BOOL bForceOpaqueBlack=FALSE);
-};
-
-//Linear gradient
-class CFillDirEx : public CFillData
-{
-public:
-	// Constructors
-	CFillDirEx(COLORREF crFrom, COLORREF crTo, BOOL Vertical);
-
-public:
-	int m_xOrg;
-	int m_yOrg;
-	// Attributes
-	COLORREF	m_crFrom;
-	COLORREF	m_crTo;
-	BOOL		m_vert;
-
-public:
-	void SetColors(COLORREF crFrom, COLORREF crTo);
-	void SetDir(BOOL vert);
-	// Implementation
-	virtual BOOL Fill(cSurface FAR * pSf, int l, int t, int r, int b, BOOL bForceOpaqueBlack=FALSE);
-};

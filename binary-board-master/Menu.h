@@ -6,10 +6,7 @@
 #ifdef CONDITION_MENU
 
 SEPARATOR
-SUB_START("Board")
-ITEM(0,"Exists")
-ITEM(1,"Protected")
-SUB_END
+	ITEM(0,"Board exists?")
 SEPARATOR
 
 #endif
@@ -22,102 +19,102 @@ SEPARATOR
 
 SEPARATOR
 SUB_START("Board")
-ITEM(0,"Create")
-ITEM(1,"Select")
-SEPARATOR
-ITEM(2,"Rename")
-ITEM(59,"Rename...")
-ITEM(5,"Protected")
-ITEM(60,"Protected...")
-ITEM(3,"Resize")
-ITEM(54,"Resize...")
-ITEM(4,"Delete")
-ITEM(53,"Delete...")
-SEPARATOR
-ITEM(57,"Clear Everything")
+	ITEM(0,"Create")
+	ITEM(1,"Select")
+	ITEM(2,"Select previous")
+	SEPARATOR
+	ITEM(3,"Rename")
+	ITEM(4,"Rename...")
+	ITEM(5,"Lock")
+	ITEM(6,"Lock...")
+	ITEM(7,"Resize")
+	ITEM(8,"Resize...")
+	ITEM(9,"Delete")
+	ITEM(10,"Delete...")
+	SEPARATOR
+	ITEM(11,"Clear everything")
 SUB_END
-SUB_START("Data")
-ITEM(6,"Load from file")
-ITEM(7,"Save to file")
-SEPARATOR
-ITEM(58,"Load PE resource from file")
-SEPARATOR
-SUB_START("Zlib compression")
-ITEM(46,"Compress")
-ITEM(47,"Decompress")
+SUB_START("Content")
+	ITEM(12,"Load from file")
+	ITEM(13,"Save to file")
+	ITEM(14,"Load PE resource from file")
+	SEPARATOR
+	SUB_START("Workspace")
+		ITEM(15,"Save to file")
+		ITEM(16,"Load from file")
+	SUB_END
+	SEPARATOR
+	ITEM(17,"Swap with another")
+	ITEM(18,"Copy to another")
+	SEPARATOR
+	ITEM(19,"Crop at offset")
+	ITEM(20,"Remove at offset")
+	SEPARATOR
+	ITEM(21,"Fill with character")
+	SEPARATOR
+	SUB_START("Compress with Zlib")
+		ITEM(22,"Compress")
+		ITEM(23,"Decompress")
+	SUB_END
+	SUB_START("Encrypt with Blowfish")
+		ITEM(24,"Encrypt")
+		ITEM(25,"Decrypt")
+	SUB_END
+	SUB_START("Encode with Base64")
+		ITEM(26,"Encode")
+		ITEM(27,"Decode")
+	SUB_END
 SUB_END
-SUB_START("Blowfish encryption")
-ITEM(48,"Encrypt")
-ITEM(49,"Decrypt")
+SUB_START("Value")
+	SUB_START("Set")
+		ITEM(28,"bit")
+		ITEM(29,"Char")
+		ITEM(30,"Short Int")
+		ITEM(31,"Long Int")
+		ITEM(32,"Float")
+		ITEM(33,"String")
+		SEPARATOR
+		ITEM(34,"Content")
+		ITEM(35,"File")
+	SUB_END
+	SUB_START("Append")
+		ITEM(36,"Char")
+		ITEM(37,"Short Int")
+		ITEM(38,"Long Int")
+		ITEM(39,"Float")
+		ITEM(40,"String")
+		SEPARATOR
+		ITEM(41,"Content")
+		ITEM(42,"File")
+	SUB_END
+	SUB_START("Insert")
+		ITEM(43,"Char")
+		ITEM(44,"Short Int")
+		ITEM(45,"Long Int")
+		ITEM(46,"Float")
+		ITEM(47,"String")
+		SEPARATOR
+		ITEM(48,"Content")
+		ITEM(49,"File")
+	SUB_END
+	SEPARATOR
+	ITEM(50,"Flip")
 SUB_END
-SUB_START("Base64 encoding")
-ITEM(50,"Encode")
-ITEM(51,"Decode")
-SUB_END
-SEPARATOR
-ITEM(8,"Copy to another")
-ITEM(9,"Swap with another")
-SEPARATOR
-ITEM(10,"Crop at offset")
-ITEM(11,"Remove at offset")
-SEPARATOR
-ITEM(12,"Fill with Char")
-SUB_END
-SUB_START("Set")
-ITEM(52,"bit")
-//ITEM(53,"undefined")
-ITEM(13,"Char")
-ITEM(14,"Short Int")
-ITEM(15,"Long Int")
-ITEM(16,"Float")
-ITEM(17,"String")
-SEPARATOR
-ITEM(18,"Board")
-ITEM(19,"File")
-SUB_END
-SUB_START("Append")
-ITEM(20,"Char")
-ITEM(21,"Short Int")
-ITEM(22,"Long Int")
-ITEM(23,"Float")
-ITEM(24,"String")
-SEPARATOR
-ITEM(25,"Board")
-ITEM(26,"File")
-SUB_END
-SUB_START("Insert")
-ITEM(27,"Char")
-ITEM(28,"Short Int")
-ITEM(29,"Long Int")
-ITEM(30,"Float")
-ITEM(31,"String")
-SEPARATOR
-ITEM(32,"Board")
-ITEM(33,"File")
-SUB_END
-SUB_START("Occurrences")
-SUB_START("Search and replace")
-ITEM(34,"Integer by Integer")
-ITEM(35,"String by String")
-ITEM(36,"Board by Board")
-SUB_END
-SUB_START("Search and remove")
-ITEM(37,"Integer")
-ITEM(38,"String")
-ITEM(39,"Board")
-SUB_END
+SUB_START("Occurrence")
+	SUB_START("Replace every")
+		ITEM(51,"Integer by Integer")
+		ITEM(52,"String by String")
+		ITEM(53,"Content by Content")
+	SUB_END
+	SUB_START("Remove every")
+		ITEM(54,"Integer")
+		ITEM(55,"String")
+		ITEM(56,"Content")
+	SUB_END
 SUB_END
 SUB_START("Endianness")
-ITEM(40,"Little Endian")
-ITEM(41,"Big Endian")
-SEPARATOR
-ITEM(42,"Flip Short Int")
-ITEM(43,"Flip Long Int")
-SUB_END
-SEPARATOR
-SUB_START("Workspace")
-ITEM(44,"Save to file")
-ITEM(45,"Load from file")
+	ITEM(57,"Little-endian")
+	ITEM(58,"Big-endian")
 SUB_END
 SEPARATOR
 
@@ -131,78 +128,74 @@ SEPARATOR
 #ifdef EXPRESSION_MENU
 
 SEPARATOR
-SUB_START("Board")
-SUB_START("Current")
-ITEM(0,"Name")
-ITEM(1,"Identifier")
+SUB_START("Get board")
+	SUB_START("Current")
+		ITEM(0,"Name")
+		ITEM(1,"Identifier")
+		ITEM(2,"Name from identifier")
+	SUB_END
+	ITEM(3,"Memory location")
+	ITEM(4,"Content size")
+	ITEM(5,"Lock flag")
+	SEPARATOR
+	ITEM(6,"Count")
 SUB_END
-ITEM(2,"Memory location")
-ITEM(3,"Size")
-ITEM(4,"Protected mode")
+SUB_START("Get value")
+	ITEM(7,"size")
+	ITEM(8,"sign")
+	ITEM(9,"bit")
+	SEPARATOR
+	ITEM(10,"Char")
+	ITEM(11,"Unsigned char")
+	ITEM(12,"Short int")
+	ITEM(13,"Unsigned short int")
+	ITEM(14,"Long int")
+	ITEM(15,"Float")
+	ITEM(16,"String")
+	SEPARATOR
+	ITEM(17,"Double")
+	ITEM(18,"Long Long Int")
+	SEPARATOR
+	ITEM(19,"LOBYTE")
+	ITEM(20,"HIBYTE")
+	ITEM(21,"LOWORD")
+	ITEM(22,"HIWORD")
+SUB_END
+SUB_START("Get file")
+	ITEM(23,"Size")
+	ITEM(24,"Last used path")
+SUB_END
+SUB_START("Get Date/Time of")
+	ITEM(25,"Year")
+	ITEM(26,"Month")
+	ITEM(27,"Day")
+	ITEM(28,"Hour")
+	ITEM(29,"Minute")
+	ITEM(30,"Second")
+SUB_END
 SEPARATOR
-ITEM(5,"Get number of boards")
-ITEM(6,"Name from identifier")
-SUB_END
-SUB_START("Get")
-ITEM(7,"sign")
-ITEM(27,"bit")
-//ITEM(28,"undefined")
-ITEM(8,"Char")
-ITEM(9,"Unsigned Char")
-ITEM(10,"Short Int")
-ITEM(11,"Unsigned Short Int")
-ITEM(12,"Long Int")
-ITEM(13,"Floating-Point")
-ITEM(14,"String")
-SEPARATOR
-ITEM(38,"Long Long Int")
-ITEM(28,"null-terminated String length")
-ITEM(15,"Value size")
-ITEM(16,"File size")
-SEPARATOR
-SUB_START("Binary date")
-ITEM(29,"Year")
-ITEM(30,"Month")
-ITEM(31,"Day")
-ITEM(32,"Hour")
-ITEM(33,"Minute")
-ITEM(34,"Second")
-SUB_END
-SUB_END
-SUB_START("Occurrences")
-SUB_START("Count")
-ITEM(17,"Integer")
-ITEM(18,"String")
-ITEM(19,"Board")
-SUB_END
-SUB_START("Find")
-ITEM(20,"Integer")
-ITEM(21,"String")
-ITEM(22,"Board")
-SUB_END
+SUB_START("Occurences")
+	SUB_START("Count")
+		ITEM(31,"Integer")
+		ITEM(32,"String")
+		ITEM(33,"Content")
+	SUB_END
+	SUB_START("Find")
+		ITEM(34,"Integer")
+		ITEM(35,"String")
+		ITEM(36,"Content")
+	SUB_END
 SUB_END
 SUB_START("Conversions")
-ITEM(23,"Binary to Floating-Point")
-ITEM(24,"Floating-Point to Binary")
-SEPARATOR
-ITEM(25,"Flip Short Int endianness")
-ITEM(26,"Flip Long Int endianness")
-SEPARATOR
-ITEM(35,"Floating-Point to String")
-ITEM(36,"Long Long Int to String")
-SEPARATOR
-SUB_START("4x4 Matrix")
-SUB_START("Rotation To Quaternions")
-ITEM(39,"Get rX")
-ITEM(40,"Get rY")
-ITEM(41,"Get rZ")
-ITEM(42,"Get rW")
+	ITEM(37,"Long int to single")
+	ITEM(38,"Single to long int")
+	ITEM(39,"Short int to half float")
+	ITEM(30,"Half float to short int")
+	ITEM(41,"Precision adjustment")
 SUB_END
-SUB_START("Math")
-ITEM(44,"hyperbolic cosine")
-ITEM(45,"hyperbolic sine")
-SUB_END
-SUB_END
+SUB_START("Bitwise operations")
+	ITEM(42,"Shift left <<")
+	ITEM(43,"Shift right >>")
 SUB_END
 SEPARATOR
 

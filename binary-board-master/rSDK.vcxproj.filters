@@ -152,11 +152,15 @@
     <ClInclude Include="..\..\Inc\WinMacro.h">
       <Filter>MMF Headers</Filter>
     </ClInclude>
+    <ClInclude Include="floats.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Ext.def">
       <Filter>Header Files</Filter>
     </None>
+    <None Include="cpp.hint" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Ext.rc">
