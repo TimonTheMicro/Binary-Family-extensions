@@ -98,23 +98,24 @@ SUB_START("Value")
 		ITEM(49,"File")
 	SUB_END
 	SEPARATOR
-	ITEM(50,"Flip")
+	ITEM(50,"Swap")
+	ITEM(51,"Flip")
 SUB_END
 SUB_START("Occurrence")
 	SUB_START("Replace every")
-		ITEM(51,"Integer by Integer")
-		ITEM(52,"String by String")
-		ITEM(53,"Content by Content")
+		ITEM(52,"Integer by Integer")
+		ITEM(53,"String by String")
+		ITEM(54,"Content by Content")
 	SUB_END
 	SUB_START("Remove every")
-		ITEM(54,"Integer")
-		ITEM(55,"String")
-		ITEM(56,"Content")
+		ITEM(55,"Integer")
+		ITEM(56,"String")
+		ITEM(57,"Content")
 	SUB_END
 SUB_END
 SUB_START("Endianness")
-	ITEM(57,"Little-endian")
-	ITEM(58,"Big-endian")
+	ITEM(58,"Little-endian")
+	ITEM(59,"Big-endian")
 SUB_END
 SEPARATOR
 
@@ -155,11 +156,6 @@ SUB_START("Get value")
 	SEPARATOR
 	ITEM(17,"Double")
 	ITEM(18,"Long Long Int")
-	SEPARATOR
-	ITEM(19,"LOBYTE")
-	ITEM(20,"HIBYTE")
-	ITEM(21,"LOWORD")
-	ITEM(22,"HIWORD")
 SUB_END
 SUB_START("Get file")
 	ITEM(23,"Size")
@@ -192,6 +188,11 @@ SUB_START("Conversions")
 	ITEM(39,"Short int to half float")
 	ITEM(30,"Half float to short int")
 	ITEM(41,"Precision adjustment")
+	SEPARATOR
+	ITEM(19,"LOBYTE")
+	ITEM(20,"HIBYTE")
+	ITEM(21,"LOWORD")
+	ITEM(22,"HIWORD")
 SUB_END
 SUB_START("Bitwise operations")
 	ITEM(42,"Shift left <<")

@@ -282,7 +282,7 @@ ACTION(
 	/* ID */			12,
 	/* Name */			_T("%o: Load file %0 from offset %2, size %1 Bytes to current board"),
 	/* Flags */			0,
-	/* Params */		(3, PARAM_FILENAME2,_T("File"), PARAM_NUMBER,_T("Begin (in Bytes)"), PARAM_NUMBER,_T("Size (in Bytes, -1: End of File)"))
+	/* Params */		(3, PARAM_FILENAME2,_T("File"), PARAM_NUMBER,_T("Begin offset"), PARAM_NUMBER,_T("Size (-1: End of File)"))
 ) {
 	string p1 = string(GetStr());
 	if(!p1.length()) return 0;
@@ -291,10 +291,10 @@ ACTION(
 
 	if(numBoards && !d_bProtected && p3)
 	{
-
 		std::ifstream file(p1,std::ios::binary);
 		if(file.good())
 		{
+			rdPtr->lastPath = p1;
 			file.unsetf(std::ios::skipws);
 			if(p3 == -1)
 			{
@@ -324,6 +324,7 @@ ACTION(
 
 	if(numBoards)
 	{
+		rdPtr->lastPath = p1;
 		std::ofstream fout(p1,std::ios::out | std::ios::binary);
 		fout.write((char*)&(d_vData)[0],d_vData.size());
 		fout.close();
@@ -348,6 +349,7 @@ ACTION(
 		std::ifstream file(p1,std::ios::binary);
 		if(file.good())
 		{
+			rdPtr->lastPath = p1;
 			d_vData.clear();
 			file.unsetf(std::ios::skipws);
 			file.seekg(0,std::ios::end);
@@ -417,6 +419,7 @@ ACTION(
 
 	if(numBoards)
 	{
+		rdPtr->lastPath = p1;
 		strcpy(WorkspaceHeader.magic, "BINB"); // store MAGIC
 		WorkspaceHeader.ver = 2.0; // store version
 		WorkspaceHeader.count = numBoards;
@@ -455,6 +458,10 @@ ACTION(
 	file.seekg(0, std::ios::beg);
 	file.read((char*)&WorkspaceHeader, sizeof(WorkspaceHeader));
 	std::string str(WorkspaceHeader.magic);
+
+	if(file.good())
+	{
+		rdPtr->lastPath = p1;
 	if((str == "BINB") && (WorkspaceHeader.ver == 2.0)) // compare with the header
 		for (int i=0; i<WorkspaceHeader.count; i++) // read board index
 		{
@@ -501,6 +508,7 @@ ACTION(
 			if(file.peek() == EOF) break;
 		}
 	file.close();
+	}
 	return 0;
 }
 
@@ -710,14 +718,13 @@ ACTION(
 	/* Params */        (2,PARAM_STRING,_T("Set key string (length from 4 to 56 characters)"),PARAM_NUMBER,_T("Method (0: Simple, 1: Strict)"))
 ) {
 	string p1 = string(GetStr());
-	if(!p1[0]) return 0;
 	bool p2 = GetInt();
-	/*
-	if(numBoards && wcslen(p1) >= 4 && d_vData.size() >= 8)
+	
+	if(numBoards && p1.size() >= 4 && d_vData.size() >= 8)
 	{
 		BLOWFISH_CTX ctx;
 
-		Blowfish_Init(&ctx,(unsigned char*)p1,min(wcslen(p1),56));
+		Blowfish_Init(&ctx, (unsigned char*)p1.c_str(), min(p1.size(), 56));
 
 		if(p2)
 			for(size_t i = 0; i < d_vData.size() + 1 - 8; i++)
@@ -725,7 +732,7 @@ ACTION(
 		else
 			for(size_t i = 0; i < d_vData.size() / 8; i++)
 				Blowfish_Encrypt(&ctx,(unsigned long*)&d_vData.at(i * 4),(unsigned long*)&d_vData.at((i + 1) * 4));
-	}*/
+	}
 	return 0;
 }
 
@@ -734,14 +741,14 @@ ACTION(
 	/* Name */          _T("%o: Decrypt current data using blowfish, key %0, method %1"),
 	/* Flags */         0,
 	/* Params */        (2,PARAM_STRING,_T("Set key string (length from 4 to 56 characters)"),PARAM_NUMBER,_T("Strict mode (0: No, 1: Yes)"))
-) {/*
-	TCHAR* p1 = GetStr();
+) {
+	string p1 = string(GetStr());
 	bool p2 = GetInt();
-	if(numBoards && wcslen(p1) >= 4 && d_vData.size() >= 8)
+	if(numBoards && p1.size() >= 4 && d_vData.size() >= 8)
 	{
 		BLOWFISH_CTX ctx;
 
-		Blowfish_Init(&ctx,(unsigned char*)p1,min(wcslen(p1),56));
+		Blowfish_Init(&ctx, (unsigned char*)p1.c_str(), min(p1.size(), 56));
 
 		if(p2)
 			for(int i = d_vData.size() - 8; i >= 0; i--)
@@ -749,7 +756,7 @@ ACTION(
 		else
 			for(size_t i = 0; i < d_vData.size() / 8; i++)
 				Blowfish_Decrypt(&ctx,(unsigned long*)&d_vData.at(i * 4),(unsigned long*)&d_vData.at((i + 1) * 4));
-	}*/
+	}
 	return 0;
 }
 /* ENCODE */
@@ -1344,13 +1351,34 @@ ACTION(
 	return 0;
 }
 
+ACTION(
+	/* ID */            51,
+	/* Name */          _T("%o: Flip integer value at %0"),
+	/* Flags */         0,
+	/* Params */        (2, PARAM_NUMBER,_T("Offset"), PARAM_NUMBER,_T("(0: short int, 1: long int)"))
+) {
+	off_t p1 = GetInt();
+	bool p2 = GetInt();
+	long buffer;
+
+	if(numBoards && !d_bProtected && p1 + sizeof(long) <= d_vData.size())
+	{
+		if (p2)
+			*(long*)(&d_vData.at(p1)) = _byteswap_ushort(*reinterpret_cast<const long*>(&d_vData.at(p1)));
+		else
+			*(long*)(&d_vData.at(p1)) = _byteswap_ulong(*reinterpret_cast<const long*>(&d_vData.at(p1)));
+	}
+
+	return 0;
+}
+
 /* OCCURRENCE */
 /* REPLACE */
 ACTION(
-	/* ID */            51,
+	/* ID */            52,
 	/* Name */          _T("%o: Replace every integer %0 size %1 by %2 size %3 in current board"),
 	/* Flags */         0,
-	/* Params */        (4,PARAM_NUMBER,_T("Old integer value"),PARAM_NUMBER,_T("Size"),PARAM_NUMBER,_T("New integer value"),PARAM_NUMBER,_T("Size"))
+	/* Params */        (4, PARAM_NUMBER,_T("Old integer value"), PARAM_NUMBER,_T("Size"), PARAM_NUMBER,_T("New integer value"), PARAM_NUMBER,_T("Size"))
 ) {
 	long p1 = GetInt();
 	char p2 = GetInt();
@@ -1392,16 +1420,20 @@ ACTION(
 	return 0;
 }
 
+#ifdef UNICODE
 ACTION(
-	/* ID */            52,
+	/* ID */            53,
 	/* Name */          _T("%o: Replace every string %0 by %1 in current board"),
 	/* Flags */         0,
-	/* Params */        (2,PARAM_STRING,_T("Old string"),PARAM_STRING,_T("New string"))
+	/* Params */        (5, PARAM_STRING,_T("Old string"), PARAM_STRING,_T("Case sensitive? (0: no, 1: yes)"), PARAM_STRING,_T("Unicode? (0: no, 1: yes)"), PARAM_STRING,_T("New string"), PARAM_STRING,_T("Unicode? (0: no, 1: yes)"))
 ) {
 	string p1 = string(GetStr());
 	if(!p1.length()) return 0;
-	string p2 = string(GetStr());
-	if(!p2.length()) return 0;
+	bool p2 = GetInt();
+	bool p3 = GetInt();
+	string p4 = string(GetStr());
+	if(!p4.length()) return 0;
+	bool p5 = GetInt();
 
 	if(numBoards && !d_bProtected)
 	{
@@ -1427,12 +1459,50 @@ ACTION(
 	}
 	return 0;
 }
-
+#else
 ACTION(
 	/* ID */            53,
+	/* Name */          _T("%o: Replace every string %0 by %1 in current board"),
+	/* Flags */         0,
+	/* Params */        (3, PARAM_STRING,_T("Old string"), PARAM_STRING,_T("Case sensitive? (0: no, 1: yes)"), PARAM_STRING,_T("New string"))
+) {
+	string p1 = string(GetStr());
+	if(!p1.length()) return 0;
+	bool p2 = GetInt();
+	string p3 = string(GetStr());
+	if(!p3.length()) return 0;
+
+	if(numBoards && !d_bProtected)
+	{
+		long dist = 0;
+		while(true)
+		{/*
+		 auto it = search(d_vData.begin() + dist,d_vData.end(),p1,p1 + strlen(p1));
+		 dist = it - d_vData.begin();
+
+		 if(dist != d_vData.size())
+		 {
+		 if(wcslen(p2) > wcslen(p1))
+		 d_vData.insert(d_vData.begin() + dist,p2,p2 + (wcslen(p2) - wcslen(p1)));
+		 copy(p2,p2 + wcslen(p2),d_vData.begin() + dist);
+		 if(wcslen(p2) < wcslen(p1))
+		 d_vData.erase(d_vData.begin() + dist + wcslen(p2),d_vData.begin() + dist + wcslen(p1));
+
+		 dist += wcslen(p2);
+		 }
+		 else
+		 break;*/
+		}
+	}
+	return 0;
+}
+#endif
+
+ACTION(
+	/* ID */            54,
 	/* Name */          _T("%o: Replace every content of board %0 by %1 in current board"),
 	/* Flags */         0,
-	/* Params */        (2,PARAM_STRING,_T("Old board name"),PARAM_STRING,_T("New board name"))
+	/* Params */        (2, PARAM_STRING,_T("Old board name"), PARAM_STRING,_T("New board name"))
 ) {
 	string p1 = string(GetStr());
 	if(!p1.length()) return 0;
@@ -1475,7 +1545,7 @@ ACTION(
 /* REMOVE */
 
 ACTION(
-	/* ID */            54,
+	/* ID */            55,
 	/* Name */          _T("%o: Remove every integer %0, size %1 from current board"),
 	/* Flags */         0,
 	/* Params */        (2,PARAM_NUMBER,_T("Integer value"),PARAM_NUMBER,_T("Size"))
@@ -1508,20 +1578,27 @@ ACTION(
 	return 0;
 }
 
+#ifdef UNICODE
 ACTION(
-	/* ID */            55,
+	/* ID */            56,
 	/* Name */          _T("%o: Remove every string %0 from current board"),
 	/* Flags */         0,
-	/* Params */        (1,PARAM_STRING,_T("String"))
+	/* Params */        (2, PARAM_STRING,_T("String"), PARAM_STRING,_T("Case sensitive? (0: no, 1: yes)"), PARAM_STRING,_T("Unicode? (0: no, 1: yes)"))
 ) {
 	string p1 = string(GetStr());
 	if(!p1.length()) return 0;
+	bool  p3 = GetInt();
+	bool  p2 = GetInt();
 
 	if(numBoards && !d_bProtected)
 	{
 		long dist = 0;
 		while(true)
 		{/*
+		std::transform(data.begin(), data.end(), data.begin(),
+    [](unsigned char c){ return std::tolower(c); });
+		 if (p3)
+		 p1 = std::tolower(p1);
 			auto it = search(d_vData.begin() + dist,d_vData.end(),p1,p1 + wcslen(p1));
 			dist = it - d_vData.begin();
 			if(dist != d_vData.size())
@@ -1532,9 +1609,36 @@ ACTION(
 	}
 	return 0;
 }
-
+#else
 ACTION(
 	/* ID */            56,
+	/* Name */          _T("%o: Remove every string %0 from current board"),
+	/* Flags */         0,
+	/* Params */        (1, PARAM_STRING,_T("String"), PARAM_STRING,_T("Case sensitive? (0: no, 1: yes)"))
+) {
+	string p1 = string(GetStr());
+	if(!p1.length()) return 0;
+	bool p2;
+
+	if(numBoards && !d_bProtected)
+	{
+		long dist = 0;
+		while(true)
+		{/*
+		 auto it = search(d_vData.begin() + dist,d_vData.end(),p1,p1 + wcslen(p1));
+		 dist = it - d_vData.begin();
+		 if(dist != d_vData.size())
+		 d_vData.erase(d_vData.begin() + dist,d_vData.begin() + dist + wcslen(p1));
+		 else
+		 break;*/
+		}
+	}
+	return 0;
+}
+#endif
+
+ACTION(
+	/* ID */            57,
 	/* Name */          _T("%o: Remove every content of board %0 from current board"),
 	/* Flags */         0,
 	/* Params */        (1,PARAM_STRING,_T("Board name"))
@@ -1568,7 +1672,7 @@ ACTION(
 /* ENDIANNESS */
 
 ACTION(
-	/* ID */            57,
+	/* ID */            58,
 	/* Name */          _T("%o: Set little-endian"),
 	/* Flags */         0,
 	/* Params */        (0)
@@ -1578,7 +1682,7 @@ ACTION(
 }
 
 ACTION(
-	/* ID */            58,
+	/* ID */            59,
 	/* Name */          _T("%o: Set big-endian"),
 	/* Flags */         0,
 	/* Params */        (0)

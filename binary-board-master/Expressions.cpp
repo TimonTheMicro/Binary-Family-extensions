@@ -275,12 +275,33 @@ EXPRESSION(
 	return 0;
 }
 
+#ifdef UNICODE
+EXPRESSION(
+	/* ID */			16,
+	/* Name */			_T("string$("),
+	/* Flags */			EXPFLAG_STRING,
+	/* Params */		(3, EXPPARAM_NUMBER,_T("Offset"), EXPPARAM_NUMBER,_T("Size"), EXPPARAM_NUMBER,_T("Unicode? (0: no, 1: yes)"))
+	) {
+	off_t p1 = ExParam(TYPE_INT);
+	size_t p2 = ExParam(TYPE_INT);
+	bool p3 = ExParam(TYPE_INT);
+
+	if ( numBoards && p2 )
+	{
+		if ( p2>d_vData.size() )
+			p2 = d_vData.size();
+		string output( d_vData.begin()+p1, p1+p2>d_vData.size() ? d_vData.end():d_vData.begin()+p1+p2 );
+		ReturnString(output.c_str());
+	}
+	ReturnString("");
+}
+#else
 EXPRESSION(
 	/* ID */			16,
 	/* Name */			_T("string$("),
 	/* Flags */			EXPFLAG_STRING,
 	/* Params */		(2, EXPPARAM_NUMBER,_T("Offset"), EXPPARAM_NUMBER,_T("Size"))
-	) {
+) {
 	off_t p1 = ExParam(TYPE_INT);
 	size_t p2 = ExParam(TYPE_INT);
 
@@ -293,7 +314,7 @@ EXPRESSION(
 	}
 	ReturnString("");
 }
-
+#endif
 
 EXPRESSION(
 	/* ID */			17,
@@ -691,41 +712,59 @@ EXPRESSION(
 	return -1;
 }
 
+#ifdef UNICODE
 EXPRESSION( //to modify. Find since beginning of offset. Then give offset of found. In that way you can enlist them.
 	/* ID */			35,
 	/* Name */			_T("findStr("),
 	/* Flags */			0,
-	/* Params */		(4, EXPPARAM_STRING,_T("String"), /*EXPPARAM_NUMBER,_T("Case sensitive"), */EXPPARAM_NUMBER,_T("Occurrence"),EXPPARAM_NUMBER,_T("Begins with NULL (0 for false, 1 for true)"),EXPPARAM_NUMBER,_T("Ends with NULL (0 for false, 1 for true)"))
+	/* Params */		(4, EXPPARAM_STRING,_T("String"), EXPPARAM_NUMBER,_T("Case sensitive? (0: no, 1: yes)"), EXPPARAM_NUMBER,_T("Begin offset"), EXPPARAM_NUMBER,_T("Unicode? (0: no, 1: yes)"))
 ) {
 	string p1(GetStr2());
-	long p2 = ExParam(TYPE_INT);
-	bool p3 = ExParam(TYPE_INT);
+	if(!p1.length()) return 0;
+	bool p2 = ExParam(TYPE_INT);
+	int p3 = ExParam(TYPE_INT);
 	bool p4 = ExParam(TYPE_INT);
 
-	if ( numBoards && p2 )
+	if(numBoards)
 	{
-		long dist = 0;
-		while ( p2 && dist != d_vData.size() )
-		{
-			/*
-			auto it = std::search( d_vData.begin()+dist+1, d_vData.end(), p1, p1 + strlen(p1) );			
-			dist = it - d_vData.begin();						
-			if ( !p3 || (p3 && !((char)d_vData.at(dist-1))))
-				if ( !p4 || (p4 && ((dist+strlen(p1)) < d_vData.size()) && !((char)d_vData.at(dist+strlen(p1)))))
-					p2--;
-			if ( dist == d_vData.size() )
-				return -1;
-			if (p2)
-				dist += strlen(p1);
+		unsigned int pos = p3;
+			if(p4) //Unicode
+			{ //UTF-16 LE
+				const char *pointer = reinterpret_cast<const char*>(&p1[0]);
+				size_t size = p1.size()*sizeof(p1.front());
+				const auto it = std::search(d_vData.begin()+pos, d_vData.end(),pointer,pointer+size);
+				pos = it-d_vData.begin();
+			}
 			else
-				return dist;
-				*/
-		}
+			{
+				const auto it = std::search(d_vData.begin()+pos, d_vData.end(),p1.begin(),p1.end());
+				pos = it-d_vData.begin();
+			}
+		return pos;
 	}
-	
-	return -1;
+	return 0;
 }
-
+#else
+EXPRESSION( //to modify. Find since beginning of offset. Then give offset of found. In that way you can enlist them.
+	/* ID */			35,
+	/* Name */			_T("findStr("),
+	/* Flags */			0,
+	/* Params */		(4, EXPPARAM_STRING,_T("String"), EXPPARAM_NUMBER,_T("Case sensitive? (0: no, 1: yes)"), EXPPARAM_NUMBER,_T("Begin offset"))
+) {
+	string p1(GetStr2());
+	if(!p1.length()) return 0;
+	bool p2 = ExParam(TYPE_INT);
+	int p3 = ExParam(TYPE_INT);
+	if(numBoards)
+	{
+		unsigned int pos = p3;
+		const auto it = std::search(d_vData.begin()+pos, d_vData.end(),p1.begin(),p1.end());
+		pos = it-d_vData.begin();
+		return pos;
+	}
+	return 0;
+}
+#endif
 EXPRESSION(
 	/* ID */			36,
 	/* Name */			_T("findCont("),
@@ -738,7 +777,7 @@ EXPRESSION(
 	if ( numBoards )
 	{		
 		for (unsigned int i=0; i<numBoards; i++) //check if board already exists
-			   if ( strCompare(d_sNamei, p1) )
+			if ( strCompare(d_sNamei, p1) )
 			{
 				long dist = 0;
 				while ( true )
