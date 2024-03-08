@@ -23,6 +23,7 @@ PROPID_GRP0,
 PROPID_ENDIANNESS,
 PROPID_GRP1,
 PROPID_AUTOSELECT,
+PROPID_CASESENSITIVE,
 
 PROPS_IDS_END()
 
@@ -30,10 +31,11 @@ PROPS_DATA_START()
 
 // PropData_EditString(PROPID_TEXT1,PSTR("Text item"),PSTR("I'm more textual than you")),
 // PropData_EditNumber(PROPID_NUM1,PSTR("Number item"),PSTR("I'm more numeric than text")),
-PropData_Group(PROPID_GRP0,(int)_T("Endianness"),(int)_T("")),
-PropData_CheckBox(PROPID_ENDIANNESS,(int)_T("Big endian"),(int)_T("Read integer values in big endian format")),
-PropData_Group(PROPID_GRP1,(int)_T("Other options"),(int)_T("")),
-PropData_CheckBox(PROPID_AUTOSELECT,(int)_T("Board autoselect"),(int)_T("Automatically select board after create")),
+PropData_Group(PROPID_GRP0,(int)_T("Data"),(int)_T("")),
+PropData_CheckBox(PROPID_ENDIANNESS,(int)_T("big-endian order"),(int)_T("Read the most significant Byte first")),
+PropData_Group(PROPID_GRP1,(int)_T("Board options"),(int)_T("")),
+PropData_CheckBox(PROPID_AUTOSELECT,(int)_T("Board autoselect"),(int)_T("Automatically select boards when created")),
+PropData_CheckBox(PROPID_CASESENSITIVE,(int)_T("Case sensitive"),(int)_T("Respect case of strings for boards naming")),
 PROPS_DATA_END()
 
 // --------------------
@@ -174,6 +176,9 @@ BOOL WINAPI DLLExport GetPropCheck(LPMV mV,LPEDATA edPtr,UINT nPropID)
 	case PROPID_AUTOSELECT:
 		return edPtr->bAutoSelect;
 		break;
+	case PROPID_CASESENSITIVE:
+		return edPtr->bCaseSensitive;
+		break;
 	}
 
 #endif // !RUN_ONLY
@@ -266,6 +271,11 @@ void WINAPI DLLExport SetPropCheck(LPMV mV,LPEDATA edPtr,UINT nPropID,BOOL nChec
 		edPtr->bAutoSelect = nCheck;
 		mvInvalidateObject(mV,edPtr);
 		mvRefreshProp(mV,edPtr,PROPID_AUTOSELECT,false);
+		break;
+	case PROPID_CASESENSITIVE:
+		edPtr->bCaseSensitive = nCheck;
+		mvInvalidateObject(mV,edPtr);
+		mvRefreshProp(mV,edPtr,PROPID_CASESENSITIVE,false);
 		break;
 		//mvRefreshProp(mV, edPtr, PROPID_COMBO);
 	}
@@ -550,6 +560,8 @@ int WINAPI DLLExport CreateObject(mv _far *mV,fpLevObj loPtr,LPEDATA edPtr)
 		//		edPtr->sheight = 32;
 
 		edPtr->bEndianness = false;
+		edPtr->bAutoSelect = true;
+		edPtr->bCaseSensitive = false;
 		return 0;	// No error
 	}
 
@@ -787,6 +799,9 @@ BOOL WINAPI	DLLExport UsesFile (LPMV mV,LPSTR fileName)
 void WINAPI	DLLExport CreateFromFile (LPMV mV,LPSTR fileName,LPEDATA edPtr)
 {
 #ifndef RUN_ONLY
+	edPtr->bEndianness = false;
+	edPtr->bAutoSelect = true;
+	edPtr->bCaseSensitive = false;
 	// Initialize your extension data from the given file
 //	edPtr->swidth = 32;
 //	edPtr->sheight = 32;

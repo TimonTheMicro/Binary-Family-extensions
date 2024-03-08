@@ -38,6 +38,7 @@ short WINAPI DLLExport CreateRunObject(LPRDATA rdPtr,LPEDATA edPtr,fpcob cobPtr)
 */
 	rdPtr->bEndianness = edPtr->bEndianness; // kiss <3 =)
 	rdPtr->bAutoSelect = edPtr->bAutoSelect; // kiss <3 =)
+	rdPtr->bCaseSensitive = edPtr->bCaseSensitive; // kiss <3 =)
 
 	// No errors
 	return 0;
@@ -58,7 +59,7 @@ short WINAPI DLLExport DestroyRunObject(LPRDATA rdPtr,long fast)
 	*/
 	// No errors
 	delete rdPtr->rRd;
-	delete rdPtr->vBoards.data();
+	delete rdPtr->BOARDS.data();
 
 	return 0;
 }

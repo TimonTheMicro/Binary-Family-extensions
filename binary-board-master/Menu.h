@@ -6,7 +6,7 @@
 #ifdef CONDITION_MENU
 
 SEPARATOR
-	ITEM(0,"Board exists?")
+	ITEM(0,"Board exists")
 SEPARATOR
 
 #endif
@@ -158,41 +158,41 @@ SUB_START("Get value")
 	ITEM(18,"Long Long Int")
 SUB_END
 SUB_START("Get file")
-	ITEM(23,"Size")
-	ITEM(24,"Last used path")
+	ITEM(19,"Size")
+	ITEM(20,"Last used path")
 SUB_END
 SUB_START("Get Date/Time of")
-	ITEM(25,"Year")
-	ITEM(26,"Month")
-	ITEM(27,"Day")
-	ITEM(28,"Hour")
-	ITEM(29,"Minute")
-	ITEM(30,"Second")
+	ITEM(21,"Year")
+	ITEM(22,"Month")
+	ITEM(23,"Day")
+	ITEM(24,"Hour")
+	ITEM(25,"Minute")
+	ITEM(26,"Second")
 SUB_END
 SEPARATOR
 SUB_START("Occurences")
 	SUB_START("Count")
-		ITEM(31,"Integer")
-		ITEM(32,"String")
-		ITEM(33,"Content")
+		ITEM(27,"Integer")
+		ITEM(28,"String")
+		ITEM(29,"Content")
 	SUB_END
 	SUB_START("Find")
-		ITEM(34,"Integer")
-		ITEM(35,"String")
-		ITEM(36,"Content")
+		ITEM(30,"Integer")
+		ITEM(31,"String")
+		ITEM(32,"Content")
 	SUB_END
 SUB_END
 SUB_START("Conversions")
-	ITEM(37,"Long int to single")
-	ITEM(38,"Single to long int")
-	ITEM(39,"Short int to half float")
-	ITEM(30,"Half float to short int")
-	ITEM(41,"Precision adjustment")
+	ITEM(33,"Long int to single")
+	ITEM(34,"Single to long int")
+	ITEM(35,"Read half float")
+	ITEM(36,"Store half float")
+	ITEM(37,"Precision adjustment")
 	SEPARATOR
-	ITEM(19,"LOBYTE")
-	ITEM(20,"HIBYTE")
-	ITEM(21,"LOWORD")
-	ITEM(22,"HIWORD")
+	ITEM(38,"LOBYTE")
+	ITEM(39,"HIBYTE")
+	ITEM(40,"LOWORD")
+	ITEM(41,"HIWORD")
 SUB_END
 SUB_START("Bitwise operations")
 	ITEM(42,"Shift left <<")
