@@ -10,9 +10,9 @@
 
 ACTION(
 	/* ID */            0,
-	/* Name */          _T("%o: Create a board %0, size %1 Bytes"),
+	/* Name */          _T("%o: Create a board %0, capacity %1 Bytes"),
 	/* Flags */         EXPFLAG_STRING,
-	/* Params */        (2, PARAM_STRING,_T("Board name"), PARAM_NUMBER,_T("Size (in Bytes)"))
+	/* Params */        (2, PARAM_STRING,_T("Board name"), PARAM_NUMBER,_T("Capacity (in Bytes)"))
 ) {
 	string p1 = string(GetStr());
 	if(!p1.length()) return 0;
@@ -26,7 +26,9 @@ ACTION(
 	rdPtr->BOARDS[selected].bLock = false;
 	rdPtr->BOARDS[selected].sName = p1;
 	if(p2)
-		rdPtr->BOARDS[selected].vData.resize(p2);
+	{
+		rdPtr->BOARDS[selected].vData.reserve(p2);
+	}
 	if(rdPtr->bAutoSelect)
 		rdPtr->SelBoard = selected;
 	return 1;
@@ -44,7 +46,7 @@ ACTION(
 
 	if(numBoards)
 	{
-		for(unsigned int i = 0; i < numBoards; i++) //check if board already exists
+		for(unsigned int i=0; i<numBoards; i++) //check if board already exists
 			if(strCompare(d_sNamei, p1, rdPtr->bCaseSensitive))
 			{
 				if (signed int(rdPtr->SelBoard+1)) rdPtr->lastBoard = d_sName; //history
@@ -63,7 +65,7 @@ ACTION(
 ) {
 	if(numBoards)
 	{
-		for(unsigned int i = 0; i < numBoards; i++) //check if board already exists
+		for(unsigned int i=0; i<numBoards; i++) //check if board already exists
 			if(strCompare(d_sNamei, rdPtr->lastBoard, rdPtr->SelBoard))
 			{
 				rdPtr->SelBoard = i;
@@ -76,7 +78,7 @@ ACTION(
 
 ACTION(
 	/* ID */            3,
-	/* Name */          _T("%o: Rename current board to %0"),
+	/* Name */          _T("%o: Rename the board to %0"),
 	/* Flags */         0,
 	/* Params */        (1, PARAM_STRING,_T("Board new name"))
 ) {
@@ -85,14 +87,12 @@ ACTION(
 
 	if(numBoards && !d_bLock)
 	{
-		for(unsigned int i = 0; i < numBoards; i++) //check if board already exists
+		for(unsigned int i=0; i<numBoards; i++) //check if board already exists
 			if(strCompare(d_sNamei, p1, rdPtr->bCaseSensitive))
-				return 0; // a board with new name already exists, exiting
-
+				return 0; // a board with such name already exists, exiting
 		d_sName = p1; //if there will be no dublicated names
 	}
-
-	return 0;
+	return 1;
 }
 
 ACTION(
@@ -114,16 +114,15 @@ ACTION(
 		if(strCompare(d_sNamei, p1, rdPtr->bCaseSensitive)) // it does
 		{ 
 			d_sNamei = p2; // it does, change the old name to new
-			break;
+			return 1;
 		}
 	}
-
 	return 0;
 }
 
 ACTION(
 	/* ID */            5,
-	/* Name */          _T("%o: Set current board content lock flag to %0"),
+	/* Name */          _T("%o: Set the board lock flag to %0"),
 	/* Flags */         0,
 	/* Params */        (1, PARAM_NUMBER,_T("Content locked (0: No, 1: Yes)"))
 
@@ -137,75 +136,94 @@ ACTION(
 
 ACTION(
 	/* ID */            6,
-	/* Name */          _T("%o: Set board %0 content lock flag to %1"),
+	/* Name */          _T("%o: Set board %0 lock flag to %1"),
 	/* Flags */         0,
 	/* Params */        (2, PARAM_STRING,_T("Target board name"), PARAM_NUMBER,_T("Content locked (0: No, 1: Yes)"))
 ) {
 	string p1 = string(GetStr());
 	bool p2 = GetInt();
+
 	if(!p1.length()) return 0;
 
 	for(unsigned int i=0; i<numBoards; i++) //check if board already exists
 		if(strCompare(d_sNamei, p1, rdPtr->bCaseSensitive))
 		{
 			rdPtr->BOARDS[i].bLock = p2;
-			break;
+			return 1;
 		}
-
 	return 0;
 }
 
 ACTION(
 	/* ID */            7,
-	/* Name */          _T("%o: Resize current board container to %0 Bytes"),
+	/* Name */          _T("%o: Resize the container dimensions to %0 Bytes, option %1"),
 	/* Flags */         0,
-	/* Params */        (1, PARAM_NUMBER,_T("Size (in Bytes)"))
+	/* Params */        (2, PARAM_NUMBER,_T("Size (in Bytes)"), PARAM_NUMBER,_T("Which? (0: Capacity, 1: Size, 2: Both)"))
 ) {
-	size_t p1 = GetInt();
+	size_t p2 = GetInt();
+	bool p3 = GetInt();
 
-	if(numBoards && !d_bLock)
-		if(p1 != -1)
-		{
-			if(p1 <= d_vData.size())
-				d_vData.reserve(p1);
-
-			d_vData.resize(p1);
-			d_vData.shrink_to_fit();
-		}
+	if(numBoards)
+	{
+		if(!d_bLock) //is not locked flag
+			switch (p3)
+			{
+				case 1: d_vData.resize(p2); break;
+				case 2: d_vData.resize(p2);
+				case 0:
+				{
+					if(p2 > d_vData.capacity())
+						d_vData.reserve(p2);
+					else if(p2 < d_vData.capacity())
+						d_vData.shrink_to_fit();
+					//vector<char>(d_vData).swap(d_vData); // trick
+				}
+			}
+			return 1;
+	}
 	return 0;
 }
 
 ACTION(
 	/* ID */            8,
-	/* Name */          _T("%o: Resize board container %0 to %1 Bytes"),
+	/* Name */          _T("%o: Resize container dimensions of board %0 to %1 Bytes, option %2"),
 	/* Flags */         0,
-	/* Params */        (2, PARAM_STRING,_T("Board name"), PARAM_NUMBER,_T("Size (in Bytes)"))
+	/* Params */        (3, PARAM_STRING,_T("Board name"), PARAM_NUMBER,_T("Size (in Bytes)"), PARAM_NUMBER,_T("Which? (0: Capacity, 1: Size, 2: Both)"))
 ) {
 	string p1 = string(GetStr());
 	if(!p1.length()) return 0;
-
 	size_t p2 = GetInt();
+	int p3 = GetInt();
 
-	for(unsigned int i = 0; i < numBoards; i++) //check if board already exists
+	for(unsigned int i=0; i<numBoards; i++) //check if board already exists
+	{
 		if(strCompare(d_sNamei, p1, rdPtr->bCaseSensitive))
 		{
 			if(!d_bLocki)
-				if(p2 != -1)
+			{
+				switch (p3)
 				{
-					if(p2 > d_vData.size())
-						d_vData.reserve(p2);
-
-					rdPtr->BOARDS[i].vData.resize(p2);
-					rdPtr->BOARDS[i].vData.shrink_to_fit();
-					break;
+					case 1: d_vDatai.resize(p2); break;
+					case 2: d_vDatai.resize(p2);
+					case 0:
+					{
+						if(p2 > d_vDatai.capacity())
+							d_vDatai.reserve(p2);
+						else if(p2 < d_vDatai.capacity())
+							d_vDatai.shrink_to_fit();
+						//vector<char>(d_vData).swap(d_vData); // trick
+					}
 				}
+			return 1;
+			}
 		}
+	}
 	return 0;
 }
 
 ACTION(
 	/* ID */            9,
-	/* Name */          _T("%o: Delete current board"),
+	/* Name */          _T("%o: Delete the board"),
 	/* Flags */         0,
 	/* Params */        (0)
 ) {
@@ -245,7 +263,7 @@ ACTION(
 				if (rdPtr->SelBoard == numBoards) //if selected board number is equal to boards number, decrease it to not overflow.
 					rdPtr->SelBoard--;
 			}
-			break;
+			return 1;
 		}
 	return 0;
 }
@@ -258,18 +276,21 @@ ACTION(
 	/* Params */        (1, PARAM_NUMBER,_T("Ignore lock flag? (0: No, 1: Yes)"))
 ) {
 	bool ignorelock = GetInt();
-	//rdPtr->BOARDS.clear(); //crashes randomly
+	//rdPtr->BOARDS.clear();
 	for (unsigned int i=0; i<numBoards; i++) //check if board already exists			
-		{//if (ignorelock || !d_bLock)
-			//d_bLocki = false;
-			//d_sNamei.clear();
-			//d_vDatai.clear();
-			//d_vDatai.shrink_to_fit();
-			//rdPtr->BOARDS.erase(rdPtr->BOARDS.begin()+i, rdPtr->BOARDS.begin()+i+1);
-			//rdPtr->SelBoard = 0;
-			rdPtr->BOARDS.pop_back();
+		{
+		if (ignorelock || !d_bLock)
+			// the make sure section
+			d_bLocki = false;
+			d_sNamei.clear();
+			d_vDatai.clear();
+			d_vDatai.shrink_to_fit(); 
+			// this should do the work
+			rdPtr->BOARDS.erase(rdPtr->BOARDS.begin()+i, rdPtr->BOARDS.begin()+i+1);
+			rdPtr->SelBoard = 0;
+			//rdPtr->BOARDS.pop_back(); // trick
+			return 1;
 		}
-
 	return 0;
 }
 
@@ -277,9 +298,9 @@ ACTION(
 
 ACTION(
 	/* ID */			12,
-	/* Name */			_T("%o: Load file %0 from offset %2, size %1 Bytes to current board"),
+	/* Name */			_T("%o: Load file %0 beginning at %1, size %2"),
 	/* Flags */			0,
-	/* Params */		(3, PARAM_FILENAME2,_T("File"), PARAM_NUMBER,_T("Begin offset"), PARAM_NUMBER,_T("Size (-1: End of File)"))
+	/* Params */		(3, PARAM_FILENAME2,_T("File"), PARAM_NUMBER,_T("Begin"), PARAM_NUMBER,_T("Size (-1: End of File)"))
 ) {
 	string p1 = string(GetStr());
 	if(!p1.length()) return 0;
@@ -328,12 +349,12 @@ ACTION(
 	}
 	return 0;
 }
-// might be taken as false positive for dumb Windows 10 antivirus
+// might be taken as false positive to dumb Windows 10 Defender
 ACTION(
 	/* ID */			14,
-	/* Name */			_T("%o: Load resource (PE) from file %0 to current board, type %1, find %2,  index %3"),
+	/* Name */			_T("%o: Load resource (PE) from file %0 to the board, type %1, find %2, index %3"),
 	/* Flags */			0,
-	/* Params */		(4, PARAM_FILENAME,_T("File"), PARAM_NUMBER,_T("Type (example: 0x00000020: LOAD_LIBRARY_AS_IMAGE_RESOURCE)"), PARAM_NUMBER,_T("Type (example: 3: RT_ICON)"), PARAM_NUMBER,_T("Index"))
+	/* Params */		(4, PARAM_FILENAME,_T("File"), PARAM_NUMBER,_T("Type (0x00000020: LOAD_LIBRARY_AS_IMAGE_RESOURCE)"), PARAM_NUMBER,_T("Type (3: RT_ICON)"), PARAM_NUMBER,_T("Index"))
 ) {
 	string p1 = string(GetStr());
 	if(!p1.length()) return 0;
@@ -361,9 +382,9 @@ ACTION(
 				HRSRC hResource;	
 				switch(resFind)
 				{
-				case 13: resFind = DIFFERENCE; break;
-				case 14: resFind = (ULONG_PTR)(RT_CURSOR)+DIFFERENCE; break;
-				case 15: resFind = (ULONG_PTR)(RT_ICON)+DIFFERENCE; break;
+					case 13: resFind = DIFFERENCE; break;
+					case 14: resFind = (ULONG_PTR)(RT_CURSOR)+DIFFERENCE; break;
+					case 15: resFind = (ULONG_PTR)(RT_ICON)+DIFFERENCE; break;
 				};
 				//that thing wanted a constant value as a parameter. C++ in a nutshell, had to case the argument
 				hResource = FindResource(hModule, MAKEINTRESOURCE(resIndex), (MAKEINTRESOURCE(resFind)));
@@ -512,7 +533,7 @@ ACTION(
 
 ACTION(
 	/* ID */            17,
-	/* Name */          _T("%o: Swap data of current board with %0"),
+	/* Name */          _T("%o: Swap the content with board %0 content"),
 	/* Flags */         0,
 	/* Params */        (1, PARAM_STRING,_T("Board name"))
 ) {
@@ -524,7 +545,7 @@ ACTION(
 		bool exists = false;
 		long slot = 0;
 		transform(p1.begin(),p1.end(),p1.begin(),::tolower);
-		for(unsigned int i = 0; i < numBoards; i++) //check if board already exists
+		for(unsigned int i=0; i<numBoards; i++) //check if board already exists
 			if(strCompare(d_sNamei, p1, rdPtr->bCaseSensitive))
 			{
 				if(!d_bLocki)
@@ -552,7 +573,7 @@ ACTION(
 		unsigned int i;
 		if(numBoards && p3.length())
 		{
-			for(unsigned int i = 0; i < numBoards; i++) //check if board already exists
+			for(unsigned int i=0; i<numBoards; i++) //check if board already exists
 				if(strCompare(d_sNamei, p3, rdPtr->bCaseSensitive))
 				{
 					exists = true;
@@ -603,9 +624,9 @@ ACTION(
 
 ACTION(
 	/* ID */            21,
-	/* Name */          _T("%o: Fill data by char %0 in current board"),
+	/* Name */          _T("%o: Fill the content with %0"),
 	/* Flags */         0,
-	/* Params */        (1, PARAM_NUMBER,_T("Fill by"))
+	/* Params */        (1, PARAM_NUMBER,_T("Fill by char (0-255)"))
 ) {
 	long p1 = GetInt();
 
@@ -614,11 +635,11 @@ ACTION(
 	return 0;
 }
 
-/*Compress*/
-//Zlib (Mark Adler) */
+/* COMPRESSION */
+// Zlib (Mark Adler) */
 ACTION(
 	/* ID */            22,
-	/* Name */          _T("%o: Compress current data using zlib, level %0"),
+	/* Name */          _T("%o: Compress the content with Zlib, level %0"),
 	/* Flags */         0,
 	/* Params */        (1, PARAM_NUMBER,_T("Compression level (0: No compression, -1: Default, 1: Best speed, 9: Best compression)"))
 ) {
@@ -664,7 +685,7 @@ ACTION(
 
 ACTION(
 	/* ID */            23,
-	/* Name */          _T("%o: Decompress current data using zlib"),
+	/* Name */          _T("%o: Decompress the content with Zlib"),
 	/* Flags */         0,
 	/* Params */        (0)
 ) {
@@ -707,11 +728,11 @@ ACTION(
 	}
 	return 0;
 }
-/* Encrypt */
+/* ENCRYPTION */
 // Blowfish
 ACTION(
 	/* ID */            24,
-	/* Name */          _T("%o: Encrypt current data using blowfish, key %0, method %1"),
+	/* Name */          _T("%o: Encrypt the content with Blowfish, key %0, method %1"),
 	/* Flags */         0,
 	/* Params */        (2, PARAM_STRING,_T("Set key string (length from 4 to 56 characters)"), PARAM_NUMBER,_T("Method (0: Simple, 1: Strict)"))
 ) {
@@ -736,7 +757,7 @@ ACTION(
 
 ACTION(
 	/* ID */            25,
-	/* Name */          _T("%o: Decrypt current data using blowfish, key %0, method %1"),
+	/* Name */          _T("%o: Decrypt the content with Blowfish, key %0, method %1"),
 	/* Flags */         0,
 	/* Params */        (2, PARAM_STRING,_T("Set key string (length from 4 to 56 characters)"), PARAM_NUMBER,_T("Strict mode (0: No, 1: Yes)"))
 ) {
@@ -757,11 +778,11 @@ ACTION(
 	}
 	return 0;
 }
-/* ENCODE */
+/* ENCODING */
 //Base64
 ACTION(
 	/* ID */            26,
-	/* Name */          _T("%o: Encode current data using base64"),
+	/* Name */          _T("%o: Encode the content with Base64"),
 	/* Flags */         0,
 	/* Params */        (0)
 ) {
@@ -778,7 +799,7 @@ ACTION(
 
 ACTION(
 	/* ID */            27,
-	/* Name */          _T("%o: Decode current data using base64"),
+	/* Name */          _T("%o: Decode the content with Base64"),
 	/* Flags */         0,
 	/* Params */        (0)
 ) {
@@ -879,7 +900,7 @@ ACTION(
 #ifdef UNICODE
 ACTION(
 	/* ID */            33,
-	/* Name */          _T("%o: Set String %0 at %1, Unicode flag: %2"),
+	/* Name */          _T("%o: Set string %0 at %1, unicode flag: %2"),
 	/* Flags */         0,
 	/* Params */        (3, PARAM_STRING,_T("String"), PARAM_NUMBER,_T("Offset"), PARAM_NUMBER,_T("Unicode? (0: No, 1: Yes)"))
 ) {
@@ -911,7 +932,7 @@ ACTION(
 #else
 ACTION(
 	/* ID */            33,
-	/* Name */          _T("%o: Set String %0 at %1"),
+	/* Name */          _T("%o: Set string %0 at %1"),
 	/* Flags */         0,
 	/* Params */        (2, PARAM_STRING,_T("String"), PARAM_NUMBER,_T("Offset"))
 ) {
@@ -933,7 +954,7 @@ ACTION(
 
 ACTION(
 	/* ID */            34,
-	/* Name */          _T("%o: Set content from %0 at %1"),
+	/* Name */          _T("%o: Set content from board %0 at %1"),
 	/* Flags */         0,
 	/* Params */        (2, PARAM_STRING,_T("Board name"), PARAM_NUMBER,_T("Offset"))
 ) {
@@ -945,7 +966,7 @@ ACTION(
 	if(numBoards && !d_bLock)
 	{
 		transform(p1.begin(),p1.end(),p1.begin(),::tolower);
-		for(unsigned int i = 0; i < numBoards; i++) //check if board already exists
+		for(unsigned int i=0; i<numBoards; i++) //check if board already exists
 		{
 			if(strCompare(d_sNamei, p1, rdPtr->bCaseSensitive))
 			{
@@ -959,7 +980,7 @@ ACTION(
 
 ACTION(
 	/* ID */			35,
-	/* Name */			_T("%o: Set content from %0 at %1 in current board"),
+	/* Name */			_T("%o: Set the content from file %0 at %1"),
 	/* Flags */			0,
 	/* Params */		(2, PARAM_FILENAME,_T("File"), PARAM_NUMBER,_T("Offset"))
 ) {
@@ -1053,7 +1074,7 @@ ACTION(
 #ifdef UNICODE
 ACTION(
 	/* ID */            40,
-	/* Name */          _T("%o: Append string %0, Unicode flag: %1"),
+	/* Name */          _T("%o: Append string %0, unicode flag: %1"),
 	/* Flags */         0,
 	/* Params */        (2, PARAM_STRING,_T("String"), PARAM_NUMBER,_T("Unicode? (0: No, 1: Yes)"))
 ) {
@@ -1103,7 +1124,7 @@ ACTION(
 	if(numBoards && !d_bLock)
 	{
 		transform(p1.begin(),p1.end(),p1.begin(),::tolower);
-		for(unsigned int i = 0; i < numBoards; i++) //check if board already exists
+		for(unsigned int i=0; i<numBoards; i++) //check if board already exists
 		{
 			if(strCompare(d_sNamei, p1, rdPtr->bCaseSensitive))
 			{
@@ -1215,7 +1236,7 @@ ACTION(
 #ifdef UNICODE
 ACTION(
 	/* ID */            47,
-	/* Name */          _T("%o: Insert string %0 at %1, Unicode flag: %2"),
+	/* Name */          _T("%o: Insert string %0 at %1, unicode flag: %2"),
 	/* Flags */         0,
 	/* Params */        (3, PARAM_STRING,_T("String"), PARAM_NUMBER,_T("Offset"), PARAM_NUMBER,_T("Unicode? (0: No, 1: Yes)"))
 ) {
@@ -1273,7 +1294,7 @@ ACTION(
 	if(numBoards && !d_bLock)
 	{
 		transform(p1.begin(),p1.end(),p1.begin(),::tolower);
-		for(unsigned int i = 0; i < numBoards; i++) //check if the board exists
+		for(unsigned int i=0; i<numBoards; i++) //check if the board exists
 		{
 			if(strCompare(d_sNamei, p1, rdPtr->bCaseSensitive))
 			{
@@ -1532,7 +1553,7 @@ ACTION(
 		long dist = 0;
 		transform(p1.begin(),p1.end(),p1.begin(),::tolower);
 		transform(p2.begin(),p2.end(),p2.begin(),::tolower);
-		for(unsigned int i = 0; i < numBoards; i++) //check if board already exists
+		for(unsigned int i=0; i<numBoards; i++) //check if board already exists
 			if(strCompare(d_sNamei, p1, rdPtr->bCaseSensitive))
 			{
 				for(long j = 0; j < numBoards; j++) //check if board already exists

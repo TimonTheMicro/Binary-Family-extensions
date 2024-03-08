@@ -10,11 +10,11 @@ typedef rRundata * LPRRDATA;
 #ifndef DATA_H
 #define DATA_H
 
-struct Board
+struct Board // a board structure
 {
-	bool bLock = false;
-	string sName;
-	vector <char> vData;
+	bool bLock = false; // lock flag
+	string sName; // name
+	vector <char> vData; // container
 };
 
 #endif /* DATA_H */
@@ -30,7 +30,7 @@ typedef struct tagRDATA
 	unsigned int SelBoard;
 	string lastBoard; //new (boards can change their ids because their vector position is not constant, so it is string)
 	string lastPath; //new
-	vector <Board> BOARDS; //vector of structs
+	vector <Board> BOARDS; // main board initialization (vector of structs)
 
 } RUNDATA;
 typedef	RUNDATA	* LPRDATA;

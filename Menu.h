@@ -38,7 +38,6 @@ SUB_START("Content")
 	ITEM(12,"Load from file")
 	ITEM(13,"Save to file")
 	ITEM(14,"Load PE resource from file")
-	SEPARATOR
 	SUB_START("Workspace")
 		ITEM(15,"Save to file")
 		ITEM(16,"Load from file")
@@ -136,14 +135,14 @@ SUB_START("Get board")
 		ITEM(2,"Name from identifier")
 	SUB_END
 	ITEM(3,"Memory location")
-	ITEM(4,"Content size")
+	ITEM(4,"Content dimensions")
 	ITEM(5,"Lock flag")
 	SEPARATOR
 	ITEM(6,"Count")
 SUB_END
 SUB_START("Get value")
-	ITEM(7,"size")
-	ITEM(8,"sign")
+	ITEM(7,"Size")
+	ITEM(8,"Sign")
 	ITEM(9,"bit")
 	SEPARATOR
 	ITEM(10,"Char")
@@ -155,7 +154,7 @@ SUB_START("Get value")
 	ITEM(16,"String")
 	SEPARATOR
 	ITEM(17,"Double")
-	ITEM(18,"Long Long Int")
+	ITEM(18,"Long long int")
 SUB_END
 SUB_START("Get file")
 	ITEM(19,"Size")
