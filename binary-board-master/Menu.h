@@ -6,7 +6,10 @@
 #ifdef CONDITION_MENU
 
 SEPARATOR
-	ITEM(0,"Board exists")
+SUB_START("Board")
+	ITEM(0,"Exists")
+	ITEM(1,"On create")
+SUB_END
 SEPARATOR
 
 #endif
@@ -38,7 +41,6 @@ SUB_START("Content")
 	ITEM(12,"Load from file")
 	ITEM(13,"Save to file")
 	ITEM(14,"Load PE resource from file")
-	SEPARATOR
 	SUB_START("Workspace")
 		ITEM(15,"Save to file")
 		ITEM(16,"Load from file")
@@ -132,18 +134,19 @@ SEPARATOR
 SUB_START("Get board")
 	SUB_START("Current")
 		ITEM(0,"Name")
+		ITEM(45,"Previous Name")
 		ITEM(1,"Identifier")
 		ITEM(2,"Name from identifier")
 	SUB_END
 	ITEM(3,"Memory location")
-	ITEM(4,"Content size")
+	ITEM(4,"Content dimensions")
 	ITEM(5,"Lock flag")
 	SEPARATOR
 	ITEM(6,"Count")
 SUB_END
 SUB_START("Get value")
-	ITEM(7,"size")
-	ITEM(8,"sign")
+	ITEM(7,"Size")
+	ITEM(8,"Sign")
 	ITEM(9,"bit")
 	SEPARATOR
 	ITEM(10,"Char")
@@ -155,7 +158,7 @@ SUB_START("Get value")
 	ITEM(16,"String")
 	SEPARATOR
 	ITEM(17,"Double")
-	ITEM(18,"Long Long Int")
+	ITEM(18,"Long long int")
 SUB_END
 SUB_START("Get file")
 	ITEM(19,"Size")
@@ -195,8 +198,10 @@ SUB_START("Conversions")
 	ITEM(41,"HIWORD")
 SUB_END
 SUB_START("Bitwise operations")
-	ITEM(42,"Shift left <<")
-	ITEM(43,"Shift right >>")
+	ITEM(42,"Shift left")
+	ITEM(43,"Shift right")
+	SEPARATOR
+	ITEM(44,"Make pattern of bits")
 SUB_END
 SEPARATOR
 

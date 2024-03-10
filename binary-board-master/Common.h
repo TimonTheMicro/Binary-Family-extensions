@@ -7,22 +7,25 @@
 #define OPTIMIZED_ACTION
 #define _CFCFILTERMGR_UNICODE_DEFS
 
-#define	MAX_IMAGES	16
-#define DEF_WIDTH	320
-#define DEF_HEIGHT	240
-
 //#define	CUSTOM_BACKSAVE
 #define FORCE_FALSE 2
 
-
 // General includes
 #include	"TemplateInc.h"
-#include	<string>
+#include	<bitset>
+#include	<algorithm>
+#include	<iterator>
 #include	<vector>
 #include	<map>
+#include	<string>
 #include	<fstream>
+#include	<sstream>
 #include	<iostream>
-#include	<cstdlib>
+#include	<iomanip>
+#include	<assert.h>
+#include	<limits.h>
+#include	<time.h>
+#include	<cctype>    // std::tolower
 
 using std::vector;
 using std::map;
@@ -30,23 +33,6 @@ using std::cin;
 using std::cout;
 using std::pair;
 using std::swap;
-#include	<bitset>
-#include	<algorithm>
-#include	<iterator>
-#include	<set>
-#include	<string>
-#include	<vector>
-#include	<map>
-#include	<fstream>
-#include	<iostream>
-#include	<sstream>
-#include	<iomanip>
-#include	<stdlib.h>  
-#include	<assert.h>
-#include	<stdio.h>
-#include	<limits.h>
-#include	<time.h>
-#include	<comdef.h>  // you will need this (unicode convertors)
 
 #ifdef UNICODE
 using std::wstring;
@@ -76,8 +62,8 @@ using std::stringstream;
 #include	"zlib.h" // zlib
 #include	"blowfish.h" // blowfish
 #include	"base64.h" // base64
-#include    <locale>
-#include    <codecvt>
+#include	"floats.h" //half floating conversions
+
 
 #define GetInt() CNC_GetIntParameter(rdPtr)
 #define GetParam() CNC_GetParameter(rdPtr)
@@ -91,53 +77,40 @@ using std::stringstream;
 #define GetYPos2() ExParam(TYPE_INT)-(rdPtr->useAbs?(rdPtr->rHo.hoRect.top+rdPtr->rHo.hoAdRunHeader->rhWindowY):0)
 #define GetStr2() (TCHAR*)ExParam(TYPE_STRING)
 
+
 // Binary Board object
-#define d_vData rdPtr->vBoards[rdPtr->iSelBoard].vData
-#define d_vDatai rdPtr->vBoards[i].vData
-#define d_vDataj rdPtr->vBoards[j].vData
-#define d_sName rdPtr->vBoards[rdPtr->iSelBoard].sName
-#define d_sNamei rdPtr->vBoards[i].sName
-#define d_sNamej rdPtr->vBoards[j].sName
-#define d_bProtected rdPtr->vBoards[rdPtr->iSelBoard].bProtected
-#define d_bProtectedi rdPtr->vBoards[i].bProtected
-#define d_bProtectedj rdPtr->vBoards[j].bProtected
-#define numBoards rdPtr->vBoards.size()
+#define d_vData rdPtr->BOARDS[rdPtr->SelBoard].vData
+#define d_vDatai rdPtr->BOARDS[i].vData
+#define d_vDataj rdPtr->BOARDS[j].vData
+#define d_sName rdPtr->BOARDS[rdPtr->SelBoard].sName
+#define d_sNamei rdPtr->BOARDS[i].sName
+#define d_sNamej rdPtr->BOARDS[j].sName
+#define d_bLock rdPtr->BOARDS[rdPtr->SelBoard].bLock
+#define d_bLocki rdPtr->BOARDS[i].bLock
+#define d_bLockj rdPtr->BOARDS[j].bLock
+#define numBoards rdPtr->BOARDS.size()
 
-/*
-#include <string>
-#include <codecvt>
-inline std::wstring wstring_convert_from_char(const char *str)
-{
-	std::wstring_convert<std::codecvt_utf8<wchar_t>,wchar_t> converter;
-	return converter.from_bytes(str);
-}
-inline std::string string_convert_from_wchar(const wchar_t *str)
-{
-	std::wstring_convert<std::codecvt_utf8<wchar_t>,wchar_t> converter;
-	return converter.to_bytes(str);
-}
-inline std::wstring wstring_convert_from_bytes(const std::vector< char > &v)
-{
-	std::wstring_convert<std::codecvt_utf8<wchar_t>,wchar_t> converter;
-	return converter.from_bytes(v.data(),v.data() + v.size());
-}
-inline std::vector< char > wstring_convert_to_bytes(const wchar_t *str)
-{
-	std::wstring_convert<std::codecvt_utf8<wchar_t>,wchar_t> converter;
-	std::string string = converter.to_bytes(str);
-	return std::vector< char >(string.begin(),string.end());
-}
-*/
-inline size_t count(std::string const &haystack,std::string const &needle, unsigned int size) {
-	auto occurrences = 0;
-	auto len = size;
-	auto pos = 0;
 
-	while(std::string::npos != (pos = haystack.find(needle,pos))) {
-		++occurrences;
-		pos += len;
+/* BINARY */
+
+inline int SizeOfValue3(int p1)
+{
+	if ( p1 < 0 || p1 > 0xFFFF )
+		return 4;
+	if ( p1 < 0x100 )
+		return 1;
+	return p1;
+}
+
+inline int NumberOfBits(int input)
+{
+	int output = 0;
+	for (int i=0; i<sizeof(input)*CHAR_BIT; i++)
+	{
+		if ((input >> i) & 1)
+			output = i+1;
 	}
-	return occurrences;
+	return output;
 }
 
 inline void skipPadding(std::ifstream &stream)
@@ -156,21 +129,50 @@ inline void writePadding(std::ofstream &stream)
 		stream.write((char*)&padChar,sizeof(char));
 }
 
-
-inline bool strCompare(string a, string b)
+/* STRINGS */
+inline size_t count(std::string const &haystack,std::string const &needle, unsigned int size)
 {
-	unsigned int sz = a.size();
+	auto occurrences = 0;
+	auto len = size;
+	auto pos = 0;
 
-	if(b.size() != sz)
+	while(std::string::npos != (pos = haystack.find(needle,pos)))
+	{
+		++occurrences;
+		pos += len;
+	}
+	return occurrences;
+}
+
+inline string strLow(string in)
+{
+	for(unsigned int i=0; i<i; ++i)
+		in[i] = tolower(in[i]);
+	return in;
+}
+
+inline bool strCompare(string ina, string inb, bool csensitive)
+{
+	unsigned int size = ina.size();
+
+	if(inb.size() != size) //first phase, the size
 		return false;
-
-	for(unsigned int i=0; i < sz; ++i)
-		if(tolower(a[i]) != tolower(b[i]))
-			return false;
-
+	if (!csensitive) //second phase, the case sensitivity
+	{
+		for(unsigned int i=0; i < size; ++i)
+			if(tolower(ina[i]) != tolower(inb[i]))
+				return false;
+	}
+	else
+	{
+		for(unsigned int i=0; i < size; ++i)
+			if(ina[i] != inb[i])
+				return false;
+	}
 	return true;
 }
 
+/* DEBUGGER */
 inline void printLogInt(int value, string path)
 {
 	ofstream outfile;
@@ -191,34 +193,6 @@ inline void printLogString(string value, string path)
 	outfile.close();
 }
 
-
-inline unsigned short rowSize(unsigned int width,unsigned char bpp)
-{
-	return ((bpp * width + 31) / 32) * 4;
-}
-
-/*
-inline std::string wstrToStr(string input)
-{
-//setup converter
-using convert_type = std::codecvt_utf8<wchar_t>;
-std::wstring_convert<convert_type,wchar_t> converter;
-
-//use converter (.to_bytes: wstr->str, .from_bytes: str->wstr)
-std::string converted_str = converter.to_bytes(input);
-return converted_str;
-}
-*/
-inline int swap(int color)
-{
-	char * bytes = (char *)&color;
-
-	bytes[3] = bytes[0];
-	bytes[0] = bytes[2];
-	bytes[2] = bytes[3];
-
-	return color;
-}
 
 
 #define USE_AA (rdPtr->rs.rsEffect&EFFECTFLAG_ANTIALIAS?TRUE:FALSE)

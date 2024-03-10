@@ -556,8 +556,6 @@ int WINAPI DLLExport CreateObject(mv _far *mV,fpLevObj loPtr,LPEDATA edPtr)
 
 // Set default object settings
 	{
-		//		edPtr->swidth = 32;
-		//		edPtr->sheight = 32;
 
 		edPtr->bEndianness = false;
 		edPtr->bAutoSelect = true;

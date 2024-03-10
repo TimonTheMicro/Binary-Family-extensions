@@ -23,3 +23,13 @@ CONDITION(
 			return 1;
 	return 0;
 }
+
+CONDITION(
+	/* ID */			1,
+	/* Name */			_T("%o : On board create"),
+	/* Flags */			0,
+	/* Params */		(0)
+)
+{
+	return true;
+}

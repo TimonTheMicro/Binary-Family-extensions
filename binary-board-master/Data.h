@@ -1,21 +1,5 @@
-
-
-enum //FillType
-{
-	FILL_NONE,
-
-	//Inbuilt
-	FILL_COLOR,
-	FILL_GRADIENT,
-	FILL_MOSAIC,
-
-	//Custom
-	FILL_USER,
-	FILL_RADIAL,
-
-	//Image flag
-	FILL_IMAGE = 0xf0000000
-};
+class rRundata;
+typedef rRundata * LPRRDATA;
 
 // --------------------------------
 // RUNNING OBJECT DATA STRUCTURE
@@ -23,17 +7,14 @@ enum //FillType
 // If you want to store anything between actions/conditions/expressions
 // you should store it here
 
-//#pragma pack(push, 1)
-struct Board
-{
-	bool bProtected;
-	string sName;
-	vector <char> vData;
-};
-//#pragma pack(pop)
 
-class rRundata;
-typedef rRundata * LPRRDATA;
+struct Board // a board structure
+{
+	bool bLock = false; // lock flag
+	string sName; // name
+	vector <char> vData; // container
+};
+
 
 typedef struct tagRDATA
 {
@@ -41,12 +22,12 @@ typedef struct tagRDATA
 
 	bool bEndianness;
 	bool bAutoSelect;
-	bool bStrCmp;
+	bool bCaseSensitive;
 
-	unsigned int iSelBoard;
+	unsigned int SelBoard;
 	string lastBoard; //new (boards can change their ids because their vector position is not constant, so it is string)
 	string lastPath; //new
-	vector <Board> vBoards; //vector of structs
+	vector <Board> BOARDS; // main board initialization (vector of structs)
 
 } RUNDATA;
 typedef	RUNDATA	* LPRDATA;
@@ -59,14 +40,6 @@ typedef	RUNDATA	* LPRDATA;
 // These values let you store data in your extension that will be saved in the MFA
 // You should use these with properties
 
-// --------------------------------
-// EDITION OF OBJECT DATA STRUCTURE
-// --------------------------------
-// These values let you store data in your extension that will be saved in the MFA
-// You should use these with properties
-
-
-
 
 typedef struct tagEDATAA_V1
 {
@@ -75,7 +48,7 @@ typedef struct tagEDATAA_V1
 	//	short			sheight;
 	bool			bEndianness;
 	bool			bAutoSelect;
-	bool			bStrCmp;
+	bool			bCaseSensitive;
 } EDITDATAA;
 
 typedef struct tagEDATAW_V1
@@ -85,7 +58,7 @@ typedef struct tagEDATAW_V1
 	//	short			sheight;
 	bool			bEndianness;
 	bool			bAutoSelect;
-	bool			bStrCmp;
+	bool			bCaseSensitive;
 } EDITDATAW;
 
 #ifdef _UNICODE

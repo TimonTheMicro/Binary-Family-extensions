@@ -300,7 +300,7 @@
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>..\..\Inc;%(AdditionalIncludeDirectories);$(ProjectDir)\zlib\;$(ProjectDir)\blowfish\;$(ProjectDir)\base64\;$(ProjectDir)\quaternion\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Inc;%(AdditionalIncludeDirectories);$(ProjectDir)\add-ons\</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;RUN_ONLY;COMPILE_SMALL;WIN32;_WINDOWS;STRICT;COXSDK;IN_EXT_VERSION2;RSDK;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -349,7 +349,7 @@
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>..\..\Inc;%(AdditionalIncludeDirectories);$(ProjectDir)\zlib\;$(ProjectDir)\blowfish\;$(ProjectDir)\base64\;$(ProjectDir)\quaternion\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Inc;%(AdditionalIncludeDirectories);$(ProjectDir)\add-ons\</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;RUN_ONLY;VITALIZE;WIN32;_WINDOWS;STRICT;COXSDK;IN_EXT_VERSION2;RSDK;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -397,7 +397,7 @@
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>..\..\Inc;%(AdditionalIncludeDirectories);$(ProjectDir)\zlib\;$(ProjectDir)\blowfish\;$(ProjectDir)\base64\;$(ProjectDir)\quaternion\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Inc;%(AdditionalIncludeDirectories);$(ProjectDir)\add-ons\</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;HWABETA;RUN_ONLY;WIN32;_WINDOWS;STRICT;COXSDK;IN_EXT_VERSION2;RSDK;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -444,7 +444,7 @@
       <Optimization>Disabled</Optimization>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>..\..\Inc;%(AdditionalIncludeDirectories);$(ProjectDir)\zlib\;$(ProjectDir)\blowfish\;$(ProjectDir)\base64\;$(ProjectDir)\quaternion\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Inc;%(AdditionalIncludeDirectories);$(ProjectDir)\add-ons\</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;HWABETA;WIN32;_WINDOWS;STRICT;COXSDK;IN_EXT_VERSION2;RSDK;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -496,7 +496,7 @@
       <OmitFramePointers>false</OmitFramePointers>
       <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>..\..\Inc;%(AdditionalIncludeDirectories);$(ProjectDir)\zlib\;$(ProjectDir)\blowfish\;$(ProjectDir)\base64\;$(ProjectDir)\quaternion\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Inc;%(AdditionalIncludeDirectories);$(ProjectDir)\add-ons\</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;HWABETA;WIN32;_WINDOWS;STRICT;COXSDK;IN_EXT_VERSION2;RSDK;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -545,7 +545,7 @@
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>..\..\Inc;%(AdditionalIncludeDirectories);$(ProjectDir)\zlib\;$(ProjectDir)\blowfish\;$(ProjectDir)\base64\;$(ProjectDir)\quaternion\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Inc;%(AdditionalIncludeDirectories);$(ProjectDir)\add-ons\</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;RUN_ONLY;COMPILE_SMALL;VITALIZE;WIN32;_WINDOWS;STRICT;COXSDK;IN_EXT_VERSION2;RSDK;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -594,7 +594,7 @@
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>..\..\Inc;%(AdditionalIncludeDirectories);$(ProjectDir)\zlib\;$(ProjectDir)\blowfish\;$(ProjectDir)\base64\;$(ProjectDir)\quaternion\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Inc;%(AdditionalIncludeDirectories);$(ProjectDir)\add-ons\</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;COMPILE_SMALL;WIN32;_WINDOWS;STRICT;COXSDK;IN_EXT_VERSION2;RSDK;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -640,7 +640,7 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\..\Inc;%(AdditionalIncludeDirectories);$(ProjectDir)\zlib\;$(ProjectDir)\blowfish\;$(ProjectDir)\base64\;$(ProjectDir)\quaternion\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Inc;%(AdditionalIncludeDirectories);$(ProjectDir)\add-ons\</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;WIN32;_WINDOWS;STRICT;COXSDK;IN_EXT_VERSION2;RSDK;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -689,7 +689,7 @@
       <Optimization>Disabled</Optimization>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>..\..\Inc;%(AdditionalIncludeDirectories);$(ProjectDir)\zlib\;$(ProjectDir)\blowfish\;$(ProjectDir)\base64\;$(ProjectDir)\quaternion\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Inc;%(AdditionalIncludeDirectories);$(ProjectDir)\add-ons\</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;WIN32;_WINDOWS;STRICT;COXSDK;IN_EXT_VERSION2;RSDK;HWA;HWABETA;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -736,7 +736,7 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\..\Inc;%(AdditionalIncludeDirectories);$(ProjectDir)\zlib\;$(ProjectDir)\blowfish\;$(ProjectDir)\base64\;$(ProjectDir)\quaternion\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Inc;%(AdditionalIncludeDirectories);$(ProjectDir)\add-ons\</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;WIN32;_WINDOWS;STRICT;COXSDK;IN_EXT_VERSION2;RSDK;HWA;HWABETA;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -788,7 +788,7 @@
       <OmitFramePointers>false</OmitFramePointers>
       <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>..\..\Inc;%(AdditionalIncludeDirectories);$(ProjectDir)\zlib\;$(ProjectDir)\blowfish\;$(ProjectDir)\base64\;$(ProjectDir)\quaternion\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Inc;%(AdditionalIncludeDirectories);$(ProjectDir)\add-ons\</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;STRICT;COXSDK;IN_EXT_VERSION2;RSDK;HWA;HWABETA;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -837,7 +837,7 @@
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>..\..\Inc;%(AdditionalIncludeDirectories);$(ProjectDir)\zlib\;$(ProjectDir)\blowfish\;$(ProjectDir)\base64\;$(ProjectDir)\quaternion\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Inc;%(AdditionalIncludeDirectories);$(ProjectDir)\add-ons\</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;RUN_ONLY;WIN32;_WINDOWS;STRICT;COXSDK;IN_EXT_VERSION2;RSDK;HWA;HWABETA;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -887,7 +887,7 @@
       <OmitFramePointers>false</OmitFramePointers>
       <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>..\..\Inc;%(AdditionalIncludeDirectories);$(ProjectDir)\zlib\;$(ProjectDir)\blowfish\;$(ProjectDir)\base64\;$(ProjectDir)\quaternion\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Inc;%(AdditionalIncludeDirectories);$(ProjectDir)\add-ons\</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>UNICODE;HWABETA;_UNICODE;NDEBUG;WIN32;_WINDOWS;STRICT;COXSDK;IN_EXT_VERSION2;RSDK;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -938,7 +938,7 @@
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>..\..\Inc;%(AdditionalIncludeDirectories);$(ProjectDir)\zlib\;$(ProjectDir)\blowfish\;$(ProjectDir)\base64\;$(ProjectDir)\quaternion\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Inc;%(AdditionalIncludeDirectories);$(ProjectDir)\add-ons\</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>HWABETA;UNICODE;_UNICODE;NDEBUG;RUN_ONLY;WIN32;_WINDOWS;STRICT;COXSDK;IN_EXT_VERSION2;RSDK;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -986,7 +986,7 @@
       <Optimization>Disabled</Optimization>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>..\..\Inc;%(AdditionalIncludeDirectories);$(ProjectDir)\zlib\;$(ProjectDir)\blowfish\;$(ProjectDir)\base64\;$(ProjectDir)\quaternion\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Inc;%(AdditionalIncludeDirectories);$(ProjectDir)\add-ons\</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;HWABETA;UNICODE;_UNICODE;WIN32;_WINDOWS;STRICT;COXSDK;IN_EXT_VERSION2;RSDK;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -1024,8 +1024,9 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="base64\base64.cpp" />
-    <ClCompile Include="blowfish\blowfish.cpp" />
+    <ClCompile Include="add-ons\base64.cpp" />
+    <ClCompile Include="add-ons\blowfish.cpp" />
+    <ClCompile Include="add-ons\rotm2quat.cpp" />
     <ClCompile Include="Edittime.cpp">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Release_Small|Win32'">MinSpace</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Run_Only_Small|Win32'">MinSpace</Optimization>
@@ -1041,7 +1042,6 @@
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Run_Only_Small|Win32'">MinSpace</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Vitalize_Small|Win32'">MinSpace</Optimization>
     </ClCompile>
-    <ClCompile Include="quaternion\rotm2quat.cpp" />
     <ClCompile Include="Runtime.cpp">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Release_Small|Win32'">MinSpace</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Run_Only_Small|Win32'">MinSpace</Optimization>
@@ -1110,7 +1110,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Vitalize_Small|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Vitalize|Win32'">true</ExcludedFromBuild>
     </CustomBuild>
-    <ClInclude Include="floats.hpp" />
     <ClInclude Include="Information.h" />
     <CustomBuild Include="Menu.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Edittime HWA|Win32'">true</ExcludedFromBuild>
@@ -1127,7 +1126,6 @@
     <ClInclude Include="Resource.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="cpp.hint" />
     <None Include="Ext.def" />
   </ItemGroup>
   <ItemGroup>
@@ -1142,6 +1140,9 @@
     <CustomBuild Include="EXTIMG.BMP">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Run_Only_Small|Win32'">true</ExcludedFromBuild>
     </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
