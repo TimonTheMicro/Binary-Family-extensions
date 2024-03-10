@@ -582,7 +582,7 @@ ACTION(
 				{
 					exists = true;
 					d_vDatai.clear();
-					copy(d_vData.begin()+p2, d_vData.size() > p1 ? d_vData.begin()+p2+p1 : d_vData.end(), back_inserter(d_vDatai));
+					copy(d_vData.begin()+p2, p1<d_vData.size()?d_vData.begin()+p2+p1:d_vData.end(), back_inserter(d_vDatai));
 					d_vDatai.shrink_to_fit();
 				}
 		}
@@ -915,7 +915,8 @@ ACTION(
 
 	if(numBoards && !d_bLock)
 	{
-		p2 = max(min(p2, d_vData.size()-1), 0); // overflow security for current argument
+		p2 = p2<d_vData.size()?p2:d_vData.size()-1; // Q?Y:N overflow security for the argument
+
 		if(p3) //Unicode
 		{ //UTF-16 LE
 			const char *pointer = reinterpret_cast<const char*>(&p1[0]);
@@ -947,7 +948,7 @@ ACTION(
 	const char* p1cstr = wstos.c_str();
 
 	if(numBoards && !d_bLock)
-		p2 = max(min(p2, d_vData.size()-1), 0); // overflow security for current argument
+		p2 = p2<d_vData.size()?p2:d_vData.size()-1; // Q?Y:N overflow security for the argument
 		if(p2+p1.size()>d_vData.size())
 			d_vData.resize(p1.size()+p2);
 		copy(p1.begin(),p1.end(),d_vData.begin()+p2);
@@ -1419,21 +1420,21 @@ ACTION(
 			const char* value = reinterpret_cast<char*>(&p1);
 			const char* value2 = reinterpret_cast<char*>(&p3);
 
-			long dist = 0;
+			long pos = 0;
 			while(true)
 			{
-				auto it = search(d_vData.begin()+dist,d_vData.end(), value, value+sizeof(char)*p2);
-				dist = it-d_vData.begin();
+				auto it = search(d_vData.begin()+pos,d_vData.end(), value, value+sizeof(char)*p2);
+				pos = it-d_vData.begin();
 
-				if(dist != d_vData.size())
+				if(pos != d_vData.size())
 				{
 					if(p4 > p2)
-						d_vData.insert(d_vData.begin()+dist, value2, value2+sizeof(char)*(p4 - p2));
-					copy(value2, value2+sizeof(char)*p4, d_vData.begin()+dist);
+						d_vData.insert(d_vData.begin()+pos, value2, value2+sizeof(char)*(p4 - p2));
+					copy(value2, value2+sizeof(char)*p4, d_vData.begin()+pos);
 					if(p4 < p2)
-						d_vData.erase(d_vData.begin()+dist+p4, d_vData.begin()+dist+p2);
+						d_vData.erase(d_vData.begin()+pos+p4, d_vData.begin()+pos+p2);
 
-					dist += sizeof(char) * p4;
+					pos += sizeof(char) * p4;
 				}
 				else
 					break;
@@ -1448,55 +1449,99 @@ ACTION(
 #ifdef UNICODE
 ACTION(
 	/* ID */            53,
-	/* Name */          _T("%o: Replace occurences of string %0 by %1"),
+	/* Name */          _T("%o: Replace occurences of string %0 by %2"),
 	/* Flags */         0,
-	/* Params */        (4, PARAM_STRING,_T("Old string"), PARAM_STRING,_T("Unicode? (0: No, 1: Yes)"), PARAM_STRING,_T("New string"), PARAM_STRING,_T("Unicode? (0: No, 1: Yes)"))
+	/* Params */        (5, PARAM_STRING,_T("Old string"), PARAM_NUMBER,_T("Unicode? (0: No, 1: Yes)"), PARAM_STRING,_T("New string"), PARAM_NUMBER,_T("Unicode? (0: No, 1: Yes)"), PARAM_NUMBER,_T("Respect size? (0: No, 1: Yes)"))
 ) {
-	string p1 = string(GetStr());
-	if(!p1.length()) return 0;
-	bool p3 = GetInt();
-	string p4 = string(GetStr());
-	if(!p4.length()) return 0;
-	bool p5 = GetInt();
+	string p1 = string(GetStr()); // str old
+	bool p3 = GetInt(); //Unicode old
+	string p4 = string(GetStr()); // str new
+	bool p5 = GetInt(); //Unicode new
+	bool p7 = GetInt(); //respect size
+
 	string buff = p4;
+	if(!p1.length() || !p4.length()) return 0;
 
 	if(numBoards && !d_bLock)
 	{
 		unsigned int pos = 0;
-		if (p3) //Unicode
+		if (p3) // old string is Unicode
 		{
-			while(true)
+			if (p5) // new string is Unicode
 			{
+				while(true)
+				{
+					//get old string from data
+					const char *pointer = reinterpret_cast<const char*>(&p1[0]);
+					size_t size = p1.size()*sizeof(p1.front());
+					const auto it = std::search(d_vData.begin()+pos, d_vData.end(), pointer, pointer+size);
+					
+					const int diff = (p4.size() - p1.size()) * sizeof(wchar_t); //size new - size old
+					if(!p7 && (diff > 0)) d_vData.insert(d_vData.begin()+pos+diff, pointer, pointer+diff);
+					copy(pointer, !p7?pointer+size:pointer+p1.size()*sizeof(wchar_t), d_vData.begin()+pos);	
+					if(!p7 && (diff < 0)) d_vData.erase(d_vData.begin()+pos+size, d_vData.begin()+pos+size+diff);
+
+					pos = it-d_vData.begin();
+					if(pos >= d_vData.size())
+						return 1;
+					pos++;
+				}
+			}
+			else // new string is not Unicode
+			{
+				//get old string from data
 				const char *pointer = reinterpret_cast<const char*>(&p1[0]);
 				size_t size = p1.size()*sizeof(p1.front());
 				const auto it = std::search(d_vData.begin()+pos, d_vData.end(), pointer, pointer+size);
 
-				if(p1.size() > p4.size())
-					d_vData.insert(d_vData.begin()+pos, pointer, pointer+(size-p1.size()));
-				copy(pointer, pointer+size, d_vData.begin()+pos);
-				if(p4.size() > p1.size())
-					d_vData.erase(d_vData.begin()+pos, d_vData.begin()+pos+p1.size());
+				const int diff = (p4.size() - p1.size()) * sizeof(wchar_t); //size new - size old
+				if(!p7 && (diff > 0)) d_vData.insert(d_vData.begin()+pos, p4.begin(), p4.begin()+(p4.size()-p1.size()));
+				copy(p4.begin(), !p7?p4.end():p1.end(), d_vData.begin()+pos);
+				if(!p7 && (diff < 0)) d_vData.erase(d_vData.begin()+pos, d_vData.begin()+pos+p1.size());
 
 				pos = it-d_vData.begin();
-				if(pos == d_vData.size())
+				if(pos >= d_vData.size())
 					return 1;
 				pos++;
 			}
 		}
-		else
+		else // old string is not Unicode
 		{
-			while(true)
+			if (p5) // new string is Unicode
 			{
-				const auto it = std::search(d_vData.begin()+pos, d_vData.end(), p1.begin(), p1.end());
+				while(true)
+				{
+					//get old string from data
+					const auto it = std::search(d_vData.begin()+pos, d_vData.end(), p1.begin(), p1.end());
+					
+					const int diff = (p4.size() - p1.size()) * sizeof(wchar_t); //size new - size old
+					
+					//get new string from argument
+					const char *pointer = reinterpret_cast<const char*>(&p4[0]);
+					size_t size = p4.size()*sizeof(p4.front());
 
-				if(p1.size() > p4.size())
-					d_vData.insert(d_vData.begin()+pos, p4.begin(), p4.begin()+(p4.size()-p1.size()));
-				copy(p4.begin(), p1.begin()+p1.size(), d_vData.begin()+pos);
-				if(p4.size() > p1.size())
-					d_vData.erase(d_vData.begin()+pos, d_vData.begin()+pos+p1.size());
+					if(!p7 && (diff > 0)) d_vData.insert(d_vData.begin()+pos, p4.begin(), p4.begin()+(p4.size()-p1.size()));
+					copy(pointer, !p7?pointer+size:pointer+p1.size(), d_vData.begin()+pos);
+					if(!p7 && (diff < 0)) d_vData.erase(d_vData.begin()+pos, d_vData.begin()+pos+p1.size());
+
+					pos = it-d_vData.begin();
+					if(pos >= d_vData.size())
+						return 1;
+					pos++;
+				}
+			}
+			else // new string is not Unicode aswell
+			{
+				//get old string from data
+				const auto it = std::search(d_vData.begin()+pos, d_vData.end(), p1.begin(), p1.end());
+				const int diff = p4.size() - p1.size(); //size new - size old
+				
+				if(!p7 && (diff > 0)) d_vData.insert(d_vData.begin()+pos, p4.begin(), p4.begin()+(p4.size()-p1.size()));
+				copy(p4.begin(), !p7?p4.end():p1.end(), d_vData.begin()+pos);
+				if(!p7 && (diff < 0)) d_vData.erase(d_vData.begin()+pos, d_vData.begin()+pos+p1.size());
 
 				pos = it-d_vData.begin();
-				if(pos == d_vData.size())
+				if(pos >= d_vData.size())
 					return 1;
 				pos++;
 			}
@@ -1509,29 +1554,28 @@ ACTION(
 	/* ID */            53,
 	/* Name */          _T("%o: Replace occurences of string %0 by %1"),
 	/* Flags */         0,
-	/* Params */        (2, PARAM_STRING,_T("Old string"), PARAM_STRING,_T("New string"))
+	/* Params */        (3, PARAM_STRING,_T("Old string"), PARAM_STRING,_T("New string"), PARAM_NUMBER,_T("Respect size? (0: No, 1: Yes)")))
 ) {
 	string p1 = string(GetStr());
-	if(!p1.length()) return 0;
 	string p4 = string(GetStr());
-	if(!p4.length()) return 0;
-	string buff;
+	bool p7 = GetInt();
+	if(!p1.length() || !p4.length()) return 0;
 
 	if(numBoards && !d_bLock)
 	{
 		unsigned int pos = 0;
 		while(true)
 		{	
+			//get old string from data
 			const auto it = std::search(d_vData.begin()+pos, d_vData.end(), p1.begin(), p1.end());
+			const int diff = p4.size() - p1.size(); //size new - size old
 
-			if(p1.size() > p4.size())
-				d_vData.insert(d_vData.begin()+pos, p4.begin(), p4.begin()+(p4.size()-p1.size()));
-			copy(p4.begin(), p1.begin()+p1.size(), d_vData.begin()+pos);
-			if(p4.size() > p1.size())
-				d_vData.erase(d_vData.begin()+pos, d_vData.begin()+pos+p1.size());
+			if(!p7 && (diff > 0)) d_vData.insert(d_vData.begin()+pos, p4.begin(), p4.begin()+(p4.size()-p1.size()));
+			copy(p4.begin(), !p7?p4.end():p1.end(), d_vData.begin()+pos);
+			if(!p7 && (diff < 0)) d_vData.erase(d_vData.begin()+pos, d_vData.begin()+pos+p1.size());
 
 			pos = it-d_vData.begin();
-			if(pos == d_vData.size())
+			if(pos >= d_vData.size())
 				return 1;
 			pos++;
 		}
@@ -1547,15 +1591,12 @@ ACTION(
 	/* Params */        (2, PARAM_STRING,_T("Old board name"), PARAM_STRING,_T("New board name"))
 ) {
 	string p1 = string(GetStr());
-	if(!p1.length()) return 0;
 	string p2 = string(GetStr());
-	if(!p2.length()) return 0;
+	if(!p1.length() || !p2.length()) return 0;
 
 	if(numBoards && !d_bLock)
 	{
-		long dist = 0;
-		transform(p1.begin(),p1.end(),p1.begin(),::tolower);
-		transform(p2.begin(),p2.end(),p2.begin(),::tolower);
+		size_t pos = 0;
 		for(unsigned int i=0; i<numBoards; i++) //check if board already exists
 			if(strCompare(d_sNamei, p1, rdPtr->bCaseSensitive))
 			{
@@ -1564,16 +1605,16 @@ ACTION(
 					{
 						while(true)
 						{
-							auto it = search(d_vData.begin() + dist,d_vData.end(),d_vDatai.begin(),d_vDatai.end());
-							dist = it - d_vData.begin();
-							if(dist == d_vData.size())
+							auto it = search(d_vData.begin() + pos,d_vData.end(),d_vDatai.begin(),d_vDatai.end());
+							pos = it - d_vData.begin();
+							if(pos == d_vData.size())
 								return 1;
 							if(d_vDataj.size() > d_vDatai.size())
-								d_vData.insert(d_vData.begin() + dist,d_vDataj.begin(),d_vDataj.begin() + (d_vDataj.size() - d_vDatai.size()));
-							copy(d_vDataj.begin(),d_vDataj.end(),d_vData.begin() + dist);
+								d_vData.insert(d_vData.begin() + pos,d_vDataj.begin(),d_vDataj.begin() + (d_vDataj.size() - d_vDatai.size()));
+							copy(d_vDataj.begin(),d_vDataj.end(),d_vData.begin() + pos);
 							if(d_vDataj.size() < d_vDatai.size())
-								d_vData.erase(d_vData.begin() + dist + d_vDataj.size(),d_vData.begin() + dist + d_vDatai.size());
-							dist += d_vDataj.size();
+								d_vData.erase(d_vData.begin() + pos + d_vDataj.size(),d_vData.begin() + pos + d_vDatai.size());
+							pos += d_vDataj.size();
 						}
 						break;
 					}
@@ -1585,7 +1626,6 @@ ACTION(
 
 /* OCCURRENCES */
 /* REMOVE */
-
 ACTION(
 	/* ID */            55,
 	/* Name */          _T("%o: Remove occurences of integer %0"),
@@ -1601,7 +1641,7 @@ ACTION(
 			p2 = SizeOfValue3(p1);
 		{
 			const char* value = reinterpret_cast<char*>(&p1);
-			int pos = 0;
+			size_t pos = 0;
 			while(true)
 			{
 				auto it = search(d_vData.begin(), d_vData.end(), value, value+p2);
@@ -1629,7 +1669,7 @@ ACTION(
 
 	if(numBoards && !d_bLock)
 	{
-		unsigned int pos = 0;
+		size_t pos = 0;
 		if (p3) //Unicode
 		{
 			while(true)
@@ -1669,7 +1709,7 @@ ACTION(
 
 	if(numBoards && !d_bLock)
 	{
-		unsigned int pos = 0;
+		size_t pos = 0;
 		while(true)
 		{
 			const auto it = std::search(d_vData.begin()+pos, d_vData.end(), p1.begin(), p1.end());
@@ -1694,20 +1734,20 @@ ACTION(
 
 	if(numBoards && !d_bLock)
 	{
-		long dist = 0;
-		transform(p1.begin(), p1.end(), p1.begin(), ::tolower);
+		size_t pos = 0;
 		for(unsigned int i=0; i<numBoards; i++) //check if board already exists
 			if(strCompare(d_sNamei, p1, rdPtr->bCaseSensitive))
 			{
+				if (!d_vDatai.size())
+					return 0;
 				while(true)
 				{
-					auto it = search(d_vData.begin()+dist, d_vData.end(), d_vDatai.begin(), d_vDatai.end());
-					dist = it-d_vData.begin();
-					if(dist == d_vData.size())
+					auto it = search(d_vData.begin()+pos, d_vData.end(), d_vDatai.begin(), d_vDatai.end());
+					pos = it-d_vData.begin();
+					if(pos == d_vData.size())
 						return 1;
-					d_vData.erase(d_vData.begin()+dist, d_vData.begin()+dist+d_vDatai.size());
+					d_vData.erase(d_vData.begin()+pos, d_vData.begin()+pos+d_vDatai.size());
 				}
-				break;
 			}
 	}
 	return 0;
@@ -1721,7 +1761,7 @@ ACTION(
 	/* Flags */         0,
 	/* Params */        (0)
 ) {
-	rdPtr->bEndianness = 0;
+	rdPtr->bEndianness = false;
 	return 0;
 }
 
@@ -1731,6 +1771,6 @@ ACTION(
 	/* Flags */         0,
 	/* Params */        (0)
 ) {
-	rdPtr->bEndianness = 1;
+	rdPtr->bEndianness = true;
 	return 0;
 }

@@ -196,6 +196,9 @@ SUB_START("Conversions")
 	ITEM(39,"HIBYTE")
 	ITEM(40,"LOWORD")
 	ITEM(41,"HIWORD")
+	SEPARATOR
+	ITEM(46,"ASCII character to char")
+	ITEM(47,"Char to ASCII character")
 SUB_END
 SUB_START("Bitwise operations")
 	ITEM(42,"Shift left")

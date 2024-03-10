@@ -283,33 +283,27 @@ EXPRESSION(
 	/* ID */			16,
 	/* Name */			_T("string$("),
 	/* Flags */			EXPFLAG_STRING,
-	/* Params */		(3, EXPPARAM_NUMBER, _T("Offset"), EXPPARAM_NUMBER, _T("Unicode? (0: No, 1: Yes)"), EXPPARAM_NUMBER, _T("Size (-1: null-terminated)"))
+	/* Params */		(3, EXPPARAM_NUMBER, _T("Offset"), EXPPARAM_NUMBER, _T("Unicode? (0: No, 1: Yes)"), EXPPARAM_NUMBER, _T("Size (0: Auto)"))
 ) {
-	off_t p1 = ExParam(TYPE_INT);
+	size_t p1 = ExParam(TYPE_INT);
 	bool p2 = ExParam(TYPE_INT);
-	int p3 = ExParam(TYPE_INT);
+	size_t p3 = ExParam(TYPE_INT); // 0: null-terminated
 
 	if(numBoards)
 	{
-		p1 = max(min(p1, d_vData.size()-1), 0); // overflow security for the argument
+		p1 = p1<d_vData.size()?p1:d_vData.size()-1; // Q?Y:N overflow security for the argument
 		if (p2)
 		{
 			string output = reinterpret_cast<TCHAR*>(&d_vData.at(p1));
-			if (p3 == -1) output.resize(p3*sizeof(wchar_t));
+			if (p3) output.resize(min(p3,d_vData.size())*sizeof(wchar_t));
 			ReturnStringSafe(output.c_str());
 		}
 		else
 		{
-			if (p3 == -1)
-			{
-				string output( d_vData.begin()+p1, d_vData.end());
-				ReturnStringSafe(output.c_str());
-			}
-			else
-			{
-				string output( d_vData.begin()+p1, d_vData.begin()+p1+p3);
-				ReturnStringSafe(output.c_str());
-			}
+			if (!p3)
+				p3 = d_vData.size()-p1;
+			string output( d_vData.begin()+p1, p1+p3<d_vData.size()?d_vData.begin()+p1+p3:d_vData.end());
+			ReturnStringSafe(output.c_str());
 		}
 	}
 	ReturnString(L"");
@@ -319,23 +313,17 @@ EXPRESSION(
 	/* ID */			16,
 	/* Name */			_T("string$("),
 	/* Flags */			EXPFLAG_STRING,
-	/* Params */		(2, EXPPARAM_NUMBER, _T("Offset"), EXPPARAM_NUMBER, _T("Size (-1: null-terminated)"))
+	/* Params */		(2, EXPPARAM_NUMBER, _T("Offset"), EXPPARAM_NUMBER, _T("Size (0: Auto)"))
 ) {
-	off_t p1 = ExParam(TYPE_INT);
-	int p3 = ExParam(TYPE_INT);
-
+	size_t p1 = ExParam(TYPE_INT);
+	off_t p3 = ExParam(TYPE_INT); // 0: null-terminated
+	p1 = p1<d_vData.size()?p1:d_vData.size()-1; // Q?Y:N overflow security for the argument
 	if(numBoards)
 	{
-		if (p3 == -1)
-		{
-			string output( d_vData.begin()+p1, d_vData.end());
-			ReturnStringSafe(output.c_str());
-		}
-		else
-		{
-			string output( d_vData.begin()+p1, d_vData.begin()+p1+p3);
-			ReturnStringSafe(output.c_str());
-		}
+		if (!p3)
+			p3 = d_vData.size()-p1; //		IF TRUE ?			YES					NO
+		string output( d_vData.begin()+p1, p1+p3<d_vData.size()?d_vData.begin()+p1+p3:d_vData.end());
+		ReturnStringSafe(output.c_str());
 	}
 	ReturnString("");
 }
@@ -349,9 +337,14 @@ EXPRESSION(
 ) {
 	off_t p1 = ExParam(TYPE_INT);
 
-	if ( numBoards && p1+sizeof(float) <= d_vData.size() )
+	if ( numBoards && (p1+sizeof(double) <= d_vData.size()) )
 	{
-		ReturnString(*reinterpret_cast<const double *>(&d_vData.at(p1)));
+		double output = *reinterpret_cast<const double *>(&d_vData.at(p1));
+		std::ostringstream sstream;
+		sstream << output;
+		std::string str = sstream.str();
+		string strb(str.begin(), str.end());
+		ReturnStringSafe(strb.c_str());
 	}
 
 	ReturnString("");
@@ -363,17 +356,19 @@ EXPRESSION(
 	/* Flags */			EXPFLAG_STRING,
 	/* Params */		(1, EXPPARAM_NUMBER, _T("Offset"))
 ) {
-	off_t p1 = ExParam(TYPE_INT);
-	long long output(0);
+	size_t p1 = ExParam(TYPE_INT);
+	long long output = 0;
 
-	if ( numBoards && p1+sizeof(long) <= d_vData.size() )
+	if (numBoards && (p1+sizeof(long long) <= d_vData.size()))
 	{
 		if ( !rdPtr->bEndianness )
 			output = *reinterpret_cast<const long long*>(&d_vData.at(p1));
 		else
 			output = _byteswap_ulong(*reinterpret_cast<const long long*>(&d_vData.at(p1)));
 	}
+
 	stringstream ss;
+	ss << output;
 	string dec = ss.str();
 	ReturnStringSafe(dec.c_str());
 }
@@ -418,19 +413,9 @@ EXPRESSION(
 	/* Flags */			0,
 	/* Params */		(1, EXPPARAM_STRING, _T("Hexadecimal 64bit value"))
 ) {
-	LPSTR p1 = (LPSTR)ExParam(TYPE_STRING);
-
-	long long value;
-	std::istringstream iss(p1);
-	iss >> std::hex >> value;
-
-	time_t timestamp = value;
-	struct tm time;
-	char date_time[256];
-	localtime_s(&time, &timestamp);
-	//asctime_s(date_time, sizeof(date_time), &time);
-
-	return (1900+time.tm_year);
+	string p1(GetStr2());
+	if(!p1[0]) return 0;
+	return GetDateTime(p1, 0);
 }
 
 EXPRESSION(
@@ -439,19 +424,9 @@ EXPRESSION(
 	/* Flags */			0,
 	/* Params */		(1, EXPPARAM_STRING, _T("Hexadecimal 64bit value"))
 ) {
-	LPSTR p1 = (LPSTR)ExParam(TYPE_STRING);
-
-	long long value;
-	std::istringstream iss(p1);
-	iss >> std::hex >> value;
-
-	time_t timestamp = value;
-	struct tm time;
-	char date_time[256];
-	localtime_s(&time, &timestamp);
-	//asctime_s(date_time, sizeof(date_time), &time);
-
-	return time.tm_mon;
+	string p1(GetStr2());
+	if(!p1[0]) return 0;
+	return GetDateTime(p1, 1);
 }
 EXPRESSION(
 	/* ID */			23,
@@ -459,19 +434,9 @@ EXPRESSION(
 	/* Flags */			0,
 	/* Params */		(1, EXPPARAM_STRING, _T("Hexadecimal 64bit value"))
 ) {
-	LPSTR p1 = (LPSTR)ExParam(TYPE_STRING);
-
-	long long value;
-	std::istringstream iss(p1);
-	iss >> std::hex >> value;
-
-	time_t timestamp = value;
-	struct tm time;
-	char date_time[256];
-	localtime_s(&time, &timestamp);
-	//asctime_s(date_time, sizeof(date_time), &time);
-
-	return time.tm_mday;
+	string p1(GetStr2());
+	if(!p1[0]) return 0;
+	return GetDateTime(p1, 2);
 }
 EXPRESSION(
 	/* ID */			24,
@@ -479,59 +444,31 @@ EXPRESSION(
 	/* Flags */			0,
 	/* Params */		(1, EXPPARAM_STRING, _T("Hexadecimal 64bit value"))
 ) {
-	LPSTR p1 = (LPSTR)ExParam(TYPE_STRING);
-
-	long long value;
-	std::istringstream iss(p1);
-	iss >> std::hex >> value;
-
-	time_t timestamp = value;
-	struct tm time;
-	char date_time[256];
-	localtime_s(&time, &timestamp);
-	//asctime_s(date_time, sizeof(date_time), &time);
-
-	return time.tm_hour;
+	string p1(GetStr2());
+	if(!p1[0]) return 0;
+	return GetDateTime(p1, 3);
 }
+
 EXPRESSION(
 	/* ID */			25,
 	/* Name */			_T("getMinute("),
 	/* Flags */			0,
 	/* Params */		(1, EXPPARAM_STRING, _T("Hexadecimal 64bit value"))
 ) {
-	LPSTR p1 = (LPSTR)ExParam(TYPE_STRING);
-
-	long long value;
-	std::istringstream iss(p1);
-	iss >> std::hex >> value;
-
-	time_t timestamp = value;
-	struct tm time;
-	char date_time[256];
-	localtime_s(&time, &timestamp);
-	//asctime_s(date_time, sizeof(date_time), &time);
-
-	return time.tm_min;
+	string p1(GetStr2());
+	if(!p1[0]) return 0;
+	return GetDateTime(p1, 4);
 }
+
 EXPRESSION(
 	/* ID */			26,
 	/* Name */			_T("getSecond("),
 	/* Flags */			0,
 	/* Params */		(1, EXPPARAM_STRING, _T("Hexadecimal 64bit value"))
 ) {
-	LPSTR p1 = (LPSTR)ExParam(TYPE_STRING);
-
-	long long value;
-	std::istringstream iss(p1);
-	iss >> std::hex >> value;
-
-	time_t timestamp = value;
-	struct tm time;
-	char date_time[256];
-	localtime_s(&time, &timestamp);
-	//asctime_s(date_time, sizeof(date_time), &time);
-
-	return time.tm_sec;
+	string p1(GetStr2());
+	if(!p1[0]) return 0;
+	return GetDateTime(p1, 5);
 }
 
 /* OCCURENCES */
@@ -661,43 +598,31 @@ EXPRESSION(
 	return 0;
 }
 // FIND
+// Find at beginning of given offset. In that way you can enlist them.
 EXPRESSION(
 	/* ID */			30,
 	/* Name */			_T("findInt("),
 	/* Flags */			0,
-	/* Params */		(3, EXPPARAM_NUMBER, _T("Integer value"), EXPPARAM_NUMBER, _T("Value size"), EXPPARAM_NUMBER, _T("Occurrence"))
+	/* Params */		(3, EXPPARAM_NUMBER, _T("Integer value"), EXPPARAM_NUMBER, _T("Value size (0: Auto)"), EXPPARAM_NUMBER, _T("Begin offset"))
 ) {
 	long p1 = ExParam(TYPE_INT);
-	char p2 = ExParam(TYPE_INT);
-	long p3 = ExParam(TYPE_INT);
+	unsigned char p2 = ExParam(TYPE_INT);
+	size_t p3 = ExParam(TYPE_INT);
 
-	if ( numBoards && p3 )
+	if (numBoards)
 	{
-		const char * value = reinterpret_cast<char *>(&p1);
-
-		if ( p2 == 1 )
-			return count(d_vData.begin()+p3, d_vData.end(), (signed char)p1);
-
-		long pos = 0;
-		while ( true )
-		{
-			auto it = std::search( d_vData.begin()+pos+1, d_vData.end(), value, value + sizeof(char)*p2 );
-			pos = it - d_vData.begin();
-			p3--;
-			if ( pos == d_vData.size() )
-				return -1;
-			if (p3)
-				pos += sizeof(char)*p2;
-			else
-				return pos;
-
-		}
-	}	
-	return -1;
+		if (!p2)
+			p2 = SizeOfValue3(p1);
+		const char* value = reinterpret_cast<char*>(&p1);
+		int pos = 0;
+		auto it = search(d_vData.begin(), d_vData.end(), value, value+p2);
+		return it-d_vData.begin();
+	}
+	return d_vData.size();
 }
 
 #ifdef UNICODE
-EXPRESSION( //to modify. Find since beginning of offset. Then give offset of found. In that way you can enlist them.
+EXPRESSION(
 	/* ID */			31,
 	/* Name */			_T("findStr("),
 	/* Flags */			0,
@@ -716,21 +641,18 @@ EXPRESSION( //to modify. Find since beginning of offset. Then give offset of fou
 			const char *pointer = reinterpret_cast<const char*>(&p1[0]);
 			size_t size = p1.size()*sizeof(p1.front());
 			const auto it = std::search(d_vData.begin()+pos, d_vData.end(), pointer, pointer+size);
-			pos = it-d_vData.begin();
-			return pos;
+			return it-d_vData.begin();
 		}
 		else
 		{
 			const auto it = std::search(d_vData.begin()+pos, d_vData.end(), p1.begin(), p1.end());
-			pos = it-d_vData.begin();
-			return pos;
+			return it-d_vData.begin();
 		}
-		return d_vData.size();
 	}
-	return 0;
+	return d_vData.size();
 }
 #else
-EXPRESSION( //to modify. Find since beginning of offset. Then give offset of found. In that way you can enlist them.
+EXPRESSION(
 	/* ID */			31,
 	/* Name */			_T("findStr("),
 	/* Flags */			0,
@@ -743,44 +665,31 @@ EXPRESSION( //to modify. Find since beginning of offset. Then give offset of fou
 	{
 		size_t pos = p3;
 		const auto it = std::search(d_vData.begin()+pos, d_vData.end(), p1.begin(), p1.end());
-		pos = it-d_vData.begin();
-		return pos;
-		return p3;
+		return it-d_vData.begin();
 	}
-	return 0;
+	return d_vData.size();
 }
 #endif
 EXPRESSION(
 	/* ID */			32,
 	/* Name */			_T("findCont("),
 	/* Flags */			0,
-	/* Params */		(2, EXPPARAM_STRING, _T("Board name"), EXPPARAM_NUMBER, _T("Occurrence"))
+	/* Params */		(2, EXPPARAM_STRING, _T("Board name"), EXPPARAM_NUMBER, _T("Begin offset"))
 ) {
 	string p1(GetStr2());
-	long p2 = ExParam(TYPE_INT);
+	size_t p2 = ExParam(TYPE_INT);
 
 	if(numBoards)
 	{		
 		for (unsigned int i=0; i<numBoards; i++) //check if board already exists
 			if(strCompare(d_sNamei, p1, rdPtr->bCaseSensitive))
 			{
-				long pos = 0;
-				while ( true )
-				{
-					auto it = std::search( d_vData.begin()+pos, d_vData.end(), d_vDatai.begin(), d_vDatai.end() );
-					pos = it - d_vData.begin();
-					p2--;
-					if ( pos == d_vData.size() )
-						return -1;
-					if (p2)
-						pos += d_vDatai.size();
-					else
-						return pos;
-				}
+				long pos = p2;
+				auto it = std::search( d_vData.begin()+pos, d_vData.end(), d_vDatai.begin(), d_vDatai.end() );
+				return it-d_vData.begin();
 			}
 	}
-
-	return -1;
+	return d_vData.size();
 }
 
 /* CONVERSIONS */
@@ -961,11 +870,34 @@ EXPRESSION(
 	/* Flags */			EXPFLAG_STRING,
 	/* Params */		(0)
 ) {
-	if(numBoards) //what the actual ***k?! There is no boards but it crashes. EDIT: Added token for one code preventing crash.
-	{ //One line under braces but it worked differently than without. Weird.
+	if(numBoards) //EDIT: Added token for one code preventing crash. Weird.
+	{
 		string output = rdPtr->lastBoard;
 		ReturnString(output.c_str()); 
 	}
 
 	ReturnString(L"");
+}
+
+EXPRESSION(
+	/* ID */			46,
+	/* Name */			_T("ascii2int("),
+	/* Flags */			0,
+	/* Params */		(1, EXPPARAM_STRING, _T("Character"))
+) {
+	string p1(GetStr2());
+	if(!p1.length()) return 0;
+
+	return static_cast<int>(p1[0]);
+}
+
+EXPRESSION(
+	/* ID */			47,
+	/* Name */			_T("int2ascii$("),
+	/* Flags */			EXPFLAG_STRING,
+	/* Params */		(1, EXPPARAM_NUMBER, _T("Unsigned char"))
+) {
+	unsigned char p1 = ExParam(TYPE_INT);
+	string str(1, char(p1));
+	ReturnStringSafe(str.c_str());
 }

@@ -93,6 +93,35 @@ using std::stringstream;
 
 /* BINARY */
 
+inline int GetDateTime(string str, unsigned char arg1)
+{
+	long long value;
+	std::string fit(str.begin(), str.end());
+	std::istringstream iss(fit);
+	iss >> std::dec >> value;
+	time_t timestamp = value;
+	struct tm time;
+	char date_time[256];
+	localtime_s(&time, &timestamp);
+	switch(arg1)
+	{
+	case 0:
+		return 1900+time.tm_year;
+	case 1:
+		return time.tm_mon;
+	case 2:
+		return time.tm_mday;
+	case 3:
+		return time.tm_hour;
+	case 4:
+		return time.tm_min;
+	case 5:
+		return time.tm_sec;
+	}
+	//asctime_s(date_time, sizeof(date_time), &time);
+	return 0;
+}
+
 inline int SizeOfValue3(int p1)
 {
 	if ( p1 < 0 || p1 > 0xFFFF )
