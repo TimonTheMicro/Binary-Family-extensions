@@ -165,7 +165,7 @@ ACTION(
 	/* Params */        (2, PARAM_NUMBER,_T("Size (in Bytes)"), PARAM_NUMBER,_T("Which? (0: Capacity, 1: Size, 2: Both)"))
 ) {
 	size_t p2 = GetInt();
-	bool p3 = GetInt();
+	unsigned char p3 = GetInt();
 
 	if(numBoards)
 	{
@@ -904,7 +904,7 @@ ACTION(
 #ifdef UNICODE
 ACTION(
 	/* ID */            33,
-	/* Name */          _T("%o: Set string %0 at %1, unicode flag: %2"),
+	/* Name */          _T("%o: Set string %0 at %1, Unicode flag: %2"),
 	/* Flags */         0,
 	/* Params */        (3, PARAM_STRING,_T("String"), PARAM_NUMBER,_T("Offset"), PARAM_NUMBER,_T("Unicode? (0: No, 1: Yes)"))
 ) {
@@ -1079,7 +1079,7 @@ ACTION(
 #ifdef UNICODE
 ACTION(
 	/* ID */            40,
-	/* Name */          _T("%o: Append string %0, unicode flag: %1"),
+	/* Name */          _T("%o: Append string %0, Unicode flag: %1"),
 	/* Flags */         0,
 	/* Params */        (2, PARAM_STRING,_T("String"), PARAM_NUMBER,_T("Unicode? (0: No, 1: Yes)"))
 ) {
@@ -1241,7 +1241,7 @@ ACTION(
 #ifdef UNICODE
 ACTION(
 	/* ID */            47,
-	/* Name */          _T("%o: Insert string %0 at %1, unicode flag: %2"),
+	/* Name */          _T("%o: Insert string %0 at %1, Unicode flag: %2"),
 	/* Flags */         0,
 	/* Params */        (3, PARAM_STRING,_T("String"), PARAM_NUMBER,_T("Offset"), PARAM_NUMBER,_T("Unicode? (0: No, 1: Yes)"))
 ) {
@@ -1346,7 +1346,7 @@ ACTION(
 
 ACTION(
 	/* ID */            50,
-	/* Name */          _T("%o: Swap row of Bytes at %0"),
+	/* Name */          _T("%o: Swap row of Bytes at %0 with order %1"),
 	/* Flags */         0,
 	/* Params */        (2, PARAM_NUMBER,_T("Offset"), PARAM_STRING,_T("(example of swapping Bytes: 0,3,1,2"))
 ) {
@@ -1354,24 +1354,25 @@ ACTION(
 	string p2 = string(GetStr());
 	if(!p2.length()) return 0;
 
-	if(numBoards && !d_bLock && p1 + sizeof(short) <= d_vData.size())
+	if(numBoards && !d_bLock && ((p1+sizeof(short)) <= d_vData.size()))
 	{
-		std::vector<char> integer;
+		vector<char> integer;
 		stringstream ss(p2);
-
 		for (int i; ss >> i;)
 		{
 			integer.push_back(i);    
 			if (ss.peek() == ',')
 				ss.ignore();
 		}
-		for (std::size_t i=0; i<integer.size(); i++) // fill current buffer
+
+		for (unsigned char i=0; i<integer.size(); i++) // fill current buffer
 		{
 			int buff = d_vData[p1+integer[i]];
 			integer[i] = buff;
 		}
-		for (std::size_t i=0; i<integer.size(); i++) //rewrite current data in new order
-			d_vData[p1+i] = integer[integer.size()-i];
+
+		for (unsigned char i=0; i<integer.size(); i++) //rewrite current data in new order
+			d_vData[p1+i] = integer[i];
 
 	}
 	return 0;
@@ -1385,16 +1386,15 @@ ACTION(
 ) {
 	size_t p1 = GetInt();
 	bool p2 = GetInt();
-	long buffer;
 
 	if(numBoards && !d_bLock && p1 + sizeof(long) <= d_vData.size())
 	{
-		if (p2)
-			*(long*)(&d_vData.at(p1)) = _byteswap_ushort(*reinterpret_cast<const long*>(&d_vData.at(p1)));
+		if (!p2)
+			*(short*)(&d_vData.at(p1)) = _byteswap_ushort(*reinterpret_cast<const short*>(&d_vData.at(p1)));
 		else
 			*(long*)(&d_vData.at(p1)) = _byteswap_ulong(*reinterpret_cast<const long*>(&d_vData.at(p1)));
+	return 1;
 	}
-
 	return 0;
 }
 
@@ -1407,11 +1407,11 @@ ACTION(
 	/* Params */        (4, PARAM_NUMBER,_T("Old integer value"), PARAM_NUMBER,_T("Size"), PARAM_NUMBER,_T("New integer value"), PARAM_NUMBER,_T("Size"))
 ) {
 	long p1 = GetInt();
-	char p2 = GetInt();
+	unsigned char p2 = GetInt();
 	long p3 = GetInt();
-	char p4 = GetInt();
+	unsigned char p4 = GetInt();
 
-	if(numBoards && !d_bLock)
+	if(numBoards && !d_bLock && p2)
 	{
 		if(p2 == 1 && p4 == 1)
 			replace(d_vData.begin(),d_vData.end(),(signed char)p1,(signed char)p3);
@@ -1423,18 +1423,18 @@ ACTION(
 			long pos = 0;
 			while(true)
 			{
-				auto it = search(d_vData.begin()+pos,d_vData.end(), value, value+sizeof(char)*p2);
+				auto it = search(d_vData.begin()+pos,d_vData.end(), value, value+p2);
 				pos = it-d_vData.begin();
 
 				if(pos != d_vData.size())
 				{
 					if(p4 > p2)
-						d_vData.insert(d_vData.begin()+pos, value2, value2+sizeof(char)*(p4 - p2));
-					copy(value2, value2+sizeof(char)*p4, d_vData.begin()+pos);
+						d_vData.insert(d_vData.begin()+pos, value2, value2+(p4-p2));
+					copy(value2, value2+p4, d_vData.begin()+pos);
 					if(p4 < p2)
 						d_vData.erase(d_vData.begin()+pos+p4, d_vData.begin()+pos+p2);
-
-					pos += sizeof(char) * p4;
+					// Replacing by value sized 0 works same as removing
+					pos += p4;
 				}
 				else
 					break;
@@ -1449,100 +1449,59 @@ ACTION(
 #ifdef UNICODE
 ACTION(
 	/* ID */            53,
-	/* Name */          _T("%o: Replace occurences of string %0 by %2"),
+	/* Name */          _T("%o: Replace occurences of string %0 by %1, Unicode flag: %2"),
 	/* Flags */         0,
-	/* Params */        (5, PARAM_STRING,_T("Old string"), PARAM_NUMBER,_T("Unicode? (0: No, 1: Yes)"), PARAM_STRING,_T("New string"), PARAM_NUMBER,_T("Unicode? (0: No, 1: Yes)"), PARAM_NUMBER,_T("Respect size? (0: No, 1: Yes)"))
+	/* Params */        (3, PARAM_STRING,_T("Old string"), PARAM_STRING,_T("New string"), PARAM_NUMBER,_T("Unicode? (0: No, 1: Yes)"))
 ) {
 	string p1 = string(GetStr()); // str old
-	bool p3 = GetInt(); //Unicode old
 	string p4 = string(GetStr()); // str new
-	bool p5 = GetInt(); //Unicode new
-	bool p7 = GetInt(); //respect size
-
-	string buff = p4;
-	if(!p1.length() || !p4.length()) return 0;
+	bool p5 = GetInt(); // unicode
+	if(!p1.length()) return 0;
 
 	if(numBoards && !d_bLock)
 	{
-		unsigned int pos = 0;
-		if (p3) // old string is Unicode
+		size_t pos = 0;
+		if(p5)
 		{
-			if (p5) // new string is Unicode
+			// get old string from data
+			const char *pointerA = reinterpret_cast<const char*>(&p1[0]);
+			size_t sizeA = p1.size()*sizeof(p1.front());
+			// get new string
+			const char *pointerB = reinterpret_cast<const char*>(&p4[0]);
+			size_t sizeB = p1.size()*sizeof(p1.front());			
+			// search
+			const auto it = std::search(d_vData.begin()+pos, d_vData.end(), pointerA, pointerA+sizeA);
+			pos = it-d_vData.begin();
+			if(pos == d_vData.size())
+				return 1;
+			// replace
+			if (p4.size())
 			{
-				while(true)
-				{
-					//get old string from data
-					const char *pointer = reinterpret_cast<const char*>(&p1[0]);
-					size_t size = p1.size()*sizeof(p1.front());
-					const auto it = std::search(d_vData.begin()+pos, d_vData.end(), pointer, pointer+size);
-					
-					const int diff = (p4.size() - p1.size()) * sizeof(wchar_t); //size new - size old
-					if(!p7 && (diff > 0)) d_vData.insert(d_vData.begin()+pos+diff, pointer, pointer+diff);
-					copy(pointer, !p7?pointer+size:pointer+p1.size()*sizeof(wchar_t), d_vData.begin()+pos);	
-					if(!p7 && (diff < 0)) d_vData.erase(d_vData.begin()+pos+size, d_vData.begin()+pos+size+diff);
-
-					pos = it-d_vData.begin();
-					if(pos >= d_vData.size())
-						return 1;
-					pos++;
-				}
+				if(p4.size() > p1.size()) d_vData.insert(d_vData.begin()+pos, p4.begin(), p4.begin()+(sizeB-sizeA));
+				copy(pointerB, pointerB+sizeB, d_vData.begin()+pos);
+				if(p4.size() < p1.size()) d_vData.erase(d_vData.begin()+pos+sizeB, d_vData.begin()+pos+sizeA);
 			}
-			else // new string is not Unicode
-			{
-				//get old string from data
-				const char *pointer = reinterpret_cast<const char*>(&p1[0]);
-				size_t size = p1.size()*sizeof(p1.front());
-				const auto it = std::search(d_vData.begin()+pos, d_vData.end(), pointer, pointer+size);
-
-				const int diff = (p4.size() - p1.size()) * sizeof(wchar_t); //size new - size old
-				if(!p7 && (diff > 0)) d_vData.insert(d_vData.begin()+pos, p4.begin(), p4.begin()+(p4.size()-p1.size()));
-				copy(p4.begin(), !p7?p4.end():p1.end(), d_vData.begin()+pos);
-				if(!p7 && (diff < 0)) d_vData.erase(d_vData.begin()+pos, d_vData.begin()+pos+p1.size());
-
-				pos = it-d_vData.begin();
-				if(pos >= d_vData.size())
-					return 1;
-				pos++;
-			}
+			else
+				d_vData.erase(d_vData.begin()+pos, d_vData.begin()+pos+sizeA); // replacing with blank works the same as removing
+			pos++;
 		}
-		else // old string is not Unicode
+		else
 		{
-			if (p5) // new string is Unicode
-			{
-				while(true)
-				{
-					//get old string from data
-					const auto it = std::search(d_vData.begin()+pos, d_vData.end(), p1.begin(), p1.end());
-					
-					const int diff = (p4.size() - p1.size()) * sizeof(wchar_t); //size new - size old
-					
-					//get new string from argument
-					const char *pointer = reinterpret_cast<const char*>(&p4[0]);
-					size_t size = p4.size()*sizeof(p4.front());
-
-					if(!p7 && (diff > 0)) d_vData.insert(d_vData.begin()+pos, p4.begin(), p4.begin()+(p4.size()-p1.size()));
-					copy(pointer, !p7?pointer+size:pointer+p1.size(), d_vData.begin()+pos);
-					if(!p7 && (diff < 0)) d_vData.erase(d_vData.begin()+pos, d_vData.begin()+pos+p1.size());
-
-					pos = it-d_vData.begin();
-					if(pos >= d_vData.size())
-						return 1;
-					pos++;
-				}
-			}
-			else // new string is not Unicode aswell
-			{
+			while(true)
+			{	
 				//get old string from data
 				const auto it = std::search(d_vData.begin()+pos, d_vData.end(), p1.begin(), p1.end());
-				const int diff = p4.size() - p1.size(); //size new - size old
-				
-				if(!p7 && (diff > 0)) d_vData.insert(d_vData.begin()+pos, p4.begin(), p4.begin()+(p4.size()-p1.size()));
-				copy(p4.begin(), !p7?p4.end():p1.end(), d_vData.begin()+pos);
-				if(!p7 && (diff < 0)) d_vData.erase(d_vData.begin()+pos, d_vData.begin()+pos+p1.size());
-
 				pos = it-d_vData.begin();
-				if(pos >= d_vData.size())
+				if(pos == d_vData.size())
 					return 1;
+				if (p4.size())
+				{
+					if(p4.size() > p1.size()) d_vData.insert(d_vData.begin()+pos, p4.begin(), p4.begin()+(p4.size()-p1.size()));
+					copy(p4.begin(), p4.end(), d_vData.begin()+pos);
+					if(p4.size() < p1.size()) d_vData.erase(d_vData.begin()+pos+p4.size(), d_vData.begin()+pos+p1.size());
+				}
+				else
+					d_vData.erase(d_vData.begin()+pos, d_vData.begin()+pos+p1.size()); // replacing with blank works the same as removing
 				pos++;
 			}
 		}
@@ -1554,29 +1513,30 @@ ACTION(
 	/* ID */            53,
 	/* Name */          _T("%o: Replace occurences of string %0 by %1"),
 	/* Flags */         0,
-	/* Params */        (3, PARAM_STRING,_T("Old string"), PARAM_STRING,_T("New string"), PARAM_NUMBER,_T("Respect size? (0: No, 1: Yes)")))
+	/* Params */        (3, PARAM_STRING,_T("Old string"), PARAM_STRING,_T("New string"))
 ) {
 	string p1 = string(GetStr());
 	string p4 = string(GetStr());
-	bool p7 = GetInt();
-	if(!p1.length() || !p4.length()) return 0;
+	if(!p1.length()) return 0;
 
 	if(numBoards && !d_bLock)
 	{
-		unsigned int pos = 0;
+		size_t pos = 0;
 		while(true)
 		{	
 			//get old string from data
 			const auto it = std::search(d_vData.begin()+pos, d_vData.end(), p1.begin(), p1.end());
-			const int diff = p4.size() - p1.size(); //size new - size old
-
-			if(!p7 && (diff > 0)) d_vData.insert(d_vData.begin()+pos, p4.begin(), p4.begin()+(p4.size()-p1.size()));
-			copy(p4.begin(), !p7?p4.end():p1.end(), d_vData.begin()+pos);
-			if(!p7 && (diff < 0)) d_vData.erase(d_vData.begin()+pos, d_vData.begin()+pos+p1.size());
-
 			pos = it-d_vData.begin();
-			if(pos >= d_vData.size())
+			if(pos == d_vData.size())
 				return 1;
+			if (p4.size())
+			{
+				if(p4.size() > p1.size()) d_vData.insert(d_vData.begin()+pos, p4.begin(), p4.begin()+(p4.size()-p1.size()));
+				copy(p4.begin(), p4.end(), d_vData.begin()+pos);
+				if(p4.size() < p1.size()) d_vData.erase(d_vData.begin()+pos+p4.size(), d_vData.begin()+pos+p1.size());
+			}
+			else
+				d_vData.erase(d_vData.begin()+pos, d_vData.begin()+pos+p1.size());
 			pos++;
 		}
 	}
@@ -1603,17 +1563,24 @@ ACTION(
 				for(long j = 0; j < numBoards; j++) //check if board already exists
 					if(d_sNamej[0] == p2[0] && d_sNamej == p2)
 					{
+						if (!d_vDataj.size())
+							return 0;
 						while(true)
 						{
-							auto it = search(d_vData.begin() + pos,d_vData.end(),d_vDatai.begin(),d_vDatai.end());
-							pos = it - d_vData.begin();
+							auto it = search(d_vData.begin()+pos, d_vData.end(), d_vDatai.begin(), d_vDatai.end());
+							pos = it-d_vData.begin();
 							if(pos == d_vData.size())
 								return 1;
-							if(d_vDataj.size() > d_vDatai.size())
-								d_vData.insert(d_vData.begin() + pos,d_vDataj.begin(),d_vDataj.begin() + (d_vDataj.size() - d_vDatai.size()));
-							copy(d_vDataj.begin(),d_vDataj.end(),d_vData.begin() + pos);
-							if(d_vDataj.size() < d_vDatai.size())
-								d_vData.erase(d_vData.begin() + pos + d_vDataj.size(),d_vData.begin() + pos + d_vDatai.size());
+							if (d_vDatai.size())
+							{
+								if(d_vDataj.size() > d_vDatai.size())
+									d_vData.insert(d_vData.begin()+pos, d_vDataj.begin(), d_vDataj.begin()+(d_vDataj.size()-d_vDatai.size()));
+								copy(d_vDataj.begin(), d_vDataj.end(), d_vData.begin()+pos);
+								if(d_vDataj.size() < d_vDatai.size())
+									d_vData.erase(d_vData.begin()+pos+d_vDataj.size(), d_vData.begin()+pos+d_vDatai.size());
+							}
+							else
+								d_vData.erase(d_vData.begin()+pos, d_vData.begin()+pos+d_vDatai.size()); // Replacing by blank works same as removing							
 							pos += d_vDataj.size();
 						}
 						break;
