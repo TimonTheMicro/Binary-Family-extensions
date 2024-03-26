@@ -5,7 +5,7 @@
 // Basic object details
 #define	ObjectName			"Binary Board object"
 #define	ObjectAuthor		"Timon"
-#define	ObjectCopyright		"Copyright © 2024"
+#define	ObjectCopyright		"Copyright (c) 2024"
 #define	ObjectComment		"Load, save and manage binary data (Unicode Edition)"
 #define	ObjectURL			""
 #define	ObjectHelp			_T("Help\\BinaryBoard.chm")

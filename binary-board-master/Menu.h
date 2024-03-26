@@ -96,6 +96,7 @@ SUB_START("Value")
 		ITEM(46,"Float")
 		ITEM(47,"String")
 		SEPARATOR
+		ITEM(60,"Space")
 		ITEM(48,"Content")
 		ITEM(49,"File")
 	SUB_END
@@ -134,7 +135,7 @@ SEPARATOR
 SUB_START("Get board")
 	SUB_START("Current")
 		ITEM(0,"Name")
-		ITEM(45,"Previous Name")
+		ITEM(52,"Previous Name")
 		ITEM(1,"Identifier")
 		ITEM(2,"Name from identifier")
 	SUB_END
@@ -186,8 +187,8 @@ SUB_START("Occurences")
 	SUB_END
 SUB_END
 SUB_START("Conversions")
-	ITEM(33,"Long int to single")
-	ITEM(34,"Single to long int")
+	ITEM(33,"Long int to float")
+	ITEM(34,"Float to long int")
 	ITEM(35,"Read half float")
 	ITEM(36,"Store half float")
 	ITEM(37,"Precision adjustment")
@@ -197,14 +198,22 @@ SUB_START("Conversions")
 	ITEM(40,"LOWORD")
 	ITEM(41,"HIWORD")
 	SEPARATOR
-	ITEM(46,"ASCII character to char")
-	ITEM(47,"Char to ASCII character")
+	ITEM(42,"ASCII character to char")
+	ITEM(43,"Char to ASCII character")
 SUB_END
 SUB_START("Bitwise operations")
-	ITEM(42,"Shift left")
-	ITEM(43,"Shift right")
+	ITEM(44,"Shift left")
+	ITEM(45,"Shift right")
 	SEPARATOR
-	ITEM(44,"Make pattern of bits")
+	SUB_START("On integer value")
+		ITEM(46,"Inflate bits")
+		ITEM(47,"Crop bits")
+		SEPARATOR
+		ITEM(48,"Get bit")
+		ITEM(49,"Set bit")
+		ITEM(50,"Unset bit")
+		ITEM(51,"Toggle bit")
+	SUB_END
 SUB_END
 SEPARATOR
 

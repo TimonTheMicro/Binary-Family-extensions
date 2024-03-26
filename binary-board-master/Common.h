@@ -122,6 +122,16 @@ inline int GetDateTime(string str, unsigned char arg1)
 	return 0;
 }
 
+inline int myPow(int x, unsigned int p)
+{
+	if (p == 0) return 1;
+	if (p == 1) return x;
+
+	int tmp = myPow(x, p/2);
+	if (p%2 == 0) return tmp * tmp;
+	else return x * tmp * tmp;
+}
+
 inline int SizeOfValue3(int p1)
 {
 	if ( p1 < 0 || p1 > 0xFFFF )
@@ -185,16 +195,19 @@ inline bool strCompare(string ina, string inb, bool csensitive)
 	unsigned int size = ina.size();
 
 	if(inb.size() != size) //first phase, the size
+	{
 		return false;
+	}
+
 	if (!csensitive) //second phase, the case sensitivity
 	{
-		for(unsigned int i=0; i < size; ++i)
+		for(unsigned int i=0; i<size; ++i)
 			if(tolower(ina[i]) != tolower(inb[i]))
 				return false;
 	}
 	else
 	{
-		for(unsigned int i=0; i < size; ++i)
+		for(unsigned int i=0; i<size; ++i)
 			if(ina[i] != inb[i])
 				return false;
 	}

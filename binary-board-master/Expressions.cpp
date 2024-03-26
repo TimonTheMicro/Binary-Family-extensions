@@ -15,8 +15,8 @@ EXPRESSION(
 	/* Flags */			EXPFLAG_STRING,
 	/* Params */		(0)
 ) {
-	if(numBoards) //what the actual ***k?! There is no boards but it crashes. EDIT: Added token for one code preventing crash.
-	{ //One line under braces but it worked differently than without. Weird.
+	if(numBoards) //what the actual ***k?! Adding tokens preventing crash, wrong formatting?
+	{
 		ReturnString((d_sName.c_str())); 
 	}
 
@@ -157,14 +157,14 @@ EXPRESSION(
 
 EXPRESSION(
 	/* ID */			9,
-	/* Name */			_T("bitOfByte("),
+	/* Name */			_T("bit("),
 	/* Flags */			0,
 	/* Params */		(2, EXPPARAM_NUMBER, _T("Offset"), EXPPARAM_NUMBER, _T("bit"))
 ) {
-	off_t p1 = ExParam(TYPE_INT);
-	off_t bit = ExParam(TYPE_INT);
+	size_t p1 = ExParam(TYPE_INT);
+	size_t bit = ExParam(TYPE_INT);
 
-	if (numBoards && p1 < d_vData.size())
+	if (numBoards && (p1 < d_vData.size()))
 	{
 		if (!rdPtr->bEndianness)
 			return ((char)d_vData.at(p1) >> bit) & 1;
@@ -182,9 +182,9 @@ EXPRESSION(
 	/* Flags */			0,
 	/* Params */		(1, EXPPARAM_NUMBER, _T("Offset"))
 	) {
-	off_t p1 = ExParam(TYPE_INT);
+	size_t p1 = ExParam(TYPE_INT);
 
-	if(numBoards && p1 < d_vData.size())
+	if(numBoards && (p1 < d_vData.size()))
 	{
 		if ( !rdPtr->bEndianness )
 			return (const signed char)d_vData.at(p1);
@@ -201,9 +201,9 @@ EXPRESSION(
 	/* Flags */			0,
 	/* Params */		(1, EXPPARAM_NUMBER, _T("Offset"))
 	) {
-	off_t p1 = ExParam(TYPE_INT);
+	size_t p1 = ExParam(TYPE_INT);
 
-	if ( numBoards && p1 < d_vData.size() )
+	if ( numBoards && (p1 < d_vData.size()) )
 		return (const unsigned char)d_vData.at(p1);
 	
 	return 0;
@@ -215,9 +215,9 @@ EXPRESSION(
 	/* Flags */			0,
 	/* Params */		(1, EXPPARAM_NUMBER, _T("Offset"))
 	) {
-	off_t p1 = ExParam(TYPE_INT);
+	size_t p1 = ExParam(TYPE_INT);
 
-	if ( numBoards && p1+sizeof(short) <= d_vData.size() )
+	if ( numBoards && ((p1+sizeof(short)) < d_vData.size()) )
 	{
 		if ( !rdPtr->bEndianness )
 			return *reinterpret_cast<const short int*>(&d_vData.at(p1));
@@ -234,9 +234,9 @@ EXPRESSION(
 	/* Flags */			0,
 	/* Params */		(1, EXPPARAM_NUMBER, _T("Offset"))
 	) {
-	off_t p1 = ExParam(TYPE_INT);
+	size_t p1 = ExParam(TYPE_INT);
 
-	if ( numBoards && p1+sizeof(short) <= d_vData.size() )
+	if ( numBoards && ((p1+sizeof(short)) < d_vData.size()) )
 	{
 		if ( !rdPtr->bEndianness )
 			return *reinterpret_cast<const unsigned short int*>(&d_vData.at(p1));
@@ -252,9 +252,9 @@ EXPRESSION(
 	/* Flags */			0,
 	/* Params */		(1, EXPPARAM_NUMBER, _T("Offset"))
 	) {
-	off_t p1 = ExParam(TYPE_INT);
+	size_t p1 = ExParam(TYPE_INT);
 
-	if ( numBoards && p1+sizeof(long) <= d_vData.size() )
+	if ( numBoards && ((p1+sizeof(long)) < d_vData.size()) )
 	{
 		if ( !rdPtr->bEndianness )
 			return *reinterpret_cast<const long int*>(&d_vData.at(p1));
@@ -272,7 +272,7 @@ EXPRESSION(
 	) {
 	off_t p1 = ExParam(TYPE_INT);
 
-	if ( numBoards && p1+sizeof(float) <= d_vData.size() )
+	if ( numBoards && ((p1+sizeof(float)) < d_vData.size()) )
 	{
 		ReturnFloat(*reinterpret_cast<const float *>(&d_vData.at(p1)));
 	}
@@ -321,7 +321,7 @@ EXPRESSION(
 	if(numBoards)
 	{
 		if (!p3)
-			p3 = d_vData.size()-p1; //		IF TRUE ?			YES					NO
+			p3 = d_vData.size()-p1; //		IF TRUE ? YES : NO
 		string output( d_vData.begin()+p1, p1+p3<d_vData.size()?d_vData.begin()+p1+p3:d_vData.end());
 		ReturnStringSafe(output.c_str());
 	}
@@ -814,10 +814,33 @@ EXPRESSION(
 	return HIWORD(input);
 }
 
+EXPRESSION(
+	/* ID */			42,
+	/* Name */			_T("ascii2int("),
+	/* Flags */			0,
+	/* Params */		(1, EXPPARAM_STRING, _T("Character"))
+) {
+	string p1(GetStr2());
+	if(!p1.length()) return 0;
+
+	return static_cast<int>(p1[0]);
+}
+
+EXPRESSION(
+	/* ID */			43,
+	/* Name */			_T("int2ascii$("),
+	/* Flags */			EXPFLAG_STRING,
+	/* Params */		(1, EXPPARAM_NUMBER, _T("Unsigned char"))
+) {
+	unsigned char p1 = ExParam(TYPE_INT);
+	string str(1, char(p1));
+	ReturnStringSafe(str.c_str());
+}
+
 /* BITWISE OPERATIONS */
 
 EXPRESSION(
-	/* ID */			42,
+	/* ID */			44,
 	/* Name */			_T("shl("),
 	/* Flags */			0,
 	/* Params */		(2, EXPPARAM_NUMBER, _T("Integer value"), EXPPARAM_NUMBER, _T("shift left by"))
@@ -829,7 +852,7 @@ EXPRESSION(
 }
 
 EXPRESSION(
-	/* ID */			43,
+	/* ID */			45,
 	/* Name */			_T("shr("),
 	/* Flags */			0,
 	/* Params */		(2, EXPPARAM_NUMBER, _T("Integer value"), EXPPARAM_NUMBER, _T("shift right by"))
@@ -840,10 +863,10 @@ EXPRESSION(
 	return p1 >> p2;
 }
 
-
+// On integer value
 EXPRESSION(
-	/* ID */			44,
-	/* Name */			_T("Pattern("),
+	/* ID */			46,
+	/* Name */			_T("infbits("),
 	/* Flags */			0,
 	/* Params */		(2, EXPPARAM_NUMBER, _T("Integer value"), EXPPARAM_NUMBER, _T("Pattern size"))
 ) {
@@ -865,7 +888,71 @@ EXPRESSION(
 }
 
 EXPRESSION(
-	/* ID */			45,
+	/* ID */			47,
+	/* Name */			_T("cropbits("),
+	/* Flags */			0,
+	/* Params */		(3, EXPPARAM_NUMBER, _T("value"), EXPPARAM_NUMBER, _T("begin"), EXPPARAM_NUMBER, _T("amount"))
+) {
+	int p1 = ExParam(TYPE_INT); // value input parameter
+	int p2 = ExParam(TYPE_INT); // begin
+	int p3 = ExParam(TYPE_INT); // count
+
+	return ( p1 & (((myPow(2, p3))-1) << p2) ) >> p2;
+}
+
+// "for p2, bit 0 is the right most and least significant bit"
+EXPRESSION(
+	/* ID */			48,
+	/* Name */			_T("getbit("),
+	/* Flags */			0,
+	/* Params */		(2, EXPPARAM_NUMBER, _T("value"), EXPPARAM_NUMBER, _T("index"))
+) {
+	int p1 = ExParam(TYPE_INT); // value input parameter
+	int p2 = ExParam(TYPE_INT);
+
+	return (p1 >> p2) & 1;
+}
+
+EXPRESSION(
+	/* ID */			49,
+	/* Name */			_T("setbit("),
+	/* Flags */			0,
+	/* Params */		(2, EXPPARAM_NUMBER, _T("value"), EXPPARAM_NUMBER, _T("index"))
+) {
+	int p1 = ExParam(TYPE_INT); // value input parameter
+	int p2 = ExParam(TYPE_INT);
+
+	return p1 |= 1 << p2;
+}
+
+EXPRESSION(
+	/* ID */			50,
+	/* Name */			_T("unsetbit("),
+	/* Flags */			0,
+	/* Params */		(2, EXPPARAM_NUMBER, _T("value"), EXPPARAM_NUMBER, _T("index"))
+) {
+	int p1 = ExParam(TYPE_INT); // value input parameter
+	int p2 = ExParam(TYPE_INT);
+
+	return p1 &= ~(1 << p2);
+}
+
+EXPRESSION(
+	/* ID */			51,
+	/* Name */			_T("togglebit("),
+	/* Flags */			0,
+	/* Params */		(2, EXPPARAM_NUMBER, _T("value"), EXPPARAM_NUMBER, _T("index"))
+) {
+	int p1 = ExParam(TYPE_INT); // value input parameter
+	int p2 = ExParam(TYPE_INT);
+
+	return p1 ^= 1 << p2;
+}
+
+
+
+EXPRESSION(
+	/* ID */			52,
 	/* Name */			_T("bPrevName$("),
 	/* Flags */			EXPFLAG_STRING,
 	/* Params */		(0)
@@ -877,27 +964,4 @@ EXPRESSION(
 	}
 
 	ReturnString(L"");
-}
-
-EXPRESSION(
-	/* ID */			46,
-	/* Name */			_T("ascii2int("),
-	/* Flags */			0,
-	/* Params */		(1, EXPPARAM_STRING, _T("Character"))
-) {
-	string p1(GetStr2());
-	if(!p1.length()) return 0;
-
-	return static_cast<int>(p1[0]);
-}
-
-EXPRESSION(
-	/* ID */			47,
-	/* Name */			_T("int2ascii$("),
-	/* Flags */			EXPFLAG_STRING,
-	/* Params */		(1, EXPPARAM_NUMBER, _T("Unsigned char"))
-) {
-	unsigned char p1 = ExParam(TYPE_INT);
-	string str(1, char(p1));
-	ReturnStringSafe(str.c_str());
 }

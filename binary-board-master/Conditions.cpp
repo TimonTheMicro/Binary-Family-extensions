@@ -20,7 +20,7 @@ CONDITION(
 
 	for(unsigned int i=0; i<numBoards; i++) //check if board already exists
 		if(strCompare(d_sNamei, p1, rdPtr->bCaseSensitive))
-			return 1;
+			return true;
 	return 0;
 }
 
