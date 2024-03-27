@@ -275,25 +275,29 @@ ACTION(
 
 ACTION(
 	/* ID */            11,
-	/* Name */          _T("%o: Clear everything, ignore lock flag: %1"),
+	/* Name */          _T("%o: Clear everything"),
 	/* Flags */         0,
-	/* Params */        (1, PARAM_NUMBER,_T("Ignore lock flag? (0: No, 1: Yes)"))
+	/* Params */        (0)
 ) {
-	bool ignorelock = GetInt();
 	//rdPtr->BOARDS.clear();
-	for (unsigned int i=0; i<numBoards; i++) //check if board already exists			
-		if (ignorelock || !d_bLock)
-		{
-			d_bLocki = false;
-			d_sNamei.clear();
-			d_vDatai.clear();
-			d_vDatai.shrink_to_fit(); 
-			rdPtr->BOARDS.erase(rdPtr->BOARDS.begin()+i, rdPtr->BOARDS.begin()+i+1);
-			rdPtr->SelBoard = 0;
-			//rdPtr->BOARDS.pop_back(); // trick
-			return 1;
-		}
-	return 0;
+	for (unsigned int i=0; i<numBoards; i++) //check if board already exists		
+	{
+		d_bLocki = false;
+		d_sNamei.clear();
+		d_vDatai.clear();
+		d_vDatai.shrink_to_fit(); 			
+		//rdPtr->BOARDS.pop_back();
+	}
+	rdPtr->BOARDS.erase(rdPtr->BOARDS.begin(), rdPtr->BOARDS.end());
+	rdPtr->SelBoard = 0;
+
+	if (numBoards)
+		return 0;
+	else
+	{
+		//rdPtr->rRd->PushEvent(2);  //Create event at the end of the loop, safer
+		return 1;
+	}
 }
 
 /*CONTENT*/
